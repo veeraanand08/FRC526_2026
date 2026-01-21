@@ -140,6 +140,19 @@ public class RobotContainer {
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
+    //Additional code not YAGSL Certified
+    m_driverController.a().whileTrue(
+      swerveSubsystem.driveFieldOriented( () ->
+        swerveSubsystem.getTargetSpeeds(
+          -m_driverController.getLeftY(),
+          -m_driverController.getLeftX(),
+          Rotation2d.fromDegrees(90)
+        )
+      )
+    );
+    //Fin
+
+
     if (RobotBase.isSimulation())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
