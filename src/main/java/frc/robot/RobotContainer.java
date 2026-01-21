@@ -185,7 +185,7 @@ public class RobotContainer {
       m_driverController.rightBumper().onTrue(Commands.none());
     }
     else {
-      m_driverController.a().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
+      m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
       m_driverController.start().whileTrue(Commands.none());
       m_driverController.back().whileTrue(Commands.none());
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
