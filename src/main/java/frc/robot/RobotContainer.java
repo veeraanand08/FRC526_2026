@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.DriverConstants;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
 
 import java.io.File;
@@ -41,6 +42,10 @@ public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
+
+  //Non Yagsl Code
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  //fin
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
@@ -142,13 +147,11 @@ public class RobotContainer {
 
     //Additional code not YAGSL Certified
     m_driverController.a().whileTrue(
-      swerveSubsystem.driveFieldOriented( () ->
-        swerveSubsystem.getTargetSpeeds(
+      swerveSubsystem.rotateToAngle( 
           -m_driverController.getLeftY(),
           -m_driverController.getLeftX(),
-          Rotation2d.fromDegrees(90)
+          swerveSubsystem.getHeading().minus(Rotation2d.fromDegrees(visionSubsystem.getLimelightAngle()))
         )
-      )
     );
     //Fin
 
