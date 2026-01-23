@@ -663,16 +663,14 @@ public class SwerveSubsystem extends SubsystemBase
 
 
   //Non Yagsl Code
-  public Command rotateToAngle(double xInput, double yInput, Rotation2d angle) {
-    return run(() -> {
-        ChassisSpeeds targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
+    return
+        swerveDrive.swerveController.getTargetSpeeds(
             xInput, 
             yInput,                     
             angle.getRadians(),        
-            -getHeading().getRadians(), 
-            swerveDrive.getMaximumChassisAngularVelocity()
+            getHeading().getRadians(), 
+            DrivebaseConstants.MAX_SPEED
         );
-        driveFieldOriented(targetSpeeds);
-    });
   }
 }
