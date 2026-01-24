@@ -1,20 +1,21 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCmd extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem shooterSubsystem;
-  private final Supplier<boolean> trigger;
+  private final Supplier<Boolean> trigger;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ShooterCmd(ShooterSubsystem subsystem, Supplier<boolean> trigger) {
+  public ShooterCmd(ShooterSubsystem subsystem, Supplier<Boolean> trigger) {
     shooterSubsystem = subsystem;
     this.trigger = trigger;
 

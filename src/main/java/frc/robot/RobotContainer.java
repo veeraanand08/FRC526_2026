@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.ShooterCmd;
+
 import frc.robot.Constants.DriverConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
@@ -121,7 +124,6 @@ public class RobotContainer {
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    shooterSubsystem.setDefaultCommand(new ShooterCmd, controller::getYButton);
   }
 
   /**
@@ -195,6 +197,7 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
       m_driverController.rightBumper().onTrue(Commands.none());
     }
+    shooterSubsystem.setDefaultCommand(new ShooterCmd(shooterSubsystem, () -> m_driverController.getHID().getBButton()));
   }
 
   /**
