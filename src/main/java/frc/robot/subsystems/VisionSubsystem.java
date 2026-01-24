@@ -35,10 +35,8 @@ public class VisionSubsystem extends SubsystemBase {
     double tDegreeOffset = table.getEntry("tx").getDouble(0);
     
     if (tVisible == 1){
-      System.out.println(tDegreeOffset);
       return tDegreeOffset;
     } else {
-      System.out.println("AGAGAGAG");
       return 0.0;
     }
   }
