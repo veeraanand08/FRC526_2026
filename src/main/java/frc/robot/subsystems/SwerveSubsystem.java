@@ -17,6 +17,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -663,11 +665,11 @@ public class SwerveSubsystem extends SubsystemBase
 
 
   //Non Yagsl Code
-  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
     return
         swerveDrive.swerveController.getTargetSpeeds(
-            xInput, 
-            yInput,                     
+            MathUtil.applyDeadband(xInput, deadband), 
+            MathUtil.applyDeadband(yInput, deadband),                     
             angle.getRadians(),        
             getHeading().getRadians(), 
             DrivebaseConstants.MAX_SPEED
