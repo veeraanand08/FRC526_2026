@@ -148,8 +148,8 @@ public class RobotContainer {
     //Additional code not YAGSL Certified
     m_driverController.a().whileTrue(
       swerveSubsystem.driveFieldOriented(() -> swerveSubsystem.rotateToAngle( 
-          -m_driverController.getLeftY(),
-          -m_driverController.getLeftX(),
+          m_driverController.getLeftY(),
+          m_driverController.getLeftX(),
           swerveSubsystem.getHeading().plus(Rotation2d.fromDegrees(visionSubsystem.getLimelightAngle())),
           DriverConstants.DEADBAND
         ))

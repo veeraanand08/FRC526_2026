@@ -30,12 +30,19 @@ public class VisionSubsystem extends SubsystemBase {
 
   
   public double getLimelightAngle() {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    double tVisible = table.getEntry("tv").getDouble(0);
-    double tDegreeOffset = table.getEntry("tx").getDouble(0);
+    NetworkTable leftTable = NetworkTableInstance.getDefault().getTable("limelight-left");
+    double tVisibleLeft = leftTable.getEntry("tv").getDouble(0);
+    double tDegreeOffsetLeft = leftTable.getEntry("tx").getDouble(0);
+    NetworkTable leftRight = NetworkTableInstance.getDefault().getTable("limelight-right");
+    double tVisibleRight = leftRight.getEntry("tv").getDouble(0);
+    double tDegreeOffsetRight = leftRight.getEntry("tx").getDouble(0);
     
-    if (tVisible == 1){
-      return tDegreeOffset;
+    if (tVisibleLeft == 1 && tVisibleRight == 1){
+      return (tDegreeOffsetLeft + tDegreeOffsetRight)/2.0;
+    } else if (tVisibleLeft == 1) {
+      return tDegreeOffsetLeft;
+    } else if (tVisibleRight == 1){
+      return tDegreeOffsetRight;
     } else {
       return 0.0;
     }
