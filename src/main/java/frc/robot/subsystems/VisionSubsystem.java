@@ -5,12 +5,16 @@
 package frc.robot.subsystems;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.FieldConstants;
 import limelight.Limelight;
 import limelight.networktables.*;
@@ -34,51 +38,41 @@ public class VisionSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
   private final AHRS gyro;
 
-  /** Creates a new ExampleSubsystem. */
   public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
     this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command autoAlign() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
+  public Command autoAlign(CommandXboxController m_driverController) {
+    return run(() -> {
+      Pose2d robotPose2d = swerveSubsystem.getPose();
+      Pose2d targetPose2d = getTargetPose();
 
-    Pose2d robotPose2d = swerveSubsystem.getPose();
-    Pose2d targetPose2d = getTargetPose();
-
+      Translation2d diffrence = targetPose2d.getTranslation().minus(robotPose2d.getTranslation());
+      
+      Rotation2d angleToTarget = new Rotation2d(diffrence.getX(), diffrence.getY());
     
-
-
-
-    
-    return swerveSubsystem.driveFieldOriented(() -> swerveSubsystem.rotateToAngle( 
+      swerveSubsystem.driveFieldOriented(swerveSubsystem.rotateToAngle( 
           m_driverController.getLeftY(),
           m_driverController.getLeftX(),
-          swerveSubsystem.getHeading().plus(Rotation2d.fromDegrees(visionSubsystem.getLimelightAngle())),
+          angleToTarget,
           DriverConstants.DEADBAND
-        ));
+      ));
+    });
   }
 
-  
+  private Pose2d getTargetPose() { //in the future make this also do shoot on the fly offsets
+    if (DriverStation.getAlliance().equals(Optional.of(Alliance.Red)))
+      return FieldConstants.RED_HUB;
+    return FieldConstants.BLUE_HUB;
+  }
 
   @Override
   public void periodic() {
     swerveDrive.updateOdometry();
     updateOrientation();
     updateVision();
-  }
-
-  public Pose2d getTargetPose() { //in the future make this also do shoot on the fly offsets
-    if (DriverStation.getAlliance().equals(Optional.of(Alliance.Red)))
-      return FieldConstants.RED_HUB;
-    return FieldConstants.BLUE_HUB;
   }
 
   private void updateOrientation() {

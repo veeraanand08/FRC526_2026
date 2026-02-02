@@ -595,7 +595,6 @@ public class SwerveSubsystem extends SubsystemBase
                                                         DrivebaseConstants.MAX_SPEED);
   }
 
-  /* might not be needed?
   public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
     return
         swerveDrive.swerveController.getTargetSpeeds(
@@ -605,7 +604,7 @@ public class SwerveSubsystem extends SubsystemBase
             getHeading().getRadians(), 
             DrivebaseConstants.MAX_SPEED
         );
-  }*/
+  }
 
   /**
    * Gets the current field-relative velocity (x, y and omega) of the robot

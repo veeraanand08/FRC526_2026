@@ -192,7 +192,7 @@ public class RobotContainer {
     }
     else {
       m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
-      m_driverController.a().whileTrue(visionSubsystem.autoAlign());
+      m_driverController.a().whileTrue(visionSubsystem.autoAlign(m_driverController));
       m_driverController.start().whileTrue(Commands.none());
       m_driverController.back().whileTrue(Commands.none());
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
