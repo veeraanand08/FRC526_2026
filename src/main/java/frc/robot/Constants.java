@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -36,6 +37,22 @@ public final class Constants
   //   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
   //   public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
   // }
+
+  public static final class ShooterConstants
+  {
+    // Shoot on the fly
+    public static final int MAX_ITERATIONS = 5;
+
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
+    static {
+      DISTANCE_TO_TIME.put(1.0, 1.0); //Example (Distance, Time)
+    }
+
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
+    static {
+      DISTANCE_TO_RPM.put(1.0, 1.0); //Example (Distance, RPM for Shot)
+    }
+  }
 
   public static final class FieldConstants
   {

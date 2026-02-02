@@ -6,21 +6,22 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
-import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.*;
 import limelight.Limelight;
 import limelight.networktables.*;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import swervelib.SwerveDrive;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import com.studica.frc.AHRS;
@@ -46,10 +47,10 @@ public class VisionSubsystem extends SubsystemBase {
 
   public Command autoAlign(CommandXboxController m_driverController) {
     return run(() -> {
-      Pose2d robotPose2d = swerveSubsystem.getPose();
-      Pose2d targetPose2d = getTargetPose();
+      Pose2d robotPose = swerveSubsystem.getPose();
+      Pose2d targetPose = getTargetPose(robotPose);
 
-      Translation2d diffrence = targetPose2d.getTranslation().minus(robotPose2d.getTranslation());
+      Translation2d diffrence = targetPose.getTranslation().minus(robotPose.getTranslation());
       
       Rotation2d angleToTarget = new Rotation2d(diffrence.getX(), diffrence.getY());
     
@@ -62,17 +63,34 @@ public class VisionSubsystem extends SubsystemBase {
     });
   }
 
-  private Pose2d getTargetPose() { //in the future make this also do shoot on the fly offsets
-    if (DriverStation.getAlliance().equals(Optional.of(Alliance.Red)))
-      return FieldConstants.RED_HUB;
-    return FieldConstants.BLUE_HUB;
+  private Pose2d getTargetPose(Pose2d robotPose) {
+    Pose2d hubPose;
+    // alliance relative
+    hubPose = (DriverStation.getAlliance().equals(Optional.of(Alliance.Red))) ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
+    
+    Translation2d realHubTranslation = hubPose.getTranslation();
+    Translation2d robotTranslation = robotPose.getTranslation();
+    ChassisSpeeds robotSpeed = swerveDrive.getFieldVelocity();
+    Translation2d virtualTargetTranslation = realHubTranslation;
+
+    for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){
+      double distanceToTarget = robotTranslation.getDistance(virtualTargetTranslation);
+      double shotTime = ShooterConstants.DISTANCE_TO_TIME.get(distanceToTarget);
+
+      double xTranslation = robotSpeed.vxMetersPerSecond * shotTime;
+      double yTranslation = robotSpeed.vyMetersPerSecond * shotTime;
+
+      virtualTargetTranslation = realHubTranslation.minus(new Translation2d(xTranslation, yTranslation));
+    }
+
+    return new Pose2d(virtualTargetTranslation, Rotation2d.kZero);
   }
 
   @Override
   public void periodic() {
     swerveDrive.updateOdometry();
     updateOrientation();
-    updateVision();
+    updateOdometry();
   }
 
   private void updateOrientation() {
@@ -85,7 +103,7 @@ public class VisionSubsystem extends SubsystemBase {
     limelightRight.getSettings().withRobotOrientation(orientation).save();
   }
 
-  private void updateVision() {
+  private void updateOdometry() {
     double currentTime = Timer.getFPGATimestamp();
     limelightLeftPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0 &&
@@ -112,5 +130,8 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    swerveDrive.updateOdometry();
+    updateOrientation();
+    updateOdometry();
   }
 }
