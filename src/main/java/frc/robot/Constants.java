@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -34,6 +36,12 @@ public final class Constants
   //   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
   //   public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
   // }
+
+  public static final class FieldConstants
+  {
+    public static final Pose2d RED_HUB = new Pose2d(11.938, 4.035, Rotation2d.kZero);
+    public static final Pose2d BLUE_HUB = new Pose2d(4.597, 4.035, Rotation2d.kZero);
+  }
 
   public static final class DriverConstants
   {

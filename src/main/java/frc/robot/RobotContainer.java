@@ -44,7 +44,7 @@ public class RobotContainer {
                                                                                 "swerve"));
 
   //Non Yagsl Code
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
   //fin
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
@@ -53,6 +53,7 @@ public class RobotContainer {
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
+
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                                 () -> m_driverController.getLeftY() * -1,
                                                                 () -> m_driverController.getLeftX() * -1)
@@ -68,7 +69,7 @@ public class RobotContainer {
                                                                                              m_driverController::getRightY)
                                                            .headingWhile(true);
 
-  /**
+  /**0
    * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
    */
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
@@ -145,18 +146,6 @@ public class RobotContainer {
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
-    //Additional code not YAGSL Certified
-    m_driverController.a().whileTrue(
-      swerveSubsystem.driveFieldOriented(() -> swerveSubsystem.rotateToAngle( 
-          m_driverController.getLeftY(),
-          m_driverController.getLeftX(),
-          swerveSubsystem.getHeading().plus(Rotation2d.fromDegrees(visionSubsystem.getLimelightAngle())),
-          DriverConstants.DEADBAND
-        ))
-    );
-    //Fin
-
-
     if (RobotBase.isSimulation())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -203,6 +192,7 @@ public class RobotContainer {
     }
     else {
       m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
+      m_driverController.a().whileTrue(visionSubsystem.autoAlign());
       m_driverController.start().whileTrue(Commands.none());
       m_driverController.back().whileTrue(Commands.none());
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());

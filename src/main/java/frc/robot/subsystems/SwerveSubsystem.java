@@ -595,6 +595,18 @@ public class SwerveSubsystem extends SubsystemBase
                                                         DrivebaseConstants.MAX_SPEED);
   }
 
+  /* might not be needed?
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
+    return
+        swerveDrive.swerveController.getTargetSpeeds(
+            MathUtil.applyDeadband(xInput, deadband), 
+            MathUtil.applyDeadband(yInput, deadband),                     
+            angle.getRadians(),        
+            getHeading().getRadians(), 
+            DrivebaseConstants.MAX_SPEED
+        );
+  }*/
+
   /**
    * Gets the current field-relative velocity (x, y and omega) of the robot
    *
@@ -661,18 +673,5 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveDrive getSwerveDrive()
   {
     return swerveDrive;
-  }
-
-
-  //Non Yagsl Code
-  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
-    return
-        swerveDrive.swerveController.getTargetSpeeds(
-            MathUtil.applyDeadband(xInput, deadband), 
-            MathUtil.applyDeadband(yInput, deadband),                     
-            angle.getRadians(),        
-            getHeading().getRadians(), 
-            DrivebaseConstants.MAX_SPEED
-        );
   }
 }
