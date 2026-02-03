@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.*;
@@ -39,26 +40,32 @@ public class VisionSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
   private final AHRS gyro;
 
+  private boolean isPoseEstimatorReady;
+
   public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
     this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
 
-  public Command autoAlign(CommandXboxController m_driverController) {
+  public Command autoAlign(CommandXboxController driverController) {
+    // ensure at least one vision measurement has been added
+    if (!isPoseEstimatorReady)
+      return Commands.none();
     return run(() -> {
       Pose2d robotPose = swerveSubsystem.getPose();
       Pose2d targetPose = getTargetPose(robotPose);
 
       Translation2d diffrence = targetPose.getTranslation().minus(robotPose.getTranslation());
-      
       Rotation2d angleToTarget = new Rotation2d(diffrence.getX(), diffrence.getY());
-    
+
+      double leftY = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftY() : -driverController.getLeftY();
+      double leftX = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftX() : -driverController.getLeftX();
+
       swerveSubsystem.driveFieldOriented(swerveSubsystem.rotateToAngle( 
-          m_driverController.getLeftY(),
-          m_driverController.getLeftX(),
-          angleToTarget,
-          DriverConstants.DEADBAND
+          leftY,
+          leftX,
+          angleToTarget
       ));
     });
   }
@@ -66,7 +73,7 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d getTargetPose(Pose2d robotPose) {
     Pose2d hubPose;
     // alliance relative
-    hubPose = (DriverStation.getAlliance().equals(Optional.of(Alliance.Red))) ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
+    hubPose = (swerveSubsystem.isRedAlliance()) ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
     
     Translation2d realHubTranslation = hubPose.getTranslation();
     Translation2d robotTranslation = robotPose.getTranslation();
@@ -113,6 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
+          isPoseEstimatorReady = true;
         }
     });
     limelightRightPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
@@ -123,6 +131,7 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
+          isPoseEstimatorReady = true;
         }
     });
   }

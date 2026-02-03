@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import java.io.File;
 import java.io.IOException;
@@ -509,7 +510,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @return true if the red alliance, false if blue. Defaults to false if none is available.
    */
-  private boolean isRedAlliance()
+  public boolean isRedAlliance()
   {
     var alliance = DriverStation.getAlliance();
     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
@@ -595,11 +596,11 @@ public class SwerveSubsystem extends SubsystemBase
                                                         DrivebaseConstants.MAX_SPEED);
   }
 
-  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
     return
         swerveDrive.swerveController.getTargetSpeeds(
-            MathUtil.applyDeadband(xInput, deadband), 
-            MathUtil.applyDeadband(yInput, deadband),                     
+            MathUtil.applyDeadband(xInput, ControllerConstants.DEADBAND), 
+            MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),                     
             angle.getRadians(),        
             getHeading().getRadians(), 
             DrivebaseConstants.MAX_SPEED

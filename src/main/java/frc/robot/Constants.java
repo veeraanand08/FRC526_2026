@@ -41,16 +41,17 @@ public final class Constants
   public static final class ShooterConstants
   {
     // Shoot on the fly
-    public static final int MAX_ITERATIONS = 5;
-
+    public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
+    public static final int MAX_ITERATIONS = 1;
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
-      DISTANCE_TO_TIME.put(1.0, 1.0); //Example (Distance, Time)
+      // Distance, Time
+      DISTANCE_TO_TIME.put(3.0, 1.0); //Example
     }
-
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
-      DISTANCE_TO_RPM.put(1.0, 1.0); //Example (Distance, RPM for Shot)
+      // Distance, RPM for Shot
+      DISTANCE_TO_RPM.put(1.0, 1.0); //Example
     }
   }
 
@@ -60,19 +61,14 @@ public final class Constants
     public static final Pose2d BLUE_HUB = new Pose2d(4.597, 4.035, Rotation2d.kZero);
   }
 
-  public static final class DriverConstants
+  public static final class ControllerConstants
   {
     public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
     // Joystick Deadband
     public static final double DEADBAND         = 0.1;
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
-  }
-
-  public static final class OperatorConstants
-  {
-    public static final int OPERATOR_CONTROLLER_PORT = 1;
-    public static final double DEADBAND = 0.1;
   }
 }

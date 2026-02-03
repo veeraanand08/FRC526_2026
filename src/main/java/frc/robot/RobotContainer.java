@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
@@ -38,7 +38,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   private final CommandXboxController m_driverController =
-      new CommandXboxController(DriverConstants.DRIVER_CONTROLLER_PORT);
+      new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -58,7 +58,7 @@ public class RobotContainer {
                                                                 () -> m_driverController.getLeftY() * -1,
                                                                 () -> m_driverController.getLeftX() * -1)
                                                             .withControllerRotationAxis(m_driverController::getRightX)
-                                                            .deadband(DriverConstants.DEADBAND)
+                                                            .deadband(ControllerConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true);
 
@@ -80,7 +80,7 @@ public class RobotContainer {
                                                                         () -> -m_driverController.getLeftX())
                                                                     .withControllerRotationAxis(() -> m_driverController.getRawAxis(
                                                                         2))
-                                                                    .deadband(DriverConstants.DEADBAND)
+                                                                    .deadband(ControllerConstants.DEADBAND)
                                                                     .scaleTranslation(0.8)
                                                                     .allianceRelativeControl(true);
   // Derive the heading axis with math!
@@ -148,13 +148,13 @@ public class RobotContainer {
 
     if (RobotBase.isSimulation())
     {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     } else
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
-    if (Robot.isSimulation())
+    /*if (Robot.isSimulation())
     {
       Pose2d target = new Pose2d(new Translation2d(1, 4),
                                  Rotation2d.fromDegrees(90));
@@ -174,12 +174,12 @@ public class RobotContainer {
       m_driverController.button(1).whileTrue(swerveSubsystem.sysIdDriveMotorCommand());
       m_driverController.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
                                                      () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
-//      m_driverController.b().whileTrue(
-//          swerveSubsystem.driveToPose(
-//              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-//                              );
+    //  m_driverController.b().whileTrue(
+    //      swerveSubsystem.driveToPose(
+    //          new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+    //                          );
 
-    }
+    }*/
     if (DriverStation.isTest())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
