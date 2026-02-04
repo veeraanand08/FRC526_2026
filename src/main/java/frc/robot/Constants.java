@@ -18,6 +18,14 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+  public static final class ModuleConstants {
+    public static final double kPShooter=0;
+    public static final double kIShooter=0;
+    public static final double kDShooter=0;
+    public static final double kShooterMotorGearRatio = 1;
+    public static final double kShooterEncoderRot2Rad = 2 * Math.PI * kBucketShooterGearRatio;
+  }
+
   public static final class DrivebaseConstants
   {
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
