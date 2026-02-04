@@ -42,7 +42,7 @@ public final class Constants
     // Shoot on the fly
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 1;
-    
+
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
       // Distance, Time
@@ -59,8 +59,8 @@ public final class Constants
   {
     public static final Translation2d RED_HUB = new Translation2d(11.938, 4.035);
     public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.035);
-    public static final Translation2d RED_LEFT_BUMP = Translation2d.kZero;
-    public static final Translation2d RED_RIGHT_BUMP = Translation2d.kZero;
+    public static final Translation2d RED_LEFT_BUMP = new Translation2d(11.928, 2.408);
+    public static final Translation2d RED_RIGHT_BUMP = new Translation2d(11.928, 5.598);
     public static final Translation2d BLUE_LEFT_BUMP = Translation2d.kZero;
     public static final Translation2d BLUE_RIGHT_BUMP = Translation2d.kZero;
   }

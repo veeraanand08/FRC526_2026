@@ -48,47 +48,6 @@ public class VisionSubsystem extends SubsystemBase {
     this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
 
-  public Command autoAlignHub(CommandXboxController driverController) {
-    
-    return run(() -> {
-      // ensure at least one vision measurement has been added
-      if (!isPoseEstimatorReady) 
-        return;
-      Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
-      Translation2d hubTranslation = swerveSubsystem.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
-      Translation2d virtualTarget = getTargetTranslation(robotTranslation, hubTranslation);
-
-      Translation2d difference = virtualTarget.minus(robotTranslation);
-      Rotation2d angleToTarget = new Rotation2d(difference.getX(), difference.getY());
-
-      double leftY = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftY() : -driverController.getLeftY();
-      double leftX = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftX() : -driverController.getLeftX();
-
-      swerveSubsystem.driveFieldOriented(swerveSubsystem.rotateToAngle( 
-          leftY,
-          leftX,
-          angleToTarget
-      ));
-    });
-  }
-
-  private Translation2d getTargetTranslation(Translation2d robotTranslation, Translation2d targetTranslation) {    
-    ChassisSpeeds robotSpeed = swerveDrive.getFieldVelocity();
-    Translation2d virtualTargetTranslation = targetTranslation;
-
-    for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){
-      double distanceToTarget = robotTranslation.getDistance(virtualTargetTranslation);
-      double shotTime = ShooterConstants.DISTANCE_TO_TIME.get(distanceToTarget);
-
-      double xTranslation = robotSpeed.vxMetersPerSecond * shotTime;
-      double yTranslation = robotSpeed.vyMetersPerSecond * shotTime;
-
-      virtualTargetTranslation = targetTranslation.minus(new Translation2d(xTranslation, yTranslation));
-    }
-
-    return virtualTargetTranslation;
-  }
-
   @Override
   public void periodic() {
     swerveDrive.updateOdometry();
@@ -116,6 +75,7 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
+          isPoseEstimatorReady = true;
         }
     });
     limelightRightPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
@@ -126,6 +86,7 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
+          isPoseEstimatorReady = true;
         }
     });
   }

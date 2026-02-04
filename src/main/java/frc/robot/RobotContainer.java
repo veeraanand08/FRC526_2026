@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -170,8 +171,8 @@ public class RobotContainer {
     }
     else {
       m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
-      m_driverController.a().whileTrue(autoAlignHub);
-      m_driverController.b().whileTrue(autoAlignBump.unless(autoAlignHub::isScheduled));
+      m_driverController.a().whileTrue(autoAlignHub.withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.b().whileTrue(autoAlignBump);
       m_driverController.start().whileTrue(Commands.none());
       m_driverController.back().whileTrue(Commands.none());
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
