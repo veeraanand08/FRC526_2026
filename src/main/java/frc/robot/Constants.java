@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
@@ -43,6 +42,7 @@ public final class Constants
     // Shoot on the fly
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 1;
+    
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
       // Distance, Time
@@ -57,8 +57,12 @@ public final class Constants
 
   public static final class FieldConstants
   {
-    public static final Pose2d RED_HUB = new Pose2d(11.938, 4.035, Rotation2d.kZero);
-    public static final Pose2d BLUE_HUB = new Pose2d(4.597, 4.035, Rotation2d.kZero);
+    public static final Translation2d RED_HUB = new Translation2d(11.938, 4.035);
+    public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.035);
+    public static final Translation2d RED_LEFT_BUMP = Translation2d.kZero;
+    public static final Translation2d RED_RIGHT_BUMP = Translation2d.kZero;
+    public static final Translation2d BLUE_LEFT_BUMP = Translation2d.kZero;
+    public static final Translation2d BLUE_RIGHT_BUMP = Translation2d.kZero;
   }
 
   public static final class ControllerConstants

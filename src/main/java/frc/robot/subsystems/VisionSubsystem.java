@@ -48,16 +48,18 @@ public class VisionSubsystem extends SubsystemBase {
     this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
 
-  public Command autoAlign(CommandXboxController driverController) {
-    // ensure at least one vision measurement has been added
-    if (!isPoseEstimatorReady)
-      return Commands.none();
+  public Command autoAlignHub(CommandXboxController driverController) {
+    
     return run(() -> {
-      Pose2d robotPose = swerveSubsystem.getPose();
-      Pose2d targetPose = getTargetPose(robotPose);
+      // ensure at least one vision measurement has been added
+      if (!isPoseEstimatorReady) 
+        return;
+      Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+      Translation2d hubTranslation = swerveSubsystem.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
+      Translation2d virtualTarget = getTargetTranslation(robotTranslation, hubTranslation);
 
-      Translation2d diffrence = targetPose.getTranslation().minus(robotPose.getTranslation());
-      Rotation2d angleToTarget = new Rotation2d(diffrence.getX(), diffrence.getY());
+      Translation2d difference = virtualTarget.minus(robotTranslation);
+      Rotation2d angleToTarget = new Rotation2d(difference.getX(), difference.getY());
 
       double leftY = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftY() : -driverController.getLeftY();
       double leftX = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftX() : -driverController.getLeftX();
@@ -70,15 +72,9 @@ public class VisionSubsystem extends SubsystemBase {
     });
   }
 
-  private Pose2d getTargetPose(Pose2d robotPose) {
-    Pose2d hubPose;
-    // alliance relative
-    hubPose = (swerveSubsystem.isRedAlliance()) ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
-    
-    Translation2d realHubTranslation = hubPose.getTranslation();
-    Translation2d robotTranslation = robotPose.getTranslation();
+  private Translation2d getTargetTranslation(Translation2d robotTranslation, Translation2d targetTranslation) {    
     ChassisSpeeds robotSpeed = swerveDrive.getFieldVelocity();
-    Translation2d virtualTargetTranslation = realHubTranslation;
+    Translation2d virtualTargetTranslation = targetTranslation;
 
     for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){
       double distanceToTarget = robotTranslation.getDistance(virtualTargetTranslation);
@@ -87,10 +83,10 @@ public class VisionSubsystem extends SubsystemBase {
       double xTranslation = robotSpeed.vxMetersPerSecond * shotTime;
       double yTranslation = robotSpeed.vyMetersPerSecond * shotTime;
 
-      virtualTargetTranslation = realHubTranslation.minus(new Translation2d(xTranslation, yTranslation));
+      virtualTargetTranslation = targetTranslation.minus(new Translation2d(xTranslation, yTranslation));
     }
 
-    return new Pose2d(virtualTargetTranslation, Rotation2d.kZero);
+    return virtualTargetTranslation;
   }
 
   @Override
@@ -120,7 +116,6 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
-          isPoseEstimatorReady = true;
         }
     });
     limelightRightPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
@@ -131,9 +126,12 @@ public class VisionSubsystem extends SubsystemBase {
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds
           );
-          isPoseEstimatorReady = true;
         }
     });
+  }
+
+  public boolean isPoseEstimatorReady() {
+    return isPoseEstimatorReady;
   }
 
   @Override

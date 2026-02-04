@@ -596,13 +596,22 @@ public class SwerveSubsystem extends SubsystemBase
                                                         DrivebaseConstants.MAX_SPEED);
   }
 
+  /**
+   * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
+   * 90deg.
+   *
+   * @param xInput X joystick input for the robot to move in the X direction.
+   * @param yInput Y joystick input for the robot to move in the Y direction.
+   * @param angle  The angle in as a {@link Rotation2d}.
+   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
+   */
   public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
     return
         swerveDrive.swerveController.getTargetSpeeds(
             MathUtil.applyDeadband(xInput, ControllerConstants.DEADBAND), 
-            MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),                     
-            angle.getRadians(),        
-            getHeading().getRadians(), 
+            MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),
+            angle.getRadians(),
+            getHeading().getRadians(),
             DrivebaseConstants.MAX_SPEED
         );
   }

@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.AutoAlign.Target;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
@@ -145,6 +147,8 @@ public class RobotContainer {
     Command driveFieldOrientedAnglularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+    Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
+    Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
 
     if (RobotBase.isSimulation())
     {
@@ -154,32 +158,6 @@ public class RobotContainer {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
-    /*if (Robot.isSimulation())
-    {
-      Pose2d target = new Pose2d(new Translation2d(1, 4),
-                                 Rotation2d.fromDegrees(90));
-      //swerveSubsystem.getSwerveDrive().field.getObject("targetPose").setPose(target);
-      driveDirectAngleKeyboard.driveToPose(() -> target,
-                                           new ProfiledPIDController(5,
-                                                                     0,
-                                                                     0,
-                                                                     new Constraints(5, 2)),
-                                           new ProfiledPIDController(5,
-                                                                     0,
-                                                                     0,
-                                                                     new Constraints(Units.degreesToRadians(360),
-                                                                                     Units.degreesToRadians(180))
-                                           ));
-      m_driverController.start().onTrue(Commands.runOnce(() -> swerveSubsystem.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      m_driverController.button(1).whileTrue(swerveSubsystem.sysIdDriveMotorCommand());
-      m_driverController.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
-                                                     () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
-    //  m_driverController.b().whileTrue(
-    //      swerveSubsystem.driveToPose(
-    //          new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-    //                          );
-
-    }*/
     if (DriverStation.isTest())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
@@ -192,7 +170,8 @@ public class RobotContainer {
     }
     else {
       m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
-      m_driverController.a().whileTrue(visionSubsystem.autoAlign(m_driverController));
+      m_driverController.a().whileTrue(autoAlignHub);
+      m_driverController.b().whileTrue(autoAlignBump.unless(autoAlignHub::isScheduled));
       m_driverController.start().whileTrue(Commands.none());
       m_driverController.back().whileTrue(Commands.none());
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
