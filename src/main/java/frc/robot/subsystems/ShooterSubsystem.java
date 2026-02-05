@@ -51,8 +51,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void start(double speed) {
-      motorA.set(PIDA.calculate(encoderA.getPosition(), speed));
-      motorB.set(PIDB.calculate(encoderB.getPosition(), speed));
+      motorA.set(PIDA.calculate(encoderA.getVelocity(), speed));
+      motorB.set(PIDB.calculate(encoderB.getVelocity(), speed));
     }
 
     public void stop() {
