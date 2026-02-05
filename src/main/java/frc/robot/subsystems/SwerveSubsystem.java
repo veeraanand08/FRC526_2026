@@ -17,6 +17,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase
     if (SwerveDriveTelemetry.isSimulation) swerveDrive.setCosineCompensator(false); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     swerveDrive.setAngularVelocityCompensation(true,
                                                true,
-                                               0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
+                                               -0.225); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
 
@@ -507,7 +510,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @return true if the red alliance, false if blue. Defaults to false if none is available.
    */
-  private boolean isRedAlliance()
+  public boolean isRedAlliance()
   {
     var alliance = DriverStation.getAlliance();
     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
@@ -591,6 +594,26 @@ public class SwerveSubsystem extends SubsystemBase
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
                                                         DrivebaseConstants.MAX_SPEED);
+  }
+
+  /**
+   * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
+   * 90deg.
+   *
+   * @param xInput X joystick input for the robot to move in the X direction.
+   * @param yInput Y joystick input for the robot to move in the Y direction.
+   * @param angle  The angle in as a {@link Rotation2d}.
+   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
+   */
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
+    return
+        swerveDrive.swerveController.getTargetSpeeds(
+            MathUtil.applyDeadband(xInput, ControllerConstants.DEADBAND), 
+            MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),
+            angle.getRadians(),
+            getHeading().getRadians(),
+            DrivebaseConstants.MAX_SPEED
+        );
   }
 
   /**
