@@ -40,6 +40,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
@@ -127,6 +129,7 @@ public class RobotContainer {
 
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
   }
 
   /**
@@ -178,6 +181,7 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
       m_driverController.rightBumper().onTrue(Commands.none());
     }
+    shooterSubsystem.setDefaultCommand(new ShooterCmd(shooterSubsystem, () -> m_driverController.getHID().getBButton()));
   }
 
   /**
