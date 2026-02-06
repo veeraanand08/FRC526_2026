@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 @SuppressWarnings("unused")
 public class IntakeSubsystem extends SubsystemBase {
+    public PivotState pivotState;
     private final SparkMax pivotMotor;
     private final SparkMax rollerMotor;
 
@@ -40,14 +41,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stop() {
         rollerMotor.set(0);
+        pivotMotor.set(0);
     }
 
-    public void setMotorSpeed(double speed) {
-        rollerMotor.set(speed);
+    public void stopPivot() {
+      pivotMotor.set(0);
+    }
+
+    public void toggleRoller() {
+      rollerMotor.set(rollerMotor.get()==0 ? ModuleConstants.INTAKE_CONSTANT : 0);
     }
 
     public void setPivotPos(double rot) {
-        pivotMotor.set(pivotPIDController.calculate(pivotEncoder.getPosition(), rot));
+      pivotMotor.set(pivotPIDController.calculate(pivotEncoder.getPosition(), rot));
+    }
+
+    public double getPivotDeg() {
+      return Math.toDegrees(pivotEncoder.getPosition());
     }
 
   public Command IntakeMethodCommand() {
@@ -71,7 +81,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    double currentDeg = getPivotDeg();
+    if (pivotState!=PivotState.LOWERED || pivotState!=PivotState.LOWERING) {
+      if (currentDeg)
+    }
   }
 
   @Override
@@ -80,6 +93,6 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public enum PivotState {
-    RAISING, RAISED, LOWERING, LOWERED
+    RAISING, LOWERING, LOWERED
   }
 }

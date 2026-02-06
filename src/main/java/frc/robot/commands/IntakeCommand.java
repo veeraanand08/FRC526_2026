@@ -5,35 +5,51 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
 @SuppressWarnings("unused")
 public class IntakeCommand extends Command {
   private final IntakeSubsystem intakeSubsystem;
-
-  public IntakeCommand(IntakeSubsystem intakeSubsystem) {
-    this.intakeSubsystem = intakeSubsystem;
+  public IntakeCommand(IntakeSubsystem subsys) {
+    intakeSubsystem = subsys;
     addRequirements(intakeSubsystem);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if (intakeSubsystem.pivotState==PivotState.LOWERED) {
+      intakeSubsystem.pivotState=PivotState.RAISING;
+      intakeSubsystem.toggleRoller();
+    } else intakeSubsystem.pivotState=PivotState.LOWERING;
+  }
 
   @Override
   public void execute() {
-    intakeSubsystem.setMotorSpeed(ModuleConstants.INTAKE_CONSTANT);
+    double currentDeg = intakeSubsystem.getPivotDeg();
+    if (intakeSubsystem.pivotState==PivotState.LOWERING) {
+      intakeSubsystem.setPivotPos(ModuleConstants.INTAKE_ENGAGED_ANGLE);
+      if (currentDeg<=ModuleConstants.INTAKE_ENGAGED_ANGLE-5) {
+        intakeSubsystem.pivotState=PivotState.LOWERED;
+        intakeSubsystem.toggleRoller();
+        intakeSubsystem.stopPivot();
+      }
+    } else if (currentDeg>=5) {
+      intakeSubsystem.pivotState=PivotState.RAISED;
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
-    intakeSubsystem.stop();
-
+    if (interrupted) intakeSubsystem.stop();
+  }
  
   @Override
   public boolean isFinished() {
-    return false;
+    return intakeSubsystem.pivotState == PivotState.LOWERED || intakeSubsystem.pivotState == PivotState.RAISED;
   }
 }

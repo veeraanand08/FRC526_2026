@@ -58,10 +58,12 @@ public final class Constants
 
   public static final class ModuleConstants
   {
-    public static final int INTAKE_CONSTANT     = 1;
-    public static final int P_INTAKE            = 0;
-    public static final int I_INTAKE            = 0;
-    public static final int D_INTAKE            = 0;
-    
+    public static final int INTAKE_CONSTANT         = 1;
+    public static final int INTAKE_P                = 0;
+    public static final int INTAKE_I                = 0;
+    public static final int INTAKE_D                = 0;
+    public static final double INTAKE_ENGAGED_ANGLE = 150;
+    public static final double INTAKE_UPPER_RAISED  = 50;
+    public static final double INTAKE_LOWER_RAISED  = 120;
   }
 }
