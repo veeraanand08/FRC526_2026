@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -43,6 +45,9 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
+    public static final int LEFT_INTAKE_MOTOR   = 0;
+    public static final int RIGHT_INTAKE_MOTOR  = 0;
+    public static final int INTAKE_CONSTANT     = 1;
   }
 
   public static final class OperatorConstants
