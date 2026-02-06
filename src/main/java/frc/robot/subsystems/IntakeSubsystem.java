@@ -11,35 +11,43 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.ModuleConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @SuppressWarnings("unused")
 public class IntakeSubsystem extends SubsystemBase {
-    private final SparkMax leftMotor;
-    private final SparkMax rightMotor;
+    private final SparkMax pivotMotor;
+    private final SparkMax rollerMotor;
 
-    private final SparkMaxConfig leftConfig;
-    private final SparkMaxConfig rightConfig;
+    private final SparkMaxConfig pivotConfig;
+    private final SparkMaxConfig rollerConfig;
+
+    private final RelativeEncoder pivotEncoder;
+    private final PIDController pivotPIDController;
 
     /** Creates a new IntakeSubsystem. */
     public IntakeSubsystem() {
-        leftMotor = new SparkMax(DriverConstants.LEFT_INTAKE_MOTOR, MotorType.kBrushless);
-        rightMotor = new SparkMax(DriverConstants.RIGHT_INTAKE_MOTOR, MotorType.kBrushless);
-        leftConfig = new SparkMaxConfig();
-        rightConfig = new SparkMaxConfig();
-        leftConfig.idleMode(IdleMode.kBrake);
-        rightConfig.idleMode(IdleMode.kBrake);
+        pivotMotor = new SparkMax(DriverConstants.PIVOT_INTAKE_MOTOR, MotorType.kBrushless);
+        rollerMotor = new SparkMax(DriverConstants.ROLLER_INTAKE_MOTOR, MotorType.kBrushless);
+        pivotConfig = new SparkMaxConfig();
+        rollerConfig = new SparkMaxConfig();
+        pivotConfig.idleMode(IdleMode.kBrake);
+        rollerConfig.idleMode(IdleMode.kBrake);
+        pivotEncoder = pivotMotor.getEncoder();
+        pivotPIDController = new PIDController(ModuleConstants.P_INTAKE, ModuleConstants.I_INTAKE, ModuleConstants.D_INTAKE);
     }
 
     public void stop() {
-        leftMotor.set(0);
-        rightMotor.set(0);
+        rollerMotor.set(0);
     }
 
     public void setMotorSpeed(double speed) {
-        leftMotor.set(speed);
-        rightMotor.set(speed);
+        rollerMotor.set(speed);
+    }
+
+    public void setPivotPos(double rot) {
+        pivotMotor.set(pivotPIDController.calculate(pivotEncoder.getPosition(), rot));
     }
 
   public Command IntakeMethodCommand() {
@@ -69,5 +77,9 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public enum PivotState {
+    RAISING, RAISED, LOWERING, LOWERED
   }
 }

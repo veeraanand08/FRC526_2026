@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
 @SuppressWarnings("unused")
@@ -23,14 +24,14 @@ public class IntakeCommand extends Command {
 
   @Override
   public void execute() {
-    intakeSubsystem.setMotorSpeed(DriverConstants.INTAKE_CONSTANT);
+    intakeSubsystem.setMotorSpeed(ModuleConstants.INTAKE_CONSTANT);
   }
 
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.stop();
-  }
 
+ 
   @Override
   public boolean isFinished() {
     return false;

@@ -45,14 +45,23 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
-    public static final int LEFT_INTAKE_MOTOR   = 0;
-    public static final int RIGHT_INTAKE_MOTOR  = 0;
-    public static final int INTAKE_CONSTANT     = 1;
+    public static final int PIVOT_INTAKE_MOTOR  = 0;
+    public static final int ROLLER_INTAKE_MOTOR = 0;
+    
   }
 
   public static final class OperatorConstants
   {
     public static final int OPERATOR_CONTROLLER_PORT = 1;
     public static final double DEADBAND = 0.1;
+  }
+
+  public static final class ModuleConstants
+  {
+    public static final int INTAKE_CONSTANT     = 1;
+    public static final int P_INTAKE            = 0;
+    public static final int I_INTAKE            = 0;
+    public static final int D_INTAKE            = 0;
+    
   }
 }
