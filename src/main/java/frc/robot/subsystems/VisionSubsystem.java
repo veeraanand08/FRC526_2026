@@ -3,31 +3,21 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.*;
-import limelight.Limelight;
-import limelight.networktables.*;
-import limelight.networktables.LimelightPoseEstimator.EstimationMode;
-import swervelib.SwerveDrive;
-
-import java.lang.reflect.Field;
-import java.util.Optional;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import com.studica.frc.AHRS;
 
-import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightPoseEstimator;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.LimelightSettings.LEDMode;
+import limelight.networktables.Orientation3d;
+import limelight.networktables.PoseEstimate;
+import swervelib.SwerveDrive;
 
 public class VisionSubsystem extends SubsystemBase {
   private final Limelight limelightLeft = new Limelight("limelight-left");
@@ -52,7 +42,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     swerveDrive.updateOdometry();
     updateOrientation();
-    updateOdometry();
+    this.updateOdometry();
   }
 
   private void updateOrientation() {
@@ -89,6 +79,20 @@ public class VisionSubsystem extends SubsystemBase {
           isPoseEstimatorReady = true;
         }
     });
+  }
+
+  public void toggleLED() {
+    // 0 = Pipeline Control, 1 = Force Off, 2 = Force Blink, 3 = Force On
+    NetworkTableEntry ledMode = limelightLeft.getNTTable().getEntry("ledMode");
+    if (ledMode.equals(1))
+      setLED(LEDMode.ForceOn);
+    else
+      setLED(LEDMode.ForceOff);
+  }
+
+  public void setLED(LEDMode ledMode) {
+    limelightLeft.getSettings().withLimelightLEDMode(ledMode);
+    limelightRight.getSettings().withLimelightLEDMode(ledMode);
   }
 
   public boolean isPoseEstimatorReady() {

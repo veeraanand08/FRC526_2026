@@ -10,6 +10,7 @@ import frc.robot.commands.AutoAlign.Target;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import limelight.networktables.LimelightSettings.LEDMode;
 import swervelib.SwerveInputStream;
 
 import java.io.File;
@@ -43,6 +44,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
+  
+  private final CommandXboxController operatorController =
+      new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -121,9 +125,6 @@ public class RobotContainer {
     //Set the default auto (do nothing) 
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
 
-    //Add a simple auto option to have the robot drive forward for 1 second then stop
-    autoChooser.addOption("Drive Forward", swerveSubsystem.driveForward().withTimeout(1));
-
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -139,44 +140,45 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    Command driveFieldOrientedDirectAngle      = swerveSubsystem.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveFieldOriented(driveAngularVelocity);
-    Command driveRobotOrientedAngularVelocity  = swerveSubsystem.driveFieldOriented(driveRobotOriented);
+    Command driveFieldOrientedDirectAngle     = swerveSubsystem.driveFieldOriented(driveDirectAngle);
+    Command driveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveAngularVelocity);
+    Command driveRobotOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveRobotOriented);
     Command driveSetpointGen = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard      = swerveSubsystem.driveFieldOriented(driveDirectAngleKeyboard);
-    Command driveFieldOrientedAnglularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
+    Command driveFieldOrientedDirectAngleKeyboard     = swerveSubsystem.driveFieldOriented(driveDirectAngleKeyboard);
+    Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
     Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
 
-    if (RobotBase.isSimulation())
-    {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    } else
-    {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    if (RobotBase.isSimulation()) {
+      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
     }
+    else {
+      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
+    }
+
+    // driver controls
+    m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
+    m_driverController.a().whileTrue(autoAlignHub.withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    m_driverController.b().whileTrue(autoAlignBump);
+    m_driverController.start().whileTrue(Commands.none());
+    m_driverController.back().whileTrue(Commands.none());
+    m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
+    // driverController.rightBumper().onTrue(Commands.none());
+
+    // operator controls (will change to operatorController later)
+    m_driverController.rightBumper().whileTrue(Commands.run(shooterSubsystem::shoot));
+    m_driverController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
+    m_driverController.povRight().onTrue(Commands.runOnce(() -> visionSubsystem.setLED(LEDMode.PipelineControl))); // default mode
 
     if (DriverStation.isTest())
     {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
+      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides drive command above!
 
-      m_driverController.x().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
-      m_driverController.start().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
-      m_driverController.back().whileTrue(swerveSubsystem.centerModulesCommand());
-      m_driverController.leftBumper().onTrue(Commands.none());
-      m_driverController.rightBumper().onTrue(Commands.none());
-    }
-    else {
-      m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyro)));
-      m_driverController.a().whileTrue(autoAlignHub.withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-      m_driverController.b().whileTrue(autoAlignBump);
-      m_driverController.start().whileTrue(Commands.none());
-      m_driverController.back().whileTrue(Commands.none());
-      m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
-      m_driverController.rightBumper().onTrue(Commands.none());
+      // driverController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
+      // driverController.povRight().onTrue(Commands.runOnce(() -> visionSubsystem.setLED(LEDMode.PipelineControl))); // default mode
     }
   }
 

@@ -34,7 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   public ShooterSubsystem(SwerveDrive swerveDrive) {
     this.swerveDrive = swerveDrive;
-    
+
     leftMotor = new SparkMax(ShooterConstants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
     rightMotor = new SparkMax(ShooterConstants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
     leftMotorConfig = new SparkMaxConfig();
@@ -59,11 +59,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotor.set(rightMotorPid.calculate(rightMotorEncoder.getVelocity(), rpm));
   }
 
-  public Command shoot() {
-    return run(() -> {
-      Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
-      double distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
-      setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
-    });
+  public void shoot() {
+    Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+    double distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
+    setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
   }
 }

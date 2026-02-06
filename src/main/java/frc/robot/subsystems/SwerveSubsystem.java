@@ -30,11 +30,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.RobotUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -184,9 +187,9 @@ public class SwerveSubsystem extends SubsystemBase
       e.printStackTrace();
     }
 
-    //Preload PathPlanner Path finding
+    // Preload PathPlanner Path finding
     // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-    PathfindingCommand.warmupCommand().schedule();
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   /**
@@ -506,24 +509,13 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Checks if the alliance is red, defaults to false if alliance isn't available.
-   *
-   * @return true if the red alliance, false if blue. Defaults to false if none is available.
-   */
-  public boolean isRedAlliance()
-  {
-    var alliance = DriverStation.getAlliance();
-    return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-  }
-
-  /**
    * This will zero (calibrate) the robot to assume the current position is facing forward
    * <p>
-   * If red alliance rotate the robot 180 after the drviebase zero command
+   * If red alliance rotate the robot 180 after the drivebase zero command
    */
   public void zeroGyroWithAlliance()
   {
-    if (isRedAlliance())
+    if (RobotUtil.isRedAlliance())
     {
       zeroGyro();
       //Set the pose 180 degrees
