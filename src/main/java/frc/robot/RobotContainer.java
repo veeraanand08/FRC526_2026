@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
@@ -40,17 +41,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
-
-  //Non Yagsl Code
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive());
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
-  //fin
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
@@ -181,7 +178,6 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
       m_driverController.rightBumper().onTrue(Commands.none());
     }
-    shooterSubsystem.setDefaultCommand(new ShooterCmd(shooterSubsystem, () -> m_driverController.getHID().getBButton()));
   }
 
   /**

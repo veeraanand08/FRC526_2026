@@ -1,62 +1,69 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.AutoAlign;
+import swervelib.SwerveDrive;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.FieldConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final SparkMax motorA;
-    private final SparkMax motorB;
+  private final SwerveDrive swerveDrive;
 
-    private final SparkMaxConfig configA;
-    private final SparkMaxConfig configB;
+  private final SparkMax leftMotor;
+  private final SparkMax rightMotor;
+  private final SparkMaxConfig leftMotorConfig;
+  private final SparkMaxConfig rightMotorConfig;
 
-    private final RelativeEncoder encoderA;
-    private final RelativeEncoder encoderB;
+  private final RelativeEncoder leftMotorEncoder;
+  private final RelativeEncoder rightMotorEncoder;
+  private final PIDController leftMotorPid;
+  private final PIDController rightMotorPid;
 
-    private final PIDController PIDA;
-    private final PIDController PIDB;
+  private boolean isShooterReady;
+  
+  public ShooterSubsystem(SwerveDrive swerveDrive) {
+    this.swerveDrive = swerveDrive;
+    
+    leftMotor = new SparkMax(ShooterConstants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
+    rightMotor = new SparkMax(ShooterConstants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
+    leftMotorConfig = new SparkMaxConfig();
+    rightMotorConfig = new SparkMaxConfig();
 
-    public ShooterSubsystem() {
-        motorA = new SparkMax(DriverConstants.kShooterMotorA, MotorType.kBrushless);
-        motorB = new SparkMax(DriverConstants.kShooterMotorB, MotorType.kBrushless);
-        configA = new SparkMaxConfig();
-        configB = new SparkMaxConfig();
+    leftMotorConfig.inverted(ShooterConstants.LEFT_SHOOTER_MOTOR_REVERSED);
+    rightMotorConfig.inverted(ShooterConstants.RIGHT_SHOOTER_MOTOR_REVERSED);
+    leftMotorConfig.idleMode(IdleMode.kBrake);
+    rightMotorConfig.idleMode(IdleMode.kBrake);
 
-        configA.inverted(DriverConstants.kShooterMotorAReversed);
-        configB.inverted(DriverConstants.kShooterMotorBReversed);
+    leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        configA.idleMode(IdleMode.kBrake);
-        configA.encoder.positionConversionFactor(ModuleConstants.kShooterEncoderRot2Rad);
-        configB.idleMode(IdleMode.kBrake);
-        configB.encoder.positionConversionFactor(ModuleConstants.kShooterEncoderRot2Rad);
+    leftMotorEncoder = leftMotor.getEncoder();
+    rightMotorEncoder = rightMotor.getEncoder();
+    leftMotorPid = new PIDController(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
+    rightMotorPid = new PIDController(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
+  }
 
-        motorA.configure(configA, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        motorB.configure(configB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  public void setAngularVelocity(double rpm) {
+    leftMotor.set(leftMotorPid.calculate(leftMotorEncoder.getVelocity(), rpm));
+    rightMotor.set(rightMotorPid.calculate(rightMotorEncoder.getVelocity(), rpm));
+  }
 
-        encoderA = motorA.getEncoder();
-        encoderB = motorB.getEncoder();
-
-        PIDA = new PIDController(ModuleConstants.kPShooter, ModuleConstants.kIShooter, ModuleConstants.kDShooter);
-        PIDB = new PIDController(ModuleConstants.kPShooter, ModuleConstants.kIShooter, ModuleConstants.kDShooter);
-    }
-
-    public void start(double speed) {
-      motorA.set(PIDA.calculate(encoderA.getVelocity(), speed));
-      motorB.set(PIDB.calculate(encoderB.getVelocity(), speed));
-    }
-
-    public void stop() {
-      motorA.set(0);
-      motorB.set(0);
-    }
+  public Command shoot() {
+    return run(() -> {
+      Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+      double distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
+      setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
+    });
+  }
 }

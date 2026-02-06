@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.math.Matter;
 
 /**
@@ -20,14 +21,6 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
-  public static final class ModuleConstants {
-    public static final double kPShooter=0;
-    public static final double kIShooter=0;
-    public static final double kDShooter=0;
-    public static final double kShooterMotorGearRatio = 1;
-    public static final double kShooterEncoderRot2Rad = 2 * Math.PI * kBucketShooterGearRatio;
-  }
-
   public static final class DrivebaseConstants
   {
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
@@ -47,6 +40,15 @@ public final class Constants
 
   public static final class ShooterConstants
   {
+    public static final int LEFT_SHOOTER_MOTOR = 13;
+    public static final int RIGHT_SHOOTER_MOTOR = 14;
+    public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
+    public static final boolean RIGHT_SHOOTER_MOTOR_REVERSED = false;
+    public static final double SHOOTER_P = 0;
+    public static final double SHOOTER_I = 0;
+    public static final double SHOOTER_D = 0;
+    public static final double SHOOTER_GEAR_RATIO = 1;
+
     // Shoot on the fly
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 1;
@@ -82,10 +84,5 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
-
-    public static final int kShooterMotorA = 13;
-    public static final int kShooterMotorB = 14;
-    public static final boolean kShooterMotorAReversed = false;
-    public static final boolean kShooterMotorBReversed = false;
   }
 }

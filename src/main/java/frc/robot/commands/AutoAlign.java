@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveDrive;
@@ -61,15 +64,32 @@ public class AutoAlign extends Command {
     if (!visionSubsystem.isPoseEstimatorReady() && !RobotBase.isSimulation()) 
       return;
     Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+    Translation2d targetTranslation = getTargetTranslation(target, robotTranslation);
+    Translation2d virtualTarget = getVirtualTarget(robotTranslation, targetTranslation);
+
+    Translation2d difference = virtualTarget.minus(robotTranslation);
+    Rotation2d angleToTarget = new Rotation2d(difference.getX(), difference.getY());
+
+    double leftY = (RobotUtil.isRedAlliance()) ? driverController.getLeftY() : -driverController.getLeftY();
+    double leftX = (RobotUtil.isRedAlliance()) ? driverController.getLeftX() : -driverController.getLeftX();
+
+    swerveSubsystem.driveFieldOriented(swerveSubsystem.rotateToAngle( 
+        leftY,
+        leftX,
+        angleToTarget
+    ));
+  }
+
+  public static Translation2d getTargetTranslation(Target target, Translation2d robotTranslation) {
     Translation2d targetTranslation;
     switch (target) {
       case HUB:
-        targetTranslation = swerveSubsystem.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
+        targetTranslation = RobotUtil.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
         break;
       case BUMP:
         Translation2d leftBump, rightBump;
 
-        if (swerveSubsystem.isRedAlliance()){
+        if (RobotUtil.isRedAlliance()){
             leftBump = FieldConstants.RED_LEFT_BUMP;
             rightBump = FieldConstants.RED_RIGHT_BUMP;
         } else {
@@ -88,22 +108,10 @@ public class AutoAlign extends Command {
       default:
         targetTranslation = robotTranslation;
     }
-    Translation2d virtualTarget = getTargetTranslation(robotTranslation, targetTranslation);
-
-    Translation2d difference = virtualTarget.minus(robotTranslation);
-    Rotation2d angleToTarget = new Rotation2d(difference.getX(), difference.getY());
-
-    double leftY = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftY() : -driverController.getLeftY();
-    double leftX = (swerveSubsystem.isRedAlliance()) ? driverController.getLeftX() : -driverController.getLeftX();
-
-    swerveSubsystem.driveFieldOriented(swerveSubsystem.rotateToAngle( 
-        leftY,
-        leftX,
-        angleToTarget
-    ));
+    return targetTranslation;
   }
 
-  private Translation2d getTargetTranslation(Translation2d robotTranslation, Translation2d targetTranslation) {    
+  private Translation2d getVirtualTarget(Translation2d robotTranslation, Translation2d targetTranslation) {    
     ChassisSpeeds robotSpeed = swerveDrive.getFieldVelocity();
     Translation2d virtualTargetTranslation = targetTranslation;
 
@@ -132,6 +140,10 @@ public class AutoAlign extends Command {
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public static Target getCurrentTarget() {
+    return currentTarget;
   }
 
   public static boolean isActive() {
