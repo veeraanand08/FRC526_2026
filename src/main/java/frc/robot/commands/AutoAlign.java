@@ -23,7 +23,13 @@ import swervelib.SwerveDrive;
 public class AutoAlign extends Command {
   public enum Target {
     HUB,
-    BUMP
+    BUMP,
+    NONE {
+      @Override
+      public String toString() {
+        return "N/A";
+      }
+    }
   }
 
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -33,7 +39,7 @@ public class AutoAlign extends Command {
   private final CommandXboxController driverController;
   private final Target target;
   // used in shooter subsystem to determine if bot is ready to shoot
-  private static Target currentTarget;
+  private static Target currentTarget = Target.NONE;
 
   /**
    * Creates a new ExampleCommand.
@@ -83,6 +89,7 @@ public class AutoAlign extends Command {
   public static Translation2d getTargetTranslation(Target target, Translation2d robotTranslation) {
     Translation2d targetTranslation;
     switch (target) {
+      case NONE:
       case HUB:
         targetTranslation = RobotUtil.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
         break;
@@ -133,7 +140,7 @@ public class AutoAlign extends Command {
   @Override
   public void end(boolean interrupted) {
     if (currentTarget == target)
-      currentTarget = null;
+      currentTarget = Target.NONE;
   }
 
   // Returns true when the command should end.

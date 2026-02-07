@@ -40,6 +40,8 @@ public final class Constants
 
   public static final class ShooterConstants
   {
+    public static final boolean TUNING_MODE_ACTIVE = true;
+
     public static final int LEFT_SHOOTER_MOTOR = 13;
     public static final int RIGHT_SHOOTER_MOTOR = 14;
     public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
@@ -47,9 +49,11 @@ public final class Constants
     public static final double SHOOTER_P = 0;
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
-    public static final double SHOOTER_GEAR_RATIO = 1;
+    // set speeds
+    public static final double DEFAULT_RPM = 3000; //temp
+    public static final double REVERSED_RPM = 1000; //temp, reversal if something is stuck
 
-    // Shoot on the fly
+    /* Shoot on the fly */
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 0;
 
