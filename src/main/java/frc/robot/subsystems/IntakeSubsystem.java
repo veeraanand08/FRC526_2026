@@ -7,12 +7,13 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.ModuleConstants;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.controller.PIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @SuppressWarnings("unused")
@@ -26,8 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final RelativeEncoder pivotEncoder;
     private final PIDController pivotPIDController;
-
-    /** Creates a new IntakeSubsystem. */
+    
+    @SuppressWarnings("removal")
     public IntakeSubsystem() {
         pivotMotor = new SparkMax(DriverConstants.PIVOT_INTAKE_MOTOR, MotorType.kBrushless);
         rollerMotor = new SparkMax(DriverConstants.ROLLER_INTAKE_MOTOR, MotorType.kBrushless);
@@ -36,8 +37,13 @@ public class IntakeSubsystem extends SubsystemBase {
         pivotConfig.idleMode(IdleMode.kBrake);
         rollerConfig.idleMode(IdleMode.kBrake);
         pivotEncoder = pivotMotor.getEncoder();
-        pivotPIDController = new PIDController(ModuleConstants.P_INTAKE, ModuleConstants.I_INTAKE, ModuleConstants.D_INTAKE);
-    }
+        pivotPIDController = new PIDController(ModuleConstants.INTAKE_P, ModuleConstants.INTAKE_I, ModuleConstants.INTAKE_D);
+        pivotMotor.configure(
+            pivotConfig,
+            ResetMode.kNoResetSafeParameters,
+            PersistMode.kNoPersistParameters
+        );
+      }
 
     public void stop() {
         rollerMotor.set(0);
@@ -60,39 +66,24 @@ public class IntakeSubsystem extends SubsystemBase {
       return Math.toDegrees(pivotEncoder.getPosition());
     }
 
-  public Command IntakeMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
-
-  /**
-   * An Intake method querying a boolean state of the subsystem (for Intake, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean IntakeCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
+  public Command IntakeMethodCommand() {return runOnce(() -> {});}
 
   @Override
   public void periodic() {
     double currentDeg = getPivotDeg();
-    if (pivotState!=PivotState.LOWERED || pivotState!=PivotState.LOWERING) {
-      if (currentDeg)
+    if (pivotState==PivotState.RAISED_RAISING) {
+      setPivotPos(ModuleConstants.INTAKE_UPPER_RAISED);
+      if (currentDeg<=ModuleConstants.INTAKE_UPPER_RAISED+5)
+        pivotState = PivotState.RAISED_LOWERING;
+    } else if (pivotState==PivotState.RAISED_LOWERING) {
+      setPivotPos(ModuleConstants.INTAKE_LOWER_RAISED);
+      if (currentDeg>=ModuleConstants.INTAKE_LOWER_RAISED+5)
+        pivotState = PivotState.RAISED_RAISING;
     }
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 
-  public enum PivotState {
-    RAISING, LOWERING, LOWERED
-  }
+  public enum PivotState {RAISED_RAISING, RAISED_LOWERING, LOWERING, LOWERED}
 }

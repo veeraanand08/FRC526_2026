@@ -23,7 +23,7 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     if (intakeSubsystem.pivotState==PivotState.LOWERED) {
-      intakeSubsystem.pivotState=PivotState.RAISING;
+      intakeSubsystem.pivotState=PivotState.RAISED_RAISING;
       intakeSubsystem.toggleRoller();
     } else intakeSubsystem.pivotState=PivotState.LOWERING;
   }
@@ -33,13 +33,13 @@ public class IntakeCommand extends Command {
     double currentDeg = intakeSubsystem.getPivotDeg();
     if (intakeSubsystem.pivotState==PivotState.LOWERING) {
       intakeSubsystem.setPivotPos(ModuleConstants.INTAKE_ENGAGED_ANGLE);
-      if (currentDeg<=ModuleConstants.INTAKE_ENGAGED_ANGLE-5) {
+      if (currentDeg>=ModuleConstants.INTAKE_ENGAGED_ANGLE-5) {
         intakeSubsystem.pivotState=PivotState.LOWERED;
         intakeSubsystem.toggleRoller();
         intakeSubsystem.stopPivot();
       }
-    } else if (currentDeg>=5) {
-      intakeSubsystem.pivotState=PivotState.RAISED;
+    } else if (currentDeg<=ModuleConstants.INTAKE_UPPER_RAISED+5) {
+      intakeSubsystem.pivotState=PivotState.RAISED_LOWERING;
     }
   }
 
@@ -50,6 +50,6 @@ public class IntakeCommand extends Command {
  
   @Override
   public boolean isFinished() {
-    return intakeSubsystem.pivotState == PivotState.LOWERED || intakeSubsystem.pivotState == PivotState.RAISED;
+    return (intakeSubsystem.pivotState == PivotState.LOWERED || intakeSubsystem.pivotState == PivotState.RAISED_LOWERING);
   }
 }
