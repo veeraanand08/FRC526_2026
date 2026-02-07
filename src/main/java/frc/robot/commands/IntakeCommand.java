@@ -1,18 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
-@SuppressWarnings("unused")
+
 public class IntakeCommand extends Command {
   private final IntakeSubsystem intakeSubsystem;
   public IntakeCommand(IntakeSubsystem subsys) {
@@ -21,6 +13,7 @@ public class IntakeCommand extends Command {
   }
 
   @Override
+  /* If in engaged position disable roller and bring it up to raised, otherwise set it to lowering */
   public void initialize() {
     if (intakeSubsystem.pivotState==PivotState.LOWERED) {
       intakeSubsystem.pivotState=PivotState.RAISED_RAISING;
@@ -44,11 +37,13 @@ public class IntakeCommand extends Command {
   }
 
   @Override
+  /* Only stop everything if there was an issue / interrupted */
   public void end(boolean interrupted) {
     if (interrupted) intakeSubsystem.stop();
   }
  
   @Override
+  /* The process is finished if the pivot is in the engaged position or is lowering in the raised state */
   public boolean isFinished() {
     return (intakeSubsystem.pivotState == PivotState.LOWERED || intakeSubsystem.pivotState == PivotState.RAISED_LOWERING);
   }
