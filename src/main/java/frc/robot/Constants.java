@@ -68,6 +68,17 @@ public final class Constants
       DISTANCE_TO_RPM.put(1.0, 1.0); //Example
     }
   }
+  
+  public static final class IntakeConstants
+  {
+    public static final int INTAKE_CONSTANT         = 1;
+    public static final int INTAKE_P                = 0;
+    public static final int INTAKE_I                = 0;
+    public static final int INTAKE_D                = 0;
+    public static final double INTAKE_ENGAGED_ANGLE = 150;
+    public static final double INTAKE_UPPER_RAISED  = 50;
+    public static final double INTAKE_LOWER_RAISED  = 120;
+  }
 
   public static final class FieldConstants
   {
@@ -88,5 +99,8 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
+    public static final int PIVOT_INTAKE_MOTOR  = 0;
+    public static final int ROLLER_INTAKE_MOTOR = 0;
+    
   }
 }

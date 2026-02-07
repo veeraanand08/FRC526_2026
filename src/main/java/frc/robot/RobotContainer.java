@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@SuppressWarnings("unused")
 public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
