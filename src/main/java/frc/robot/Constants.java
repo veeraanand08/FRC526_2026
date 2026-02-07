@@ -3,8 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.math.Matter;
 
 /**
@@ -34,26 +38,38 @@ public final class Constants
   //   public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
   // }
 
-  public static final class DriverConstants
+  public static final class ShooterConstants
   {
-    public static final int DRIVER_CONTROLLER_PORT = 0;
-    // Joystick Deadband
-    public static final double DEADBAND         = 0.1;
-    public static final double LEFT_Y_DEADBAND  = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
-    public static final double TURN_CONSTANT    = 6;
-    public static final int PIVOT_INTAKE_MOTOR  = 0;
-    public static final int ROLLER_INTAKE_MOTOR = 0;
-    
-  }
+    public static final boolean TUNING_MODE_ACTIVE = true;
 
-  public static final class OperatorConstants
-  {
-    public static final int OPERATOR_CONTROLLER_PORT = 1;
-    public static final double DEADBAND = 0.1;
-  }
+    public static final int LEFT_SHOOTER_MOTOR = 13;
+    public static final int RIGHT_SHOOTER_MOTOR = 14;
+    public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
+    public static final boolean RIGHT_SHOOTER_MOTOR_REVERSED = false;
+    public static final double SHOOTER_P = 0;
+    public static final double SHOOTER_I = 0;
+    public static final double SHOOTER_D = 0;
+    // set speeds
+    public static final double DEFAULT_RPM = 3000; //temp
+    public static final double REVERSED_RPM = 1000; //temp, reversal if something is stuck
 
-  public static final class ModuleConstants
+    /* Shoot on the fly */
+    public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
+    public static final int MAX_ITERATIONS = 0;
+
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
+    static {
+      // Distance, Time
+      DISTANCE_TO_TIME.put(3.0, 1.0); //Example
+    }
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
+    static {
+      // Distance, RPM for Shot
+      DISTANCE_TO_RPM.put(1.0, 1.0); //Example
+    }
+  }
+  
+  public static final class IntakeConstants
   {
     public static final int INTAKE_CONSTANT         = 1;
     public static final int INTAKE_P                = 0;
@@ -62,5 +78,29 @@ public final class Constants
     public static final double INTAKE_ENGAGED_ANGLE = 150;
     public static final double INTAKE_UPPER_RAISED  = 50;
     public static final double INTAKE_LOWER_RAISED  = 120;
+  }
+
+  public static final class FieldConstants
+  {
+    public static final Translation2d RED_HUB = new Translation2d(11.938, 4.0);
+    public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.0);
+    public static final Translation2d RED_LEFT_BUMP = new Translation2d(11.928, 2.408);
+    public static final Translation2d RED_RIGHT_BUMP = new Translation2d(11.928, 5.598);
+    public static final Translation2d BLUE_LEFT_BUMP = Translation2d.kZero; // temp
+    public static final Translation2d BLUE_RIGHT_BUMP = Translation2d.kZero; // temp
+  }
+
+  public static final class ControllerConstants
+  {
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
+    // Joystick Deadband
+    public static final double DEADBAND         = 0.1;
+    public static final double LEFT_Y_DEADBAND  = 0.1;
+    public static final double RIGHT_X_DEADBAND = 0.1;
+    public static final double TURN_CONSTANT    = 6;
+    public static final int PIVOT_INTAKE_MOTOR  = 0;
+    public static final int ROLLER_INTAKE_MOTOR = 0;
+    
   }
 }

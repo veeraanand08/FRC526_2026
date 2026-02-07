@@ -30,10 +30,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.RobotUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -183,9 +187,9 @@ public class SwerveSubsystem extends SubsystemBase
       e.printStackTrace();
     }
 
-    //Preload PathPlanner Path finding
+    // Preload PathPlanner Path finding
     // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-    PathfindingCommand.warmupCommand().schedule();
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   /**
@@ -505,24 +509,13 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Checks if the alliance is red, defaults to false if alliance isn't available.
-   *
-   * @return true if the red alliance, false if blue. Defaults to false if none is available.
-   */
-  private boolean isRedAlliance()
-  {
-    var alliance = DriverStation.getAlliance();
-    return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-  }
-
-  /**
    * This will zero (calibrate) the robot to assume the current position is facing forward
    * <p>
-   * If red alliance rotate the robot 180 after the drviebase zero command
+   * If red alliance rotate the robot 180 after the drivebase zero command
    */
   public void zeroGyroWithAlliance()
   {
-    if (isRedAlliance())
+    if (RobotUtil.isRedAlliance())
     {
       zeroGyro();
       //Set the pose 180 degrees
@@ -596,6 +589,26 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
+   * 90deg.
+   *
+   * @param xInput X joystick input for the robot to move in the X direction.
+   * @param yInput Y joystick input for the robot to move in the Y direction.
+   * @param angle  The angle in as a {@link Rotation2d}.
+   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
+   */
+  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle) {
+    return
+        swerveDrive.swerveController.getTargetSpeeds(
+            MathUtil.applyDeadband(xInput, ControllerConstants.DEADBAND), 
+            MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),
+            angle.getRadians(),
+            getHeading().getRadians(),
+            DrivebaseConstants.MAX_SPEED
+        );
+  }
+
+  /**
    * Gets the current field-relative velocity (x, y and omega) of the robot
    *
    * @return A ChassisSpeeds object of the current field-relative velocity
@@ -661,18 +674,5 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveDrive getSwerveDrive()
   {
     return swerveDrive;
-  }
-
-
-  //Non Yagsl Code
-  public ChassisSpeeds rotateToAngle(double xInput, double yInput, Rotation2d angle, double deadband) {
-    return
-        swerveDrive.swerveController.getTargetSpeeds(
-            MathUtil.applyDeadband(xInput, deadband), 
-            MathUtil.applyDeadband(yInput, deadband),                     
-            angle.getRadians(),        
-            getHeading().getRadians(), 
-            DrivebaseConstants.MAX_SPEED
-        );
   }
 }
