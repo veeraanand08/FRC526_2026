@@ -9,7 +9,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
@@ -17,27 +19,27 @@ import frc.robot.commands.AutoAlign;
 import swervelib.SwerveDrive;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.IntakeConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
   private final VisionSubsystem visionSubsystem;
 
-  private final SparkMax leftMotor;
-  private final SparkMax rightMotor;
+  private final SparkMax leftMotor; // leader
+  private final SparkMax rightMotor; // follower
   private final SparkMaxConfig leftMotorConfig;
   private final SparkMaxConfig rightMotorConfig;
 
   private final RelativeEncoder leftMotorEncoder;
   private final RelativeEncoder rightMotorEncoder;
-  private final PIDController leftMotorPid;
-  private final PIDController rightMotorPid;
+  private final SparkClosedLoopController leftMotorPid;
 
   private double desiredRPM;
   private double leftActualRPM;
   private double rightActualRPM;
   private double distanceToTarget;
   private boolean isShooterReady;
-  
+
   public ShooterSubsystem(SwerveDrive swerveDrive, VisionSubsystem visionSubsystem) {
     this.swerveDrive = swerveDrive;
     this.visionSubsystem = visionSubsystem;
@@ -49,16 +51,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorConfig.inverted(ShooterConstants.LEFT_SHOOTER_MOTOR_REVERSED);
     rightMotorConfig.inverted(ShooterConstants.RIGHT_SHOOTER_MOTOR_REVERSED);
-    leftMotorConfig.idleMode(IdleMode.kBrake);
-    rightMotorConfig.idleMode(IdleMode.kBrake);
+    leftMotorConfig.idleMode(IdleMode.kCoast);
+    rightMotorConfig.idleMode(IdleMode.kCoast);
+    leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
+    rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, false);
 
     leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     leftMotorEncoder = leftMotor.getEncoder();
     rightMotorEncoder = rightMotor.getEncoder();
-    leftMotorPid = new PIDController(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
-    rightMotorPid = new PIDController(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
+    leftMotorPid = leftMotor.getClosedLoopController();
 
     SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 0);
   }
@@ -82,8 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
     if (ShooterConstants.TUNING_MODE_ACTIVE)
       rpm = SmartDashboard.getNumber("Shooter/Tuning RPM", 0);
     desiredRPM = rpm;
-    leftMotor.set(leftMotorPid.calculate(leftMotorEncoder.getVelocity(), rpm));
-    rightMotor.set(rightMotorPid.calculate(rightMotorEncoder.getVelocity(), rpm));
+    leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
   }
 
   public void shoot() {

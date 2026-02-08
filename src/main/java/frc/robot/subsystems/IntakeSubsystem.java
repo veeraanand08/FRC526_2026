@@ -1,86 +1,114 @@
 package frc.robot.subsystems;
+import org.dyn4j.geometry.Rotation;
+
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.math.controller.PIDController;
 
 public class IntakeSubsystem extends SubsystemBase {
-    public PivotState pivotState;
+  /* The current state of the pivot motor. */
+  public enum PivotState {
+    RAISED,
+    SHAKING_UP, // raising during shaking
+    SHAKING_DOWN, // lowering during shaking
+    LOWERING,
+    LOWERED
+  }
 
-    private final SparkMax pivotMotor;
-    private final SparkMax rollerMotor;
+  public PivotState pivotState = PivotState.RAISED;
 
-    private final SparkMaxConfig pivotConfig;
-    private final SparkMaxConfig rollerConfig;
+  private final SparkMax pivotMotor;
+  private final SparkMax rollerMotor;
+  private final SparkMaxConfig pivotConfig;
+  private final SparkMaxConfig rollerConfig;
 
-    private final RelativeEncoder pivotEncoder;
-    private final PIDController pivotPIDController;
+  private final RelativeEncoder pivotEncoder;
+  private final SparkClosedLoopController pivotPIDController;
 
-    public IntakeSubsystem() {
-        pivotMotor = new SparkMax(DriverConstants.PIVOT_INTAKE_MOTOR, MotorType.kBrushless);
-        rollerMotor = new SparkMax(DriverConstants.ROLLER_INTAKE_MOTOR, MotorType.kBrushless);
-        pivotConfig = new SparkMaxConfig();
-        rollerConfig = new SparkMaxConfig();
-        pivotConfig.idleMode(IdleMode.kBrake);
-        rollerConfig.idleMode(IdleMode.kBrake);
-        pivotEncoder = pivotMotor.getEncoder();
-        pivotPIDController = new PIDController(ModuleConstants.INTAKE_P, ModuleConstants.INTAKE_I, ModuleConstants.INTAKE_D);
-        pivotMotor.configure(
-            pivotConfig,
-            ResetMode.kNoResetSafeParameters,PersistMode.kNoPersistParameters // According to the docs these parameters are deprecated and I was unable to find a new alternative
-        );
-      }
+  public IntakeSubsystem() {
+    pivotMotor = new SparkMax(IntakeConstants.PIVOT_MOTOR, MotorType.kBrushless);
+    rollerMotor = new SparkMax(IntakeConstants.ROLLER_MOTOR, MotorType.kBrushless);
+    pivotConfig = new SparkMaxConfig();
+    rollerConfig = new SparkMaxConfig();
 
-    /** Set the pivot and roller motor speeds to 0. */
-    public void stop() {
-        rollerMotor.set(0);
-        pivotMotor.set(0);
-    }
+    pivotConfig.idleMode(IdleMode.kBrake);
+    rollerConfig.idleMode(IdleMode.kCoast);
+    pivotConfig.closedLoop.pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
+    pivotConfig.encoder.positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG);
 
-    /** Set the pivot motor speed to 0. */
-    public void stopPivot() {pivotMotor.set(0);}
+    pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    rollerMotor.configure(rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    /** Turns on the roller motor if off, and vice-versa */
-    public void toggleRoller() {
-      rollerMotor.set(rollerMotor.get()==0 ? ModuleConstants.INTAKE_CONSTANT : 0);
-    }
+    pivotPIDController = pivotMotor.getClosedLoopController();
 
-    /** Set the pivot motor speed according to a given angle. 
-     * @param rot : Rotation (in degrees) to rotate. */
-    public void setPivotPos(double rot) {
-      pivotMotor.set(pivotPIDController.calculate(pivotEncoder.getPosition(), rot));
-    }
-
-    /** Returns the current pivot angle (in degrees). */
-    public double getPivotDeg() {
-      return Math.toDegrees(pivotEncoder.getPosition());
-    }
+    pivotEncoder = pivotMotor.getEncoder();
+  }
 
   @Override
   /* Periodically raises/lowers the pivot depending on its current state. Will not run if in lowered/lowering state. */
   public void periodic() {
     double currentDeg = getPivotDeg();
-    if (pivotState==PivotState.RAISED_RAISING) {
-      setPivotPos(ModuleConstants.INTAKE_UPPER_RAISED);
-      if (currentDeg<=ModuleConstants.INTAKE_UPPER_RAISED+5)
-        pivotState = PivotState.RAISED_LOWERING;
-    } else if (pivotState==PivotState.RAISED_LOWERING) {
-      setPivotPos(ModuleConstants.INTAKE_LOWER_RAISED);
-      if (currentDeg>=ModuleConstants.INTAKE_LOWER_RAISED+5)
-        pivotState = PivotState.RAISED_RAISING;
+    switch (pivotState) {
+      case SHAKING_UP:
+        setPivotAngle(IntakeConstants.INTAKE_AGITATION_UPPER_ANGLE);
+        if (currentDeg <= IntakeConstants.INTAKE_AGITATION_UPPER_ANGLE+5)
+          pivotState = PivotState.SHAKING_DOWN;
+        break;
+      case SHAKING_DOWN:
+        setPivotAngle(IntakeConstants.INTAKE_AGITATION_LOWER_ANGLE);
+        if (currentDeg >= IntakeConstants.INTAKE_AGITATION_LOWER_ANGLE-5)
+          pivotState = PivotState.SHAKING_UP;
+        break;
+      case LOWERING:
+        setPivotAngle(IntakeConstants.INTAKE_ENGAGED_ANGLE);
+        if (currentDeg >= IntakeConstants.INTAKE_ENGAGED_ANGLE-5) {
+          pivotState = PivotState.LOWERED;
+          stopPivot();
+          setRoller(true);
+        }
+        break;
+      default:
     }
+  }
+
+  /* Turns on the roller motor if off, and vice-versa */
+  public void setRoller(boolean enabled) {
+    rollerMotor.set(enabled ? IntakeConstants.ROLLER_POWER : 0);
+  }
+
+  /** Set the pivot motor speed according to a given angle. 
+   * @param angle : Angle (in degrees) to rotate.
+   */
+  public void setPivotAngle(double angle) {
+    pivotPIDController.setSetpoint(angle, ControlType.kPosition);
+  }
+
+  /* Returns the current pivot angle (in degrees). */
+  public double getPivotDeg() {
+    return Math.toDegrees(pivotEncoder.getPosition());
   }
 
   @Override
   public void simulationPeriodic() {}
 
-  /** The current state of the pivot motor. */
-  public enum PivotState {RAISED_RAISING, RAISED_LOWERING, LOWERING, LOWERED}
+  /* Set the pivot and roller motor speeds to 0. */
+  public void stop() {
+    rollerMotor.set(0);
+    stopPivot();
+  }
+
+  /* Set the pivot motor speed to 0. */
+  public void stopPivot() {
+    pivotMotor.set(0);
+  }
 }

@@ -154,6 +154,6 @@ public class AutoAlign extends Command {
   }
 
   public static boolean isActive() {
-    return currentTarget != null;
+    return currentTarget != Target.NONE;
   }
 }

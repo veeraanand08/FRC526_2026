@@ -5,27 +5,35 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ShooterCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem shooterSubsystem;
+  private final FeederSubsystem feederSubsystem;
+  private final boolean isReversed;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ShooterCommand(ShooterSubsystem shooterSubsystem) {
+  public ShooterCommand(ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem, boolean reversed) {
     this.shooterSubsystem = shooterSubsystem;
+    this.feederSubsystem = feederSubsystem;
+    this.isReversed = reversed;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem);
+    addRequirements(shooterSubsystem, feederSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    feederSubsystem.enableIndexer(isReversed);
+    feederSubsystem.enableKicker();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -37,6 +45,7 @@ public class ShooterCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     shooterSubsystem.stop();
+    feederSubsystem.stop();
   }
 
   // Returns true when the command should end.

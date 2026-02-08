@@ -46,7 +46,7 @@ public final class Constants
     public static final int RIGHT_SHOOTER_MOTOR = 14;
     public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
     public static final boolean RIGHT_SHOOTER_MOTOR_REVERSED = false;
-    public static final double SHOOTER_P = 0;
+    public static final double SHOOTER_P = 0; //temp
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
     // set speeds
@@ -68,16 +68,41 @@ public final class Constants
       DISTANCE_TO_RPM.put(1.0, 1.0); //Example
     }
   }
+
+  public static final class FeederConstants
+  {
+    // example values
+    public static final int LEFT_INDEXER_MOTOR = 0;
+    public static final int RIGHT_INDEXER_MOTOR = 0;
+    public static final int KICKER_MOTOR = 0;
+    
+    public static final boolean LEFT_INDEXER_MOTOR_REVERSED = false;
+    public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = false;
+    public static final boolean KICKER_MOTOR_REVERSED = false;
+
+    public static final double KICKER_P = 0;
+    public static final double KICKER_I = 0;
+    public static final double KICKER_D = 0;
+
+    public static final double INDEXER_POWER = 0.9;
+    public static final double KICKER_RPM = 5000;
+  }
   
   public static final class IntakeConstants
   {
-    public static final int INTAKE_CONSTANT         = 1;
-    public static final int INTAKE_P                = 0;
-    public static final int INTAKE_I                = 0;
-    public static final int INTAKE_D                = 0;
-    public static final double INTAKE_ENGAGED_ANGLE = 150;
-    public static final double INTAKE_UPPER_RAISED  = 50;
-    public static final double INTAKE_LOWER_RAISED  = 120;
+    public static final int ROLLER_MOTOR = 0; //temp
+    public static final double ROLLER_POWER = 0.9; //temp
+
+    public static final int PIVOT_MOTOR = 0; //temp
+    public static final double PIVOT_P = 0.0001; //temp
+    public static final double PIVOT_I = 0;
+    public static final double PIVOT_D = 0;
+    public static final double PIVOT_GEAR_RATIO = 0; //temp
+    public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
+    
+    public static final double INTAKE_ENGAGED_ANGLE = 150; // lowered
+    public static final double INTAKE_AGITATION_UPPER_ANGLE  = 50; 
+    public static final double INTAKE_AGITATION_LOWER_ANGLE  = 120;
   }
 
   public static final class FieldConstants
@@ -99,8 +124,5 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
-    public static final int PIVOT_INTAKE_MOTOR  = 0;
-    public static final int ROLLER_INTAKE_MOTOR = 0;
-    
   }
 }

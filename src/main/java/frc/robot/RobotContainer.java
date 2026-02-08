@@ -6,8 +6,11 @@ package frc.robot;
 
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.AutoAlign;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -54,6 +57,8 @@ public class RobotContainer {
                                                                                 "swerve"));
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive(), visionSubsystem);
+  private final FeederSubsystem feederSubsystem = new FeederSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
@@ -153,7 +158,8 @@ public class RobotContainer {
         driveDirectAngleKeyboard);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
     Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
-    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem);
+    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false);
+    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, true);
 
     if (RobotBase.isSimulation()) {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
@@ -172,9 +178,10 @@ public class RobotContainer {
     // driverController.rightBumper().onTrue(Commands.none());
 
     // operator controls (will change to operatorController later)
+    m_driverController.povUp().onTrue(new IntakeCommand(intakeSubsystem)); // operator left bumper
     m_driverController.rightBumper().whileTrue(shootAutoSpeed);
+    m_driverController.x().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME); // operator y
     m_driverController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
-    m_driverController.povRight().onTrue(Commands.runOnce(() -> visionSubsystem.setLED(LEDMode.PipelineControl))); // default mode
 
     if (DriverStation.isTest())
     {
