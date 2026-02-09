@@ -13,29 +13,21 @@ public class IntakeCommand extends Command {
   }
 
   @Override
-  /* If in engaged position disable roller and bring it up to raised, otherwise set it to lowering */
-  public void initialize() {}
-
-  @Override
-  public void execute() {
-    switch (intakeSubsystem.pivotState) {
-      case LOWERED:
-        intakeSubsystem.pivotState = PivotState.SHAKING_UP;
-        intakeSubsystem.setRoller(false);
-        break;
-      default:
-        intakeSubsystem.pivotState = PivotState.LOWERING;
-    }
-
+  public void initialize() {
+    intakeSubsystem.setRoller(true);
   }
 
   @Override
+  public void execute() {}
+
   // Called once the command ends or is interrupted.
-  public void end(boolean interrupted) {}
+  @Override
+  public void end(boolean interrupted) {
+    intakeSubsystem.setRoller(false);
+  }
  
   @Override
-  /* The process is finished if the pivot is in the engaged position or is lowering in the raised state */
   public boolean isFinished() {
-    return (intakeSubsystem.pivotState == PivotState.LOWERED || intakeSubsystem.pivotState == PivotState.SHAKING_DOWN);
+    return false;
   }
 }

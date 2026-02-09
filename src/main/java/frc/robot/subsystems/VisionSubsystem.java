@@ -7,9 +7,11 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.LimelightPoseEstimator;
@@ -20,11 +22,13 @@ import limelight.networktables.PoseEstimate;
 import swervelib.SwerveDrive;
 
 public class VisionSubsystem extends SubsystemBase {
-  private final Limelight limelightLeft = new Limelight("limelight-left");
-  private final Limelight limelightRight = new Limelight("limelight-right");
+  private final Limelight limelightLeft = new Limelight(VisionConstants.LIMELIGHT_LEFT_NAME);
+  private final Limelight limelightRight = new Limelight(VisionConstants.LIMELIGHT_RIGHT_NAME);
 
-  private final LimelightPoseEstimator limelightLeftPoseEstimator = limelightLeft.createPoseEstimator(EstimationMode.MEGATAG2);
-  private final LimelightPoseEstimator limelightRightPoseEstimator = limelightRight.createPoseEstimator(EstimationMode.MEGATAG2);
+  private final LimelightPoseEstimator[] limelightPoseEstimators = {
+    limelightLeft.createPoseEstimator(EstimationMode.MEGATAG2),
+    limelightRight.createPoseEstimator(EstimationMode.MEGATAG2)
+  };
 
   private final SwerveSubsystem swerveSubsystem;
   private final SwerveDrive swerveDrive;
@@ -40,9 +44,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    swerveDrive.updateOdometry();
     updateOrientation();
-    this.updateOdometry();
+    this.updatePose();
   }
 
   private void updateOrientation() {
@@ -51,15 +54,22 @@ public class VisionSubsystem extends SubsystemBase {
             DegreesPerSecond.of(gyro.getRawGyroY()),
             DegreesPerSecond.of(gyro.getRawGyroZ())));
     
-    limelightLeft.getSettings().withRobotOrientation(orientation).save();
-    limelightRight.getSettings().withRobotOrientation(orientation).save();
+    limelightLeft.getSettings().withRobotOrientation(orientation);
+    limelightRight.getSettings().withRobotOrientation(orientation);
   }
 
-  private void updateOdometry() {
-    double currentTime = Timer.getFPGATimestamp();
-    limelightLeftPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
+  private void updatePose() {
+    // account for going over bump
+    if (Math.abs(gyro.getRoll()) >= VisionConstants.MAX_TILT_DEG &&
+        Math.abs(gyro.getPitch()) >= VisionConstants.MAX_TILT_DEG)
+    {
+      isPoseEstimatorReady = false;
+    }
+    for (LimelightPoseEstimator poseEstimator : limelightPoseEstimators) {
+      poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0 &&
-            (currentTime - poseEstimate.timestampSeconds) < 0.1)
+            (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
+            poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
         {
           swerveDrive.addVisionMeasurement(
             poseEstimate.pose.toPose2d(), 
@@ -67,24 +77,14 @@ public class VisionSubsystem extends SubsystemBase {
           );
           isPoseEstimatorReady = true;
         }
-    });
-    limelightRightPoseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
-        if (poseEstimate.tagCount > 0 &&
-            (currentTime - poseEstimate.timestampSeconds) < 0.1)
-        {
-          swerveDrive.addVisionMeasurement(
-            poseEstimate.pose.toPose2d(), 
-            poseEstimate.timestampSeconds
-          );
-          isPoseEstimatorReady = true;
-        }
-    });
+      });
+    }
   }
 
   public void toggleLED() {
     // 0 = Pipeline Control, 1 = Force Off, 2 = Force Blink, 3 = Force On
     NetworkTableEntry ledMode = limelightLeft.getNTTable().getEntry("ledMode");
-    if (ledMode.equals(1))
+    if (ledMode.getInteger(0) == 1)
       setLED(LEDMode.ForceOn);
     else
       setLED(LEDMode.ForceOff);
@@ -102,8 +102,6 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    swerveDrive.updateOdometry();
-    updateOrientation();
-    updateOdometry();
+    isPoseEstimatorReady = true;
   }
 }

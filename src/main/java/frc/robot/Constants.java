@@ -97,12 +97,21 @@ public final class Constants
     public static final double PIVOT_P = 0.0001; //temp
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
-    public static final double PIVOT_GEAR_RATIO = 0; //temp
+    public static final double PIVOT_GEAR_RATIO = 1; //temp
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
     
+    public static final double INTAKE_RAISED_ANGLE = 0;
     public static final double INTAKE_ENGAGED_ANGLE = 150; // lowered
     public static final double INTAKE_AGITATION_UPPER_ANGLE  = 50; 
     public static final double INTAKE_AGITATION_LOWER_ANGLE  = 120;
+  }
+
+  public static final class VisionConstants
+  {
+    public static final String LIMELIGHT_LEFT_NAME = "limelight-left";
+    public static final String LIMELIGHT_RIGHT_NAME = "limelight-right";
+    public static final double MAX_TAG_AMBIGUITY = 0.2;
+    public static final double MAX_TILT_DEG = 12.0;
   }
 
   public static final class FieldConstants

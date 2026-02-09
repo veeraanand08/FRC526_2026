@@ -19,7 +19,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveDrive;
 
-/** An example command that uses an example subsystem. */
 public class AutoAlign extends Command {
   public enum Target {
     HUB,
@@ -42,12 +41,16 @@ public class AutoAlign extends Command {
   private static Target currentTarget = Target.NONE;
 
   /**
-   * Creates a new ExampleCommand.
+   * Creates a new AutoAlign.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param swerveSubsystem The swerve subsystem used by this command.
+   * @param visionSubsystem The vision subsystem used by this command.
+   * @param driverController The CommandXboxController object of the driver's controller.
+   * @param target The target that this command aligns to.
    */
   public AutoAlign(SwerveSubsystem swerveSubsystem, VisionSubsystem visionSubsystem,
-    CommandXboxController driverController, Target target) {
+    CommandXboxController driverController, Target target)
+  {
     this.swerveSubsystem = swerveSubsystem;
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
     this.visionSubsystem = visionSubsystem;
@@ -66,9 +69,6 @@ public class AutoAlign extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // ensure at least one vision measurement has been added
-    if (!visionSubsystem.isPoseEstimatorReady() && !RobotBase.isSimulation()) 
-      return;
     Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
     Translation2d targetTranslation = getTargetTranslation(target, robotTranslation);
     Translation2d virtualTarget = getVirtualTarget(robotTranslation, targetTranslation);
@@ -146,7 +146,8 @@ public class AutoAlign extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    // cancel command if pose estimator may not be accurate
+    return !visionSubsystem.isPoseEstimatorReady();
   }
 
   public static Target getCurrentTarget() {
