@@ -34,7 +34,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder rightMotorEncoder;
   private final SparkClosedLoopController leftMotorPid;
 
-  private double desiredRPM;
   private double leftActualRPM;
   private double rightActualRPM;
   private double distanceToTarget;
@@ -64,6 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorEncoder = rightMotor.getEncoder();
     leftMotorPid = leftMotor.getClosedLoopController();
 
+    SmartDashboard.putBoolean("Shooter/Tuning Mode Active", ShooterConstants.TUNING_MODE_ACTIVE);
     SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 0);
   }
 
@@ -74,7 +74,6 @@ public class ShooterSubsystem extends SubsystemBase {
     isShooterReady = visionSubsystem.isPoseEstimatorReady() && distanceToTarget <= ShooterConstants.MAX_DISTANCE;
     leftActualRPM = leftMotorEncoder.getVelocity();
     rightActualRPM = rightMotorEncoder.getVelocity();
-    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", desiredRPM);
     SmartDashboard.putNumber("Shooter/Left Motor RPM", leftActualRPM);
     SmartDashboard.putNumber("Shooter/Right Motor RPM", rightActualRPM);
     SmartDashboard.putBoolean("Shooter/Shooter Ready", isShooterReady);
@@ -83,19 +82,20 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setAngularVelocity(double rpm) {
-    if (ShooterConstants.TUNING_MODE_ACTIVE)
-      rpm = SmartDashboard.getNumber("Shooter/Tuning RPM", ShooterConstants.DEFAULT_RPM);
-    desiredRPM = rpm;
+    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", rpm);
     leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
   }
 
   public void shoot() {
-    setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
+    if (ShooterConstants.TUNING_MODE_ACTIVE) {
+      setAngularVelocity(SmartDashboard.getNumber("Shooter/Tuning RPM", 0));
+    }
+    else {
+      setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
+    }
   }
 
   public void stop() {
-    leftMotor.set(0);
-    rightMotor.set(0);
-    desiredRPM = 0;
+    setAngularVelocity(0);
   }
 }

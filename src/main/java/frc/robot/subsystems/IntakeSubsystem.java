@@ -69,6 +69,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotPIDController = pivotMotor.getClosedLoopController();
 
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
+    SmartDashboard.putBoolean("Intake/Intake Running", false);
   }
 
   @Override
