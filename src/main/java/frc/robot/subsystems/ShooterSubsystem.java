@@ -53,8 +53,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorConfig.inverted(ShooterConstants.RIGHT_SHOOTER_MOTOR_REVERSED);
     leftMotorConfig.idleMode(IdleMode.kCoast);
     rightMotorConfig.idleMode(IdleMode.kCoast);
-    leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
-    rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, false);
+    leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D)
+                              .velocityFF(ShooterConstants.SHOOTER_FF);
+    rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, true);
 
     leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -83,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setAngularVelocity(double rpm) {
     if (ShooterConstants.TUNING_MODE_ACTIVE)
-      rpm = SmartDashboard.getNumber("Shooter/Tuning RPM", 0);
+      rpm = SmartDashboard.getNumber("Shooter/Tuning RPM", ShooterConstants.DEFAULT_RPM);
     desiredRPM = rpm;
     leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
   }

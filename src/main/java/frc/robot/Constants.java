@@ -42,13 +42,14 @@ public final class Constants
   {
     public static final boolean TUNING_MODE_ACTIVE = true;
 
-    public static final int LEFT_SHOOTER_MOTOR = 13;
-    public static final int RIGHT_SHOOTER_MOTOR = 14;
+    public static final int LEFT_SHOOTER_MOTOR = 15;
+    public static final int RIGHT_SHOOTER_MOTOR = 16;
     public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
     public static final boolean RIGHT_SHOOTER_MOTOR_REVERSED = false;
-    public static final double SHOOTER_P = 0; //temp
+    public static final double SHOOTER_P = 0.00025; //temp
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
+    public static final double SHOOTER_FF = 1 / 5676.0;
     // set speeds
     public static final double DEFAULT_RPM = 3000; //temp
     public static final double REVERSED_RPM = 1000; //temp, reversal if something is stuck
@@ -72,15 +73,15 @@ public final class Constants
   public static final class FeederConstants
   {
     // example values
-    public static final int LEFT_INDEXER_MOTOR = 0;
-    public static final int RIGHT_INDEXER_MOTOR = 0;
-    public static final int KICKER_MOTOR = 0;
+    public static final int LEFT_INDEXER_MOTOR = 18;
+    public static final int RIGHT_INDEXER_MOTOR = 19;
+    public static final int KICKER_MOTOR = 17;
     
     public static final boolean LEFT_INDEXER_MOTOR_REVERSED = false;
     public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = false;
     public static final boolean KICKER_MOTOR_REVERSED = false;
 
-    public static final double KICKER_P = 0;
+    public static final double KICKER_P = 0.00025;
     public static final double KICKER_I = 0;
     public static final double KICKER_D = 0;
 
@@ -90,10 +91,10 @@ public final class Constants
   
   public static final class IntakeConstants
   {
-    public static final int ROLLER_MOTOR = 0; //temp
+    public static final int ROLLER_MOTOR = 14;
     public static final double ROLLER_POWER = 0.9; //temp
 
-    public static final int PIVOT_MOTOR = 0; //temp
+    public static final int PIVOT_MOTOR = 13; //temp
     public static final double PIVOT_P = 0.0001; //temp
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
