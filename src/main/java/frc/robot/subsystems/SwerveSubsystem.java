@@ -92,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                true,
                                                -0.225); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
     if (SwerveDriveTelemetry.isSimulation) swerveDrive.setCosineCompensator(false); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-    swerveDrive.setModuleEncoderAutoSynchronize(true,
+    swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
 
     setupPathPlanner();
@@ -591,9 +591,8 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
-   * 90deg.
-   *
+   * Get the chassis speeds based on controller input of 1 joystick and one angle.
+   * 
    * @param xInput X joystick input for the robot to move in the X direction.
    * @param yInput Y joystick input for the robot to move in the Y direction.
    * @param angle  The angle in as a {@link Rotation2d}.

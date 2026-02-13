@@ -10,6 +10,7 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import limelight.Limelight;
@@ -46,6 +47,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     updateOrientation();
     this.updatePose();
+    SmartDashboard.putBoolean("AutoAlign/Pose Estimator Ready", isPoseEstimatorReady);
   }
 
   private void updateOrientation() {
@@ -60,17 +62,19 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void updatePose() {
     // account for going over bump
-    if (Math.abs(gyro.getRoll()) >= VisionConstants.MAX_TILT_DEG &&
+    if (Math.abs(gyro.getRoll()) >= VisionConstants.MAX_TILT_DEG ||
         Math.abs(gyro.getPitch()) >= VisionConstants.MAX_TILT_DEG)
     {
       isPoseEstimatorReady = false;
     }
     for (LimelightPoseEstimator poseEstimator : limelightPoseEstimators) {
-      poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
+      poseEstimator.getAlliancePoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0 &&
             (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
             poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
         {
+          SmartDashboard.putString("AutoAlign/Limelight Rotation", poseEstimate.pose.getRotation().toString());
+          SmartDashboard.putString("AutoAlign/Pose Estimate Rotation", swerveDrive.getPose().getRotation().toString());
           swerveDrive.addVisionMeasurement(
             poseEstimate.pose.toPose2d(), 
             poseEstimate.timestampSeconds

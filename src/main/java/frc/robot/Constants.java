@@ -24,7 +24,7 @@ public final class Constants
 {
   public static final class DrivebaseConstants
   {
-    public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero; //new Rotation3d(0, 0, Math.toRadians(90.0));
+    public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero; //new Rotation3d(0, 0, Math.toRadians(180.0));
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(3)), ROBOT_MASS);
     public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
@@ -46,15 +46,14 @@ public final class Constants
 
     public static final int LEFT_SHOOTER_MOTOR = 15;
     public static final int RIGHT_SHOOTER_MOTOR = 16;
-    public static final boolean LEFT_SHOOTER_MOTOR_REVERSED = false;
-    public static final boolean RIGHT_SHOOTER_MOTOR_REVERSED = false;
-    public static final double SHOOTER_P = 0.00025; //temp
+    public static final boolean MOTORS_REVERSED = false;
+    public static final double SHOOTER_P = 0.00025;
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
-    public static final double SHOOTER_FF = 1 / 5676.0;
+    public static final double SHOOTER_FF = 1.0 / 5676.0;
     // set speeds
-    public static final double DEFAULT_RPM = 3000; //temp
-    public static final double REVERSED_RPM = 1000; //temp, reversal if something is stuck
+    public static final double DEFAULT_RPM = 3500;
+    public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
     /* Shoot on the fly */
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
@@ -80,27 +79,30 @@ public final class Constants
     public static final int KICKER_MOTOR = 17;
     
     public static final boolean LEFT_INDEXER_MOTOR_REVERSED = false;
-    public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = false;
+    public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = true;
     public static final boolean KICKER_MOTOR_REVERSED = false;
 
     public static final double KICKER_P = 0.00025;
     public static final double KICKER_I = 0;
     public static final double KICKER_D = 0;
 
-    public static final double INDEXER_POWER = 0.9;
+    public static final double INDEXER_POWER = 0.7;
     public static final double KICKER_RPM = 5000;
   }
   
   public static final class IntakeConstants
   {
     public static final int ROLLER_MOTOR = 14;
-    public static final double ROLLER_POWER = 0.9; //temp
+    public static final double ROLLER_POWER = 0.8; //temp
 
+    public static final boolean ROLLER_REVERSED = false;
+    public static final boolean PIVOT_REVERSED = false;
+    
     public static final int PIVOT_MOTOR = 13; //temp
     public static final double PIVOT_P = 0.0001; //temp
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
-    public static final double PIVOT_GEAR_RATIO = 1; //temp
+    public static final double PIVOT_GEAR_RATIO = 5; //temp
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
     
     public static final double INTAKE_RAISED_ANGLE = 0;
@@ -113,7 +115,7 @@ public final class Constants
   {
     public static final String LIMELIGHT_LEFT_NAME = "limelight-left";
     public static final String LIMELIGHT_RIGHT_NAME = "limelight-right";
-    public static final double MAX_TAG_AMBIGUITY = 0.2;
+    public static final double MAX_TAG_AMBIGUITY = Double.MAX_VALUE;
     public static final double MAX_TILT_DEG = 12.0;
   }
 

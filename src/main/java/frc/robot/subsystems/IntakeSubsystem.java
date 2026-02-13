@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SparkMaxConfig rollerConfig;
 
   private final RelativeEncoder pivotEncoder;
-  private final SparkClosedLoopController pivotPIDController;
+  private final SparkClosedLoopController pivotPid;
 
   private double currentPivotDeg;
 
@@ -66,7 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     rollerMotor.configure(rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
     pivotEncoder = pivotMotor.getEncoder();
-    pivotPIDController = pivotMotor.getClosedLoopController();
+    pivotPid = pivotMotor.getClosedLoopController();
 
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
     SmartDashboard.putBoolean("Intake/Intake Running", false);
@@ -87,18 +87,17 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
       case AGITATING_UP:
         setPivotAngle(IntakeConstants.INTAKE_AGITATION_UPPER_ANGLE);
-        if (currentPivotDeg <= IntakeConstants.INTAKE_AGITATION_UPPER_ANGLE+5)
+        if (currentPivotDeg < IntakeConstants.INTAKE_AGITATION_UPPER_ANGLE+5)
           pivotState = PivotState.AGITATING_DOWN;
         break;
       case AGITATING_DOWN:
         setPivotAngle(IntakeConstants.INTAKE_AGITATION_LOWER_ANGLE);
-        if (currentPivotDeg >= IntakeConstants.INTAKE_AGITATION_LOWER_ANGLE-5)
+        if (currentPivotDeg > IntakeConstants.INTAKE_AGITATION_LOWER_ANGLE-5)
           pivotState = PivotState.AGITATING_UP;
         break;
       case LOWERING:
         setPivotAngle(IntakeConstants.INTAKE_ENGAGED_ANGLE);
-        if (currentPivotDeg >= IntakeConstants.INTAKE_ENGAGED_ANGLE-5) {
-          stopPivot();
+        if (currentPivotDeg > IntakeConstants.INTAKE_ENGAGED_ANGLE-5) {
           pivotState = PivotState.LOWERED;
           setRoller(true);
         }
@@ -122,7 +121,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @param angle : Angle (in degrees) to rotate.
    */
   public void setPivotAngle(double angle) {
-    pivotPIDController.setSetpoint(angle, ControlType.kPosition);
+    pivotPid.setSetpoint(angle, ControlType.kPosition);
   }
 
   /* Returns the current pivot angle (in degrees). */
@@ -177,6 +176,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Set the pivot motor speed to 0. */
   public void stopPivot() {
-    pivotMotor.set(0);
+    pivotMotor.stopMotor();
   }
 }

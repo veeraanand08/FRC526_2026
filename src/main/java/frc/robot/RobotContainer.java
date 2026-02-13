@@ -68,8 +68,8 @@ public class RobotContainer {
    */
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
-                                                                () -> m_driverController.getLeftY() * -1,
-                                                                () -> m_driverController.getLeftX() * -1)
+                                                                () -> -m_driverController.getLeftY(),
+                                                                () -> -m_driverController.getLeftX())
                                                             .withControllerRotationAxis(m_driverController::getRightX)
                                                             .deadband(ControllerConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
@@ -122,9 +122,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-    
-    //Create the NamedCommands that will be used in PathPlanner
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
 
     //Have the autoChooser pull in all PathPlanner autos as options
     autoChooser = AutoBuilder.buildAutoChooser();

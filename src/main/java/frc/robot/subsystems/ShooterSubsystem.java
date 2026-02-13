@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutoAlign;
 import swervelib.SwerveDrive;
+import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedMotorController.GenericMotorController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -48,12 +49,11 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorConfig = new SparkMaxConfig();
     rightMotorConfig = new SparkMaxConfig();
 
-    leftMotorConfig.inverted(ShooterConstants.LEFT_SHOOTER_MOTOR_REVERSED);
-    rightMotorConfig.inverted(ShooterConstants.RIGHT_SHOOTER_MOTOR_REVERSED);
+    leftMotorConfig.inverted(ShooterConstants.MOTORS_REVERSED);
     leftMotorConfig.idleMode(IdleMode.kCoast);
     rightMotorConfig.idleMode(IdleMode.kCoast);
     leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D)
-                              .velocityFF(ShooterConstants.SHOOTER_FF);
+                              .feedForward.kV(ShooterConstants.SHOOTER_FF);
     rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, true);
 
     leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -63,8 +63,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorEncoder = rightMotor.getEncoder();
     leftMotorPid = leftMotor.getClosedLoopController();
 
-    SmartDashboard.putBoolean("Shooter/Tuning Mode Active", ShooterConstants.TUNING_MODE_ACTIVE);
+    SmartDashboard.setDefaultNumber("Shooter/Desired Shooter RPM", 0);
     SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 0);
+    SmartDashboard.putBoolean("Shooter/Tuning Mode Active", ShooterConstants.TUNING_MODE_ACTIVE);
   }
 
   @Override
@@ -82,8 +83,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setAngularVelocity(double rpm) {
-    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", rpm);
     leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
+    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", rpm);
   }
 
   public void shoot() {
@@ -97,5 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stop() {
     setAngularVelocity(0);
+    leftMotor.stopMotor();
+    rightMotor.stopMotor();
   }
 }
