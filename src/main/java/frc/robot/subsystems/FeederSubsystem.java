@@ -45,22 +45,27 @@ public class FeederSubsystem extends SubsystemBase {
     kickerMotorConfig = new SparkMaxConfig();
 
     indexerLeftMotorConfig.inverted(FeederConstants.LEFT_INDEXER_MOTOR_REVERSED);
-    indexerRightMotorConfig.inverted(FeederConstants.RIGHT_INDEXER_MOTOR_REVERSED);
-    kickerMotorConfig.inverted(FeederConstants.KICKER_MOTOR_REVERSED);
-
     indexerLeftMotorConfig.idleMode(IdleMode.kCoast);
-    indexerRightMotorConfig.idleMode(IdleMode.kCoast);
-    kickerMotorConfig.idleMode(IdleMode.kCoast);
+    indexerLeftMotorConfig.smartCurrentLimit(FeederConstants.INDEXER_CURRENT_LIMIT);
 
-    kickerMotorConfig.closedLoop.pid(FeederConstants.KICKER_P, FeederConstants.KICKER_I, FeederConstants.KICKER_D);
+    indexerRightMotorConfig.inverted(FeederConstants.RIGHT_INDEXER_MOTOR_REVERSED);
+    indexerRightMotorConfig.idleMode(IdleMode.kCoast);
+    indexerRightMotorConfig.smartCurrentLimit(FeederConstants.INDEXER_CURRENT_LIMIT);
+
+    kickerMotorConfig.inverted(FeederConstants.KICKER_MOTOR_REVERSED);
+    kickerMotorConfig.idleMode(IdleMode.kCoast);
+    kickerMotorConfig.smartCurrentLimit(FeederConstants.KICKER_CURRENT_LIMIT);
+    kickerMotorConfig.closedLoop.pid(FeederConstants.KICKER_P, FeederConstants.KICKER_I, FeederConstants.KICKER_D)
+                                .feedForward.kV(FeederConstants.KICKER_FF);
 
     indexerLeftMotor.configure(indexerLeftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     indexerRightMotor.configure(indexerRightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     kickerMotor.configure(kickerMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     kickerPid = kickerMotor.getClosedLoopController();
-
     kickerEncoder = kickerMotor.getEncoder();
+
+    SmartDashboard.setDefaultNumber("Kicker/Kicker RPM", 0);
   }
 
   @Override
@@ -69,14 +74,15 @@ public class FeederSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Kicker/Kicker RPM", kickerRPM);
   }
 
-  public void enableIndexer(boolean reversed){
+  public void enableIndexer(boolean counterRotate){
     indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
-    if (reversed) indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
+    if (counterRotate) indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
     else indexerRightMotor.set(FeederConstants.INDEXER_POWER);
   }
 
   public void enableKicker() {
-    kickerPid.setSetpoint(FeederConstants.KICKER_RPM, ControlType.kVelocity);
+    // kickerPid.setSetpoint(FeederConstants.KICKER_RPM, ControlType.kVelocity);
+    kickerMotor.set(FeederConstants.KICKER_POWER);
   }
 
   public void stop() {

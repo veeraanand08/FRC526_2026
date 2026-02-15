@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +18,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutoAlign;
 import swervelib.SwerveDrive;
-import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedMotorController.GenericMotorController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -34,6 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder leftMotorEncoder;
   private final RelativeEncoder rightMotorEncoder;
   private final SparkClosedLoopController leftMotorPid;
+  private final SlewRateLimiter limit;
 
   private double leftActualRPM;
   private double rightActualRPM;
@@ -51,9 +52,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorConfig.inverted(ShooterConstants.MOTORS_REVERSED);
     leftMotorConfig.idleMode(IdleMode.kCoast);
-    rightMotorConfig.idleMode(IdleMode.kCoast);
+    leftMotorConfig.smartCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT);
     leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D)
                               .feedForward.kV(ShooterConstants.SHOOTER_FF);
+
+    rightMotorConfig.idleMode(IdleMode.kCoast);
+    rightMotorConfig.smartCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT);
     rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, true);
 
     leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -62,6 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorEncoder = leftMotor.getEncoder();
     rightMotorEncoder = rightMotor.getEncoder();
     leftMotorPid = leftMotor.getClosedLoopController();
+    limit = new SlewRateLimiter(5676, -ShooterConstants.NEGATIVE_RATE_LIMIT, 0);
 
     SmartDashboard.setDefaultNumber("Shooter/Desired Shooter RPM", 0);
     SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 0);
@@ -83,6 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setAngularVelocity(double rpm) {
+    rpm = limit.calculate(rpm);
     leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
     SmartDashboard.putNumber("Shooter/Desired Shooter RPM", rpm);
   }
@@ -97,8 +103,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stop() {
-    setAngularVelocity(0);
     leftMotor.stopMotor();
     rightMotor.stopMotor();
+    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", 0);
   }
 }

@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.AutoAlign;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.FeederSubsystem;
@@ -153,13 +152,13 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
-    Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB)
-                                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
     Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
-    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, false);
+    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, false)
+                                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, true);
-    Command holdIntake = new IntakeCommand(intakeSubsystem);
     Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
+    Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
@@ -176,7 +175,8 @@ public class RobotContainer {
     m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
     m_driverController.a().whileTrue(autoAlignHub);
     m_driverController.b().whileTrue(autoAlignBump);
-    m_driverController.leftBumper().whileTrue(Commands.runOnce(swerveSubsystem::lock, swerveSubsystem).repeatedly());
+    m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                              .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     // operator controls
     if (DriverStation.isTest())
@@ -188,6 +188,7 @@ public class RobotContainer {
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
       m_driverController.x().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       m_driverController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
+      m_driverController.povRight().whileTrue(reverseIntake);
     }
     else
     {
@@ -209,4 +210,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
+
+  public IntakeSubsystem getIntakeSubsystem() { return intakeSubsystem; }
 }
