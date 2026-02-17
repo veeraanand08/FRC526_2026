@@ -13,6 +13,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.PivotState;
 import limelight.networktables.LimelightSettings.LEDMode;
 import swervelib.SwerveInputStream;
 
@@ -67,8 +68,8 @@ public class RobotContainer {
    */
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
-                                                                () -> -m_driverController.getLeftY(),
-                                                                () -> -m_driverController.getLeftX())
+                                                                () -> m_driverController.getLeftY(),
+                                                                () -> m_driverController.getLeftX())
                                                             .withControllerRotationAxis(m_driverController::getRightX)
                                                             .deadband(ControllerConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
@@ -171,33 +172,39 @@ public class RobotContainer {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
     }
 
-    // driver controls
-    m_driverController.y().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
-    m_driverController.a().whileTrue(autoAlignHub);
-    m_driverController.b().whileTrue(autoAlignBump);
-    m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                              .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-
-    // operator controls
     if (DriverStation.isTest())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides drive command above!
 
-      m_driverController.povDown().onTrue(toggleIntake);
-      m_driverController.povUp().onTrue(resetIntake);
+      // driver controls
+      m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
+      m_driverController.a().whileTrue(autoAlignHub);
+      m_driverController.b().whileTrue(autoAlignBump);
+      m_driverController.x().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                               .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      // operator controls (on driver controller)
+      m_driverController.leftBumper().onTrue(toggleIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
-      m_driverController.x().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
-      m_driverController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
+      m_driverController.y().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      m_driverController.povUp().onTrue(resetIntake);
+      m_driverController.povDown().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       m_driverController.povRight().whileTrue(reverseIntake);
     }
     else
     {
-      // operatorController.povDown().onTrue(toggleIntake);
-      // operatorController.leftBumper().whileTrue(holdIntake);
+      // driver controls
+      m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
+      m_driverController.a().whileTrue(autoAlignHub);
+      m_driverController.b().whileTrue(autoAlignBump);
+      m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      // operator controls
       operatorController.leftBumper().onTrue(toggleIntake);
-      operatorController.povUp().onTrue(resetIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
       operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
+      operatorController.a().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      operatorController.b().whileTrue(reverseIntake);
+      operatorController.povUp().onTrue(resetIntake);
       operatorController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
     }
   }

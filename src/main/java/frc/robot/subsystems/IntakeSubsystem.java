@@ -23,18 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum PivotState {
     RAISED,
     RAISING,
-    AGITATING_UP { // raising during agitation
-      @Override
-      public String toString() {
-        return "AGITATING";
-      }
-    },
-    AGITATING_DOWN { // lowering during agitation
-      @Override
-      public String toString() {
-        return "AGITATING";
-      }
-    },
+    AGITATING,
     LOWERING,
     LOWERED
   }
@@ -61,9 +50,11 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotConfig.idleMode(IdleMode.kCoast);
     pivotConfig.smartCurrentLimit(IntakeConstants.PIVOT_CURRENT_LIMIT);
     pivotConfig.encoder.positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG);
-    pivotConfig.closedLoop.pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
-    pivotConfig.closedLoop.feedForward.kS(IntakeConstants.PIVOT_FF_S)
-                                      .kCos(IntakeConstants.PIVOT_FF_COS);
+    pivotConfig.closedLoop.pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D)
+                          .feedForward/*.kS(IntakeConstants.PIVOT_FF_S)*/
+                                      .kV(IntakeConstants.PIVOT_FF_V);
+                                      // .kCos(IntakeConstants.PIVOT_FF_COS)
+                                      // .kCosRatio(IntakeConstants.PIVOT_FF_COS_RATIO);
     pivotConfig.closedLoop.maxMotion.cruiseVelocity(IntakeConstants.PIVOT_CRUISE_VELOCITY)
                                     .maxAcceleration(IntakeConstants.PIVOT_MAX_ACCEL)
                                     .allowedProfileError(IntakeConstants.ALLOWED_PROFILE_ERROR);
@@ -89,29 +80,24 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     currentPivotDeg = getPivotDeg();
     SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
+    SmartDashboard.putNumber("Intake/Pivot Voltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Intake/Pivot Current", pivotMotor.getOutputCurrent());
     switch (pivotState) {
       case RAISING:
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
         if (currentPivotDeg <= IntakeConstants.PIVOT_RAISED_ANGLE) {
-          stop();
           pivotState = PivotState.RAISED;
         }
         break;
-      case AGITATING_UP:
-        setPivotAngle(IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE);
-        if (currentPivotDeg < IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE+5)
-          pivotState = PivotState.AGITATING_DOWN;
-        break;
-      case AGITATING_DOWN:
-        setPivotAngle(IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE);
-        if (currentPivotDeg > IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-5)
-          pivotState = PivotState.AGITATING_UP;
+      case AGITATING:
+        double pos = Math.sin(System.currentTimeMillis() * Math.PI / 2000.0) * 0.5 + 0.5;
+        double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
+        setPivotAngle(targetAngle);
         break;
       case LOWERING:
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
         if (currentPivotDeg >= IntakeConstants.PIVOT_ENGAGED_ANGLE-5) {
           pivotState = PivotState.LOWERED;
-          setRoller(true);
         }
         break;
       default:
@@ -129,6 +115,10 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake/Intake Running", enabled);
   }
 
+  public void slowRoller() {
+    rollerMotor.set(IntakeConstants.ROLLER_POWER_SLOW);
+  }
+
   public void setRollerReversed(boolean enabled) {
     rollerMotor.set(enabled ? IntakeConstants.ROLLER_REVERSED_POWER : 0);
     SmartDashboard.putBoolean("Intake/Intake Reversing", enabled);
@@ -139,17 +129,28 @@ public class IntakeSubsystem extends SubsystemBase {
    * @param angle : Angle (in degrees) to rotate.
    */
   public void setPivotAngle(double angle) {
-    pivotPid.setSetpoint(angle, ControlType.kMAXMotionPositionControl);
-  }
-
-  public void setPivotBrake(boolean brake) {
-    pivotConfig.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-    pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    pivotPid.setSetpoint(angle, ControlType.kPosition);
   }
 
   /* Returns the current pivot angle (in degrees). */
   public double getPivotDeg() {
     return pivotEncoder.getPosition();
+  }
+
+  /* Set the pivot and roller motor speeds to 0. */
+  public void stop() {
+    setRoller(false);
+    stopPivot();
+  }
+
+  /* Set the pivot motor speed to 0. */
+  public void stopPivot() {
+    pivotMotor.stopMotor();
+  }
+
+  public void setPivotBrake(boolean brake) {
+    pivotConfig.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   /**
@@ -163,13 +164,13 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           switch (pivotState) {
-            case RAISED:
-              pivotState = PivotState.LOWERING;
-              break;
             case LOWERED:
               toggleRoller();
               break;
             default:
+              setRoller(true);
+              pivotState = PivotState.LOWERING;
+              break;
           }
         });
   }
@@ -181,7 +182,6 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public Command reverseIntakeCommand() {
     // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
     return startEnd(
       () -> setRollerReversed(true), 
       () -> setRollerReversed(false)
@@ -198,19 +198,9 @@ public class IntakeSubsystem extends SubsystemBase {
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
+          setRoller(false);
           pivotState = PivotState.RAISING;
         });
-  }
-
-  /* Set the pivot and roller motor speeds to 0. */
-  public void stop() {
-    setRoller(false);
-    stopPivot();
-  }
-
-  /* Set the pivot motor speed to 0. */
-  public void stopPivot() {
-    pivotMotor.stopMotor();
   }
 
   @Override

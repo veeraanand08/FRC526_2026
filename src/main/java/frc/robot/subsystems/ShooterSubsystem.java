@@ -38,6 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double leftActualRPM;
   private double rightActualRPM;
+  private double desiredRPM;
   private double distanceToTarget;
   private boolean isShooterReady;
 
@@ -90,7 +91,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setAngularVelocity(double rpm) {
     rpm = limit.calculate(rpm);
     leftMotorPid.setSetpoint(rpm, ControlType.kVelocity);
-    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", rpm);
+    desiredRPM = rpm;
+    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", desiredRPM);
   }
 
   public void shoot() {
@@ -102,9 +104,14 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  public boolean hasSpunUp() {
+    return leftActualRPM > desiredRPM-100;
+  }
+
   public void stop() {
     leftMotor.stopMotor();
     rightMotor.stopMotor();
-    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", 0);
+    desiredRPM = 0;
+    SmartDashboard.putNumber("Shooter/Desired Shooter RPM", desiredRPM);
   }
 }

@@ -16,6 +16,7 @@ public class ShooterCommand extends Command {
   private final FeederSubsystem feederSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final boolean isReversed;
+  private boolean startShoot;
 
   /**
    * Creates a new ShooterCommand.
@@ -39,16 +40,21 @@ public class ShooterCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    feederSubsystem.enableIndexer(isReversed);
-    feederSubsystem.enableKicker();
-    intakeSubsystem.setRoller(false);
-    intakeSubsystem.pivotState = PivotState.AGITATING_UP;
+    startShoot = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     shooterSubsystem.shoot();
+    if (!startShoot && shooterSubsystem.hasSpunUp()) {
+      startShoot = true;
+      feederSubsystem.enableKicker();
+      feederSubsystem.enableIndexer(isReversed);
+      intakeSubsystem.setRoller(false);
+      intakeSubsystem.pivotState = PivotState.AGITATING;
+      intakeSubsystem.slowRoller();
+    }
   }
 
   // Called once the command ends or is interrupted.

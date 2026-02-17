@@ -30,9 +30,8 @@ public class FeederSubsystem extends SubsystemBase {
   private final SparkMaxConfig indexerRightMotorConfig;
   private final SparkMaxConfig kickerMotorConfig;
 
-  private final SparkClosedLoopController kickerPid;
-
   private final RelativeEncoder kickerEncoder;
+  private final SparkClosedLoopController kickerPid;
   private double kickerRPM;
 
   public FeederSubsystem() {
@@ -81,8 +80,7 @@ public class FeederSubsystem extends SubsystemBase {
   }
 
   public void enableKicker() {
-    // kickerPid.setSetpoint(FeederConstants.KICKER_RPM, ControlType.kVelocity);
-    kickerMotor.set(FeederConstants.KICKER_POWER);
+    kickerPid.setSetpoint(FeederConstants.KICKER_RPM, ControlType.kVelocity);
   }
 
   public void stop() {
