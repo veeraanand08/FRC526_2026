@@ -3,58 +3,109 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.Command;
+import com.studica.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightPoseEstimator;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.LimelightSettings.LEDMode;
+import limelight.networktables.Orientation3d;
+import limelight.networktables.PoseEstimate;
+import swervelib.SwerveDrive;
 
 public class VisionSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public VisionSubsystem() {}
+  private final Limelight limelightLeft = new Limelight(VisionConstants.LIMELIGHT_LEFT_NAME);
+  private final Limelight limelightRight = new Limelight(VisionConstants.LIMELIGHT_RIGHT_NAME);
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
+  private final LimelightPoseEstimator[] limelightPoseEstimators = {
+    limelightLeft.createPoseEstimator(EstimationMode.MEGATAG2),
+    limelightRight.createPoseEstimator(EstimationMode.MEGATAG2)
+  };
 
-  
-  public double getLimelightAngle() {
-    NetworkTable leftTable = NetworkTableInstance.getDefault().getTable("limelight-left");
-    double tVisibleLeft = leftTable.getEntry("tv").getDouble(0);
-    double tDegreeOffsetLeft = leftTable.getEntry("tx").getDouble(0);
-    NetworkTable leftRight = NetworkTableInstance.getDefault().getTable("limelight-right");
-    double tVisibleRight = leftRight.getEntry("tv").getDouble(0);
-    double tDegreeOffsetRight = leftRight.getEntry("tx").getDouble(0);
-    
-    if (tVisibleLeft == 1 && tVisibleRight == 1){
-      return (tDegreeOffsetLeft + tDegreeOffsetRight)/2.0;
-    } else if (tVisibleLeft == 1) {
-      return tDegreeOffsetLeft;
-    } else if (tVisibleRight == 1){
-      return tDegreeOffsetRight;
-    } else {
-      return 0.0;
-    }
+  private final SwerveSubsystem swerveSubsystem;
+  private final SwerveDrive swerveDrive;
+  private final AHRS gyro;
+
+  private boolean isPoseEstimatorReady;
+
+  public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
+    this.swerveSubsystem = swerveSubsystem;
+    this.swerveDrive = swerveSubsystem.getSwerveDrive();
+    this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    updateOrientation();
+    this.updatePose();
+    SmartDashboard.putBoolean("AutoAlign/Pose Estimator Ready", isPoseEstimatorReady);
+  }
+
+  private void updateOrientation() {
+    Orientation3d orientation = new Orientation3d(gyro.getRotation3d(),
+        new AngularVelocity3d(DegreesPerSecond.of(gyro.getRawGyroX()),
+            DegreesPerSecond.of(gyro.getRawGyroY()),
+            DegreesPerSecond.of(gyro.getRawGyroZ())));
+    
+    limelightLeft.getSettings().withRobotOrientation(orientation);
+    limelightRight.getSettings().withRobotOrientation(orientation);
+  }
+
+  private void updatePose() {
+    // account for going over bump
+    if (Math.abs(gyro.getRoll()) >= VisionConstants.MAX_TILT_DEG ||
+        Math.abs(gyro.getPitch()) >= VisionConstants.MAX_TILT_DEG)
+    {
+      isPoseEstimatorReady = false;
+    }
+    for (LimelightPoseEstimator poseEstimator : limelightPoseEstimators) {
+      poseEstimator.getAlliancePoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
+        if (poseEstimate.tagCount > 0 &&
+            (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
+            poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
+        {
+          SmartDashboard.putString("AutoAlign/Limelight Rotation", poseEstimate.pose.getRotation().toString());
+          SmartDashboard.putString("AutoAlign/Pose Estimate Rotation", swerveDrive.getPose().getRotation().toString());
+          swerveDrive.addVisionMeasurement(
+            poseEstimate.pose.toPose2d(), 
+            poseEstimate.timestampSeconds
+          );
+          isPoseEstimatorReady = true;
+        }
+      });
+    }
+  }
+
+  public void toggleLED() {
+    // 0 = Pipeline Control, 1 = Force Off, 2 = Force Blink, 3 = Force On
+    NetworkTableEntry ledMode = limelightLeft.getNTTable().getEntry("ledMode");
+    if (ledMode.getInteger(0) == 1)
+      setLED(LEDMode.ForceOn);
+    else
+      setLED(LEDMode.ForceOff);
+  }
+
+  public void setLED(LEDMode ledMode) {
+    limelightLeft.getSettings().withLimelightLEDMode(ledMode);
+    limelightRight.getSettings().withLimelightLEDMode(ledMode);
+  }
+
+  public boolean isPoseEstimatorReady() {
+    return isPoseEstimatorReady;
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    isPoseEstimatorReady = true;
   }
 }
