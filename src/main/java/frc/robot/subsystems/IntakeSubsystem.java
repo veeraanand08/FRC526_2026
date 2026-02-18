@@ -100,6 +100,7 @@ public class IntakeSubsystem extends SubsystemBase {
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
         if (currentPivotDeg >= IntakeConstants.PIVOT_ENGAGED_ANGLE-5) {
           pivotState = PivotState.LOWERED;
+          setRoller(true);
         }
         break;
       default:

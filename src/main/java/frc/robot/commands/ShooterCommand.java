@@ -62,6 +62,7 @@ public class ShooterCommand extends Command {
   public void end(boolean interrupted) {
     feederSubsystem.stop();
     shooterSubsystem.stop();
+    intakeSubsystem.stopRoller();
     intakeSubsystem.pivotState = PivotState.LOWERING;
   }
 
