@@ -21,7 +21,7 @@ public class ShooterCommand extends Command {
   /**
    * Creates a new ShooterCommand.
    *
-   * @param shooterSubstem The shooter subsystem used by this command.
+   * @param shooterSubsystem The shooter subsystem used by this command.
    * @param feederSubsystem The feeder subsystem used by this command.
    * @param intakeSubsystem The intake subsystem used by this command.
    * @param reversed Whether or not to run this command in reversed mode to get a ball unstuck.

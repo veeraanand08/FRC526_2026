@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -18,9 +16,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutoAlign;
 import swervelib.SwerveDrive;
-import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.IntakeConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
@@ -28,8 +23,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkMax leftMotor; // leader
   private final SparkMax rightMotor; // follower
-  private final SparkMaxConfig leftMotorConfig;
-  private final SparkMaxConfig rightMotorConfig;
 
   private final RelativeEncoder leftMotorEncoder;
   private final RelativeEncoder rightMotorEncoder;
@@ -48,8 +41,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotor = new SparkMax(ShooterConstants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
     rightMotor = new SparkMax(ShooterConstants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
-    leftMotorConfig = new SparkMaxConfig();
-    rightMotorConfig = new SparkMaxConfig();
+    SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
+    SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
 
     leftMotorConfig.inverted(ShooterConstants.MOTORS_REVERSED);
     leftMotorConfig.idleMode(IdleMode.kCoast);

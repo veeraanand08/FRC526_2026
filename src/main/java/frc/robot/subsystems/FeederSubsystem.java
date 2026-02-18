@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -17,31 +16,24 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.FeederConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class FeederSubsystem extends SubsystemBase {
 
   private final SparkMax indexerLeftMotor; // leader
   private final SparkMax indexerRightMotor; // follower
   private final SparkMax kickerMotor;
-  
-  private final SparkMaxConfig indexerLeftMotorConfig;
-  private final SparkMaxConfig indexerRightMotorConfig;
-  private final SparkMaxConfig kickerMotorConfig;
 
   private final RelativeEncoder kickerEncoder;
   private final SparkClosedLoopController kickerPid;
-  private double kickerRPM;
 
   public FeederSubsystem() {
     indexerLeftMotor = new SparkMax(FeederConstants.LEFT_INDEXER_MOTOR, MotorType.kBrushless);
     indexerRightMotor = new SparkMax(FeederConstants.RIGHT_INDEXER_MOTOR, MotorType.kBrushless);
     kickerMotor = new SparkMax(FeederConstants.KICKER_MOTOR, MotorType.kBrushless);
 
-    indexerLeftMotorConfig = new SparkMaxConfig();
-    indexerRightMotorConfig = new SparkMaxConfig();
-    kickerMotorConfig = new SparkMaxConfig();
+    SparkMaxConfig indexerLeftMotorConfig = new SparkMaxConfig();
+    SparkMaxConfig indexerRightMotorConfig = new SparkMaxConfig();
+    SparkMaxConfig kickerMotorConfig = new SparkMaxConfig();
 
     indexerLeftMotorConfig.inverted(FeederConstants.LEFT_INDEXER_MOTOR_REVERSED);
     indexerLeftMotorConfig.idleMode(IdleMode.kCoast);
@@ -69,8 +61,7 @@ public class FeederSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    kickerRPM = kickerEncoder.getVelocity();
-    SmartDashboard.putNumber("Kicker/Kicker RPM", kickerRPM);
+    SmartDashboard.putNumber("Kicker/Kicker RPM", kickerEncoder.getVelocity());
   }
 
   public void enableIndexer(boolean counterRotate){

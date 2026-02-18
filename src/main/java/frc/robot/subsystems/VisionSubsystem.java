@@ -32,7 +32,6 @@ public class VisionSubsystem extends SubsystemBase {
     limelightRight.createPoseEstimator(EstimationMode.MEGATAG2)
   };
 
-  private final SwerveSubsystem swerveSubsystem;
   private final SwerveDrive swerveDrive;
   private final AHRS gyro;
   private Pose2d robotPose;
@@ -40,7 +39,6 @@ public class VisionSubsystem extends SubsystemBase {
   private boolean isPoseEstimatorReady;
 
   public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
-    this.swerveSubsystem = swerveSubsystem;
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
     this.gyro = (AHRS) swerveDrive.getGyro().getIMU();
   }
