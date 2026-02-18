@@ -29,7 +29,7 @@ public final class Constants
     public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(3)), ROBOT_MASS);
     public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
     // Maximum speed of the robot in meters per second, used to limit acceleration.
-    public static final double MAX_SPEED  = 3.5;
+    public static final double MAX_SPEED  = 4;
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
@@ -98,10 +98,14 @@ public final class Constants
   public static final class IntakeConstants
   {
     public static final int ROLLER_MOTOR = 14;
-    public static final int ROLLER_CURRENT_LIMIT = 50;
-    public static final double ROLLER_POWER = 0.9;
+    public static final int ROLLER_CURRENT_LIMIT = 60;
+    public static final double ROLLER_RPM = 5000;
+    public static final double ROLLER_RPM_REVERSED = -4500;
     public static final double ROLLER_POWER_SLOW = 0.6;
-    public static final double ROLLER_REVERSED_POWER = -0.7;
+    public static final double ROLLER_P = 0.0003;
+    public static final double ROLLER_I = 0;
+    public static final double ROLLER_D = 0;
+    public static final double ROLLER_FF = 1.0 / 5676.0;
 
     public static final boolean ROLLER_REVERSED = true;
     public static final boolean PIVOT_REVERSED = false;
@@ -125,7 +129,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 130; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 137; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
   }

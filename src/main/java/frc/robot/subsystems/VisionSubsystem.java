@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final SwerveSubsystem swerveSubsystem;
   private final SwerveDrive swerveDrive;
   private final AHRS gyro;
+  private Pose2d robotPose;
 
   private boolean isPoseEstimatorReady;
 
@@ -45,13 +47,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    robotPose = swerveDrive.getPose();
     updateOrientation();
     this.updatePose();
     SmartDashboard.putBoolean("AutoAlign/Pose Estimator Ready", isPoseEstimatorReady);
   }
 
   private void updateOrientation() {
-    Orientation3d orientation = new Orientation3d(gyro.getRotation3d(),
+    Orientation3d orientation = new Orientation3d(
+        new Rotation3d(robotPose.getRotation()),
         new AngularVelocity3d(DegreesPerSecond.of(gyro.getRawGyroX()),
             DegreesPerSecond.of(gyro.getRawGyroY()),
             DegreesPerSecond.of(gyro.getRawGyroZ())));
@@ -73,10 +77,10 @@ public class VisionSubsystem extends SubsystemBase {
             (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
             poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
         {
-          SmartDashboard.putString("AutoAlign/Limelight Rotation", poseEstimate.pose.getRotation().toString());
-          SmartDashboard.putString("AutoAlign/Pose Estimate Rotation", swerveDrive.getPose().getRotation().toString());
+          SmartDashboard.putNumber("AutoAlign/Limelight Rotation", Math.toDegrees(poseEstimate.pose.getRotation().getZ()));
+          SmartDashboard.putNumber("AutoAlign/Pose Estimate Rotation", swerveDrive.getPose().getRotation().getDegrees());
           swerveDrive.addVisionMeasurement(
-            poseEstimate.pose.toPose2d(), 
+            new Pose2d(poseEstimate.pose.toPose2d().getTranslation(), robotPose.getRotation()), 
             poseEstimate.timestampSeconds
           );
           isPoseEstimatorReady = true;

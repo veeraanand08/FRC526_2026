@@ -37,8 +37,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final RelativeEncoder pivotEncoder;
   private final SparkClosedLoopController pivotPid;
+  private final SparkClosedLoopController rollerPid;
 
   private double currentPivotDeg;
+  private boolean rollerEnabled;
 
   public IntakeSubsystem() {
     pivotMotor = new SparkMax(IntakeConstants.PIVOT_MOTOR, MotorType.kBrushless);
@@ -62,6 +64,8 @@ public class IntakeSubsystem extends SubsystemBase {
     rollerConfig.inverted(IntakeConstants.ROLLER_REVERSED);
     rollerConfig.idleMode(IdleMode.kCoast);
     rollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT);
+    rollerConfig.closedLoop.pid(IntakeConstants.ROLLER_P, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D)
+                           .feedForward.kV(IntakeConstants.ROLLER_FF);
 
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -69,6 +73,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder = pivotMotor.getEncoder();
     pivotEncoder.setPosition(0);
     pivotPid = pivotMotor.getClosedLoopController();
+    rollerPid = rollerMotor.getClosedLoopController();
 
     SmartDashboard.setDefaultString("Intake/Pivot State", pivotState.toString());
     SmartDashboard.setDefaultBoolean("Intake/Intake Running", false);
@@ -107,12 +112,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void toggleRoller() {
     // if roller motor is inactive, start it
-    setRoller(rollerMotor.get() == 0);
+    setRoller(!rollerEnabled);
   }
 
   public void setRoller(boolean enabled) {
-    rollerMotor.set(enabled ? IntakeConstants.ROLLER_POWER : 0);
-    SmartDashboard.putBoolean("Intake/Intake Running", enabled);
+    if (enabled) rollerPid.setSetpoint(IntakeConstants.ROLLER_RPM, ControlType.kVelocity);
+    else stopRoller();
+    rollerEnabled = enabled;
+    SmartDashboard.putBoolean("Intake/Intake Running", rollerEnabled);
   }
 
   public void slowRoller() {
@@ -120,7 +127,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setRollerReversed(boolean enabled) {
-    rollerMotor.set(enabled ? IntakeConstants.ROLLER_REVERSED_POWER : 0);
+    if (enabled) rollerPid.setSetpoint(IntakeConstants.ROLLER_RPM_REVERSED, ControlType.kVelocity);
+    else rollerMotor.set(0);
     SmartDashboard.putBoolean("Intake/Intake Reversing", enabled);
   }
 
@@ -148,6 +156,11 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor.stopMotor();
   }
 
+  /* Set the roller motor speed to 0. */
+  public void stopRoller() {
+    rollerMotor.stopMotor();
+  }
+
   public void setPivotBrake(boolean brake) {
     pivotConfig.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -164,6 +177,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           switch (pivotState) {
+            case LOWERING:
             case LOWERED:
               toggleRoller();
               break;
