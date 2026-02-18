@@ -58,8 +58,8 @@ public class VisionSubsystem extends SubsystemBase {
             DegreesPerSecond.of(gyro.getRawGyroY()),
             DegreesPerSecond.of(gyro.getRawGyroZ())));
     
-    limelightLeft.getSettings().withRobotOrientation(orientation);
-    limelightRight.getSettings().withRobotOrientation(orientation);
+    limelightLeft.getSettings().withRobotOrientation(orientation).save();
+    limelightRight.getSettings().withRobotOrientation(orientation).save();
   }
 
   private void updatePose() {
