@@ -70,7 +70,7 @@ public class VisionSubsystem extends SubsystemBase {
       isPoseEstimatorReady = false;
     }
     for (LimelightPoseEstimator poseEstimator : limelightPoseEstimators) {
-      poseEstimator.getAlliancePoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
+      poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0 &&
             (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
             poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
