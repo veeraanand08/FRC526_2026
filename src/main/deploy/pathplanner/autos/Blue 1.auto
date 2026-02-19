@@ -1,0 +1,115 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench [blue1]"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Intake [blue1]"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Intake Rotate [blue1]"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid to Trench [blue1]"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench to Shooter [blue1]"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Hub Auto Align"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 15.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shooter to Depot [blue1]"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Blue Auto",
+  "choreoAuto": false
+}

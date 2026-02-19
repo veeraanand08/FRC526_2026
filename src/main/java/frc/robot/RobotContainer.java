@@ -150,6 +150,7 @@ public class RobotContainer {
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
+    NamedCommands.registerCommand("toggleIntake", toggleIntake);
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
     NamedCommands.registerCommand("Shoot", shootAutoSpeed);
 
