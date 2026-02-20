@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -18,6 +19,14 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.FeederConstants;
 
 public class FeederSubsystem extends SubsystemBase {
+  private enum IndexerState {
+    LEFT_MOTOR_RUNNING,
+    RIGHT_MOTOR_RUNNING,
+    DISABLED
+  }
+
+  private IndexerState indexerState;
+  private Timer timer;
 
   private final SparkMax indexerLeftMotor; // leader
   private final SparkMax indexerRightMotor; // follower
@@ -56,18 +65,46 @@ public class FeederSubsystem extends SubsystemBase {
     kickerPid = kickerMotor.getClosedLoopController();
     kickerEncoder = kickerMotor.getEncoder();
 
+    indexerState = IndexerState.DISABLED;
+    timer = new Timer();
+
     SmartDashboard.setDefaultNumber("Kicker/Kicker RPM", 0);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Kicker/Kicker RPM", kickerEncoder.getVelocity());
+
+    switch (indexerState) {
+      case LEFT_MOTOR_RUNNING:
+        indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
+        indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
+        if (timer.get() > FeederConstants.INDEXER_PERIOD) {
+          indexerState = IndexerState.RIGHT_MOTOR_RUNNING;
+          timer.restart();
+        }
+        break;
+      case RIGHT_MOTOR_RUNNING:
+        indexerLeftMotor.set(-FeederConstants.INDEXER_POWER);
+        indexerRightMotor.set(FeederConstants.INDEXER_POWER);
+        if (timer.get() > FeederConstants.INDEXER_PERIOD) {
+          indexerState = IndexerState.LEFT_MOTOR_RUNNING;
+          timer.restart();
+        }
+        break;
+      default:
+    }
   }
 
-  public void enableIndexer(boolean counterRotate){
-    indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
-    if (counterRotate) indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
-    else indexerRightMotor.set(FeederConstants.INDEXER_POWER);
+  public void enableIndexer(boolean counterRotate) {
+    if (counterRotate) {
+      indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
+      indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
+    }
+    else {
+      timer.restart();
+      indexerState = IndexerState.LEFT_MOTOR_RUNNING;
+    }
   }
 
   public void enableKicker() {
@@ -77,6 +114,8 @@ public class FeederSubsystem extends SubsystemBase {
   public void stop() {
     indexerLeftMotor.set(0);
     indexerRightMotor.set(0);
+    indexerState = IndexerState.DISABLED;
+    timer.stop();
     kickerMotor.set(0);
   }
 }
