@@ -4,7 +4,7 @@
     "drive": {"gearRatio": 8.14, "diameter": 4}
   },
   "currentLimit": {
-    "drive": 40,
+    "drive": 80,
     "angle": 20
   },
   "rampRate": {
