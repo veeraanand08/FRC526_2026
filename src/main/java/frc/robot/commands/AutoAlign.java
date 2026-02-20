@@ -87,6 +87,7 @@ public class AutoAlign extends Command {
   public static Translation2d getTargetTranslation(Target target, Translation2d robotTranslation) {
     Translation2d targetTranslation;
     switch (target) {
+      case NONE:
       case HUB:
         targetTranslation = RobotUtil.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
         break;

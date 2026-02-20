@@ -58,17 +58,29 @@ public final class Constants
 
     /* Shoot on the fly */
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
-    public static final int MAX_ITERATIONS = 0;
+    public static final int MAX_ITERATIONS = 3;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
       // Distance, Time
-      DISTANCE_TO_TIME.put(3.0, 1.0); //Example
+      DISTANCE_TO_TIME.put(1.550492641, 1.02);
+      DISTANCE_TO_TIME.put(2.377278558, 0.96);
+      DISTANCE_TO_TIME.put(2.609581948, 1.24);
+      DISTANCE_TO_TIME.put(3.215580043, 1.41);
+      DISTANCE_TO_TIME.put(4.12515407, 1.41);
+      DISTANCE_TO_TIME.put(5.407194396, 1.66);
+      DISTANCE_TO_TIME.put(5.740540669, 1.73);
     }
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
       // Distance, RPM for Shot
-      DISTANCE_TO_RPM.put(1.0, 1.0); //Example
+      DISTANCE_TO_RPM.put(1.550492641, 2900.0);
+      DISTANCE_TO_RPM.put(2.377278558, 3000.0);
+      DISTANCE_TO_RPM.put(2.609581948, 3210.0);
+      DISTANCE_TO_RPM.put(3.215580043, 3350.0);
+      DISTANCE_TO_RPM.put(4.12515407, 3930.0);
+      DISTANCE_TO_RPM.put(5.407194396, 4420.0);
+      DISTANCE_TO_RPM.put(5.740540669, 4700.0);
     }
   }
 
@@ -128,7 +140,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 137; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 130; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
   }

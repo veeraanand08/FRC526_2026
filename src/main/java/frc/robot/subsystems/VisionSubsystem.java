@@ -68,6 +68,7 @@ public class VisionSubsystem extends SubsystemBase {
         Math.abs(gyro.getPitch()) >= VisionConstants.MAX_TILT_DEG)
     {
       isPoseEstimatorReady = false;
+      return;
     }
     for (LimelightPoseEstimator poseEstimator : limelightPoseEstimators) {
       poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {

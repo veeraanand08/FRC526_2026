@@ -103,6 +103,9 @@ public class IntakeSubsystem extends SubsystemBase {
           setRoller(true);
         }
         break;
+      case LOWERED:
+        setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
+        break;
       default:
     }
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
