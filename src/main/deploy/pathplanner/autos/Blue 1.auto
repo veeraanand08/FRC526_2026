@@ -19,7 +19,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.5
           }
         },
         {
@@ -73,7 +73,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 15.0
+            "waitTime": 18.0
           }
         },
         {
@@ -86,12 +86,6 @@
           "type": "named",
           "data": {
             "name": "toggleIntake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         },
         {
