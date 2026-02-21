@@ -41,13 +41,13 @@ public final class Constants
 
   public static final class ShooterConstants
   {
-    public static final boolean TUNING_MODE_ACTIVE = true;
+    public static final boolean TUNING_MODE_ACTIVE = false;
 
     public static final int LEFT_SHOOTER_MOTOR = 15;
     public static final int RIGHT_SHOOTER_MOTOR = 16;
     public static final int SHOOTER_CURRENT_LIMIT = 60;
     public static final boolean MOTORS_REVERSED = false;
-    public static final double SHOOTER_P = 0.0004;
+    public static final double SHOOTER_P = 0.0006;
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
     public static final double SHOOTER_FF = 1.0 / 5676.0;
@@ -142,11 +142,11 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 130; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 136; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
 
-    public static final double AGITATION_PERIOD = 2.0; //Period is number * 2 in seconds
+    public static final double AGITATION_PERIOD = 2000; //Period is number * 2 in seconds
   }
 
   public static final class VisionConstants

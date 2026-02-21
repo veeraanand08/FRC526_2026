@@ -75,7 +75,7 @@ public class VisionSubsystem extends SubsystemBase {
         if (poseEstimate.tagCount > 0 &&
             (Timer.getTimestamp() - poseEstimate.timestampSeconds) < 0.1 &&
             poseEstimate.getMaxTagAmbiguity() < VisionConstants.MAX_TAG_AMBIGUITY)
-        {
+        {   
           SmartDashboard.putNumber("AutoAlign/Limelight Rotation", Math.toDegrees(poseEstimate.pose.getRotation().getZ()));
           SmartDashboard.putNumber("AutoAlign/Pose Estimate Rotation", swerveDrive.getPose().getRotation().getDegrees());
           swerveDrive.addVisionMeasurement(

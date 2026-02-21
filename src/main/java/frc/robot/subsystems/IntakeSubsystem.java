@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -40,8 +39,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private double currentPivotDeg;
   private boolean rollerEnabled;
-
-  private final Timer timer;
 
   public IntakeSubsystem() {
     pivotMotor = new SparkMax(IntakeConstants.PIVOT_MOTOR, MotorType.kBrushless);
@@ -76,8 +73,6 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotPid = pivotMotor.getClosedLoopController();
     rollerPid = rollerMotor.getClosedLoopController();
 
-    timer = new Timer();
-
     SmartDashboard.setDefaultString("Intake/Pivot State", pivotState.toString());
     SmartDashboard.setDefaultBoolean("Intake/Intake Running", false);
     SmartDashboard.setDefaultBoolean("Intake/Intake Reversed", false);
@@ -98,11 +93,10 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         break;
       case START_AGITATING:
-        timer.restart();
         pivotState = PivotState.AGITATING;
         break;
       case AGITATING:
-        double pos = Math.sin(timer.get() + 3.0 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
+        double pos = Math.sin(System.currentTimeMillis() * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
         double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
         setPivotAngle(targetAngle);
         break;
@@ -148,7 +142,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @param angle : Angle (in degrees) to rotate.
    */
   public void setPivotAngle(double angle) {
-    pivotPid.setSetpoint(angle, ControlType.kMAXMotionPositionControl);
+    pivotPid.setSetpoint(angle, ControlType.kPosition);
   }
 
   /* Returns the current pivot angle (in degrees). */
