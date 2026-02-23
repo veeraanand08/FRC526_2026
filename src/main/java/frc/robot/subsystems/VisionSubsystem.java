@@ -53,7 +53,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void updateOrientation() {
     Orientation3d orientation = new Orientation3d(
-        new Rotation3d(robotPose.getRotation()),
+        gyro.getRotation3d(),
         new AngularVelocity3d(DegreesPerSecond.of(gyro.getRawGyroX()),
             DegreesPerSecond.of(gyro.getRawGyroY()),
             DegreesPerSecond.of(gyro.getRawGyroZ())));

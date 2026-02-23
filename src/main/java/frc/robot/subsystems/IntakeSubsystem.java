@@ -15,12 +15,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Objects;
+
 public class IntakeSubsystem extends SubsystemBase {
   /* The current state of the pivot motor. */
   public enum PivotState {
     RAISED,
     RAISING,
-    START_AGITATING,
     AGITATING,
     LOWERING,
     LOWERED
@@ -82,18 +83,13 @@ public class IntakeSubsystem extends SubsystemBase {
   /* Periodically raises/lowers the pivot depending on its current state. Will not run if in lowered/lowering state. */
   public void periodic() {
     currentPivotDeg = getPivotDeg();
-    SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);  
-    SmartDashboard.putNumber("Intake/Pivot Voltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Intake/Pivot Current", pivotMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
     switch (pivotState) {
       case RAISING:
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
         if (currentPivotDeg <= IntakeConstants.PIVOT_RAISED_ANGLE) {
           pivotState = PivotState.RAISED;
         }
-        break;
-      case START_AGITATING:
-        pivotState = PivotState.AGITATING;
         break;
       case AGITATING:
         double pos = Math.sin(System.currentTimeMillis() * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
@@ -205,6 +201,24 @@ public class IntakeSubsystem extends SubsystemBase {
       () -> setRollerReversed(true), 
       () -> setRollerReversed(false)
     );
+  }
+
+  /**
+   * Toggle intake agitation
+   *
+   * @return a command to agitate the intake
+   */
+  public Command agitateCommand() {
+    return runOnce(() -> {
+      if (pivotState == PivotState.AGITATING) {
+        setRoller(true);
+        pivotState = PivotState.LOWERING;
+      }
+      else {
+        pivotState = PivotState.AGITATING;
+        slowRoller();
+      }
+    });
   }
 
   /**

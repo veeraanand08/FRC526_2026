@@ -143,11 +143,12 @@ public class RobotContainer {
         driveDirectAngleKeyboard);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
     Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
-    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, false)
+    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, true);
+    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, true);
     Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
+    Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
@@ -173,7 +174,7 @@ public class RobotContainer {
       // operator controls (on driver controller)
       m_driverController.leftBumper().onTrue(toggleIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
-      m_driverController.y().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      m_driverController.y().onTrue(agitateIntake);
       m_driverController.povUp().onTrue(resetIntake);
       m_driverController.povDown().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       m_driverController.povRight().whileTrue(reverseIntake);
@@ -190,7 +191,7 @@ public class RobotContainer {
       operatorController.leftBumper().onTrue(toggleIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
       operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
-      operatorController.a().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      operatorController.a().onTrue(agitateIntake);
       operatorController.b().whileTrue(reverseIntake);
       operatorController.povUp().onTrue(resetIntake);
       operatorController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));

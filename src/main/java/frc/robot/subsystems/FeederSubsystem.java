@@ -78,14 +78,14 @@ public class FeederSubsystem extends SubsystemBase {
     switch (indexerState) {
       case LEFT_MOTOR_RUNNING:
         indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
-        indexerRightMotor.set(0); //-FeederConstants.INDEXER_POWER
+        indexerRightMotor.set(0);
         if (timer.get() > FeederConstants.INDEXER_PERIOD) {
           indexerState = IndexerState.RIGHT_MOTOR_RUNNING;
           timer.restart();
         }
         break;
       case RIGHT_MOTOR_RUNNING:
-        indexerLeftMotor.set(0); //-FeederConstants.INDEXER_POWER
+        indexerLeftMotor.set(0);
         indexerRightMotor.set(FeederConstants.INDEXER_POWER);
         if (timer.get() > FeederConstants.INDEXER_PERIOD) {
           indexerState = IndexerState.LEFT_MOTOR_RUNNING;

@@ -47,8 +47,8 @@ public final class Constants
     public static final int RIGHT_SHOOTER_MOTOR = 16;
     public static final int SHOOTER_CURRENT_LIMIT = 60;
     public static final boolean MOTORS_REVERSED = false;
-    public static final double SHOOTER_P = 0.0006;
-    public static final double SHOOTER_I = 0;
+    public static final double SHOOTER_P = 0.00004;
+    public static final double SHOOTER_I = 0;//0.0000003;
     public static final double SHOOTER_D = 0;
     public static final double SHOOTER_FF = 1.0 / 5676.0;
     public static final double NEGATIVE_RATE_LIMIT = 3000;
@@ -114,7 +114,7 @@ public final class Constants
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
-    public static final double ROLLER_POWER_SLOW = 0.6;
+    public static final double ROLLER_POWER_SLOW = 0.75;
     public static final double ROLLER_P = 0.0003;
     public static final double ROLLER_I = 0;
     public static final double ROLLER_D = 0;

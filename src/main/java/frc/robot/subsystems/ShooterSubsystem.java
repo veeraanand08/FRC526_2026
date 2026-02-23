@@ -63,7 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
     limit = new SlewRateLimiter(5676, -ShooterConstants.NEGATIVE_RATE_LIMIT, 0);
 
     SmartDashboard.setDefaultNumber("Shooter/Desired Shooter RPM", 0);
-    SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 4000);
+    SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 3000);
     SmartDashboard.putBoolean("Shooter/Tuning Mode Active", ShooterConstants.TUNING_MODE_ACTIVE);
   }
 
@@ -71,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
     distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
-    isShooterReady = visionSubsystem.isPoseEstimatorReady() && distanceToTarget <= ShooterConstants.MAX_DISTANCE;
+    isShooterReady = visionSubsystem.isPoseEstimatorReady() && AutoAlign.isActive();
     leftActualRPM = leftMotorEncoder.getVelocity();
     rightActualRPM = rightMotorEncoder.getVelocity();
     SmartDashboard.putNumber("Shooter/Left Motor RPM", leftActualRPM);
