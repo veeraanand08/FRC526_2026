@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -151,10 +154,43 @@ public final class Constants
 
   public static final class VisionConstants
   {
-    public static final String LIMELIGHT_LEFT_NAME = "limelight-left";
-    public static final String LIMELIGHT_RIGHT_NAME = "limelight-right";
-    public static final double MAX_TAG_AMBIGUITY = Double.MAX_VALUE;
-    public static final double MAX_TILT_DEG = 12.0;
+    // AprilTag layout
+    public static final AprilTagFieldLayout APRIL_TAG_LAYOUT =
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+    // Camera names, must match names configured on coprocessor
+    public static final String CAMERA_0_NAME = "limelight-left";
+    public static final String CAMERA_1_NAME = "limelight-right";
+
+    // Robot to camera transforms
+    // (Not used by Limelight, configure in web UI instead)
+    public static Transform3d robotToCamera0 =
+            new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+    public static Transform3d robotToCamera1 =
+            new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+
+    // Basic filtering thresholds
+    public static final double MAX_AMBIGUITY = 0.3;
+    public static final double MAX_Z_ERROR = 0.75;
+    public static final double MAX_TILT_DEG = 15;
+
+    // Standard deviation baselines, for 1-meter distance and 1 tag
+    // (Adjusted automatically based on distance and # of tags)
+    public static double linearStdDevBaseline = 0.02; // Meters
+    public static double angularStdDevBaseline = 0.06; // Radians
+
+    // Standard deviation multipliers for each camera
+    // (Adjust to trust some cameras more than others)
+    public static double[] cameraStdDevFactors =
+            new double[] {
+                    1.0, // Camera 0
+                    1.0 // Camera 1
+            };
+
+    // Multipliers to apply for MegaTag 2 observations
+    public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
+    public static double angularStdDevMegatag2Factor =
+            Double.POSITIVE_INFINITY; // No rotation data available
   }
 
   public static final class FieldConstants

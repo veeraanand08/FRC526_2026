@@ -14,7 +14,6 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveDrive;
 
 public class AutoAlign extends Command {
@@ -32,7 +31,6 @@ public class AutoAlign extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveSubsystem swerveSubsystem;
   private final SwerveDrive swerveDrive;
-  private final VisionSubsystem visionSubsystem;
   private final CommandXboxController driverController;
   private final Target target;
   // used in shooter subsystem to determine if bot is ready to shoot
@@ -42,16 +40,14 @@ public class AutoAlign extends Command {
    * Creates a new AutoAlign.
    *
    * @param swerveSubsystem The swerve subsystem used by this command.
-   * @param visionSubsystem The vision subsystem used by this command.
    * @param driverController The CommandXboxController object of the driver's controller.
    * @param target The target that this command aligns to.
    */
-  public AutoAlign(SwerveSubsystem swerveSubsystem, VisionSubsystem visionSubsystem,
+  public AutoAlign(SwerveSubsystem swerveSubsystem,
     CommandXboxController driverController, Target target)
   {
     this.swerveSubsystem = swerveSubsystem;
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
-    this.visionSubsystem = visionSubsystem;
     this.driverController = driverController;
     this.target = target;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -146,7 +142,7 @@ public class AutoAlign extends Command {
   @Override
   public boolean isFinished() {
     // cancel command if pose estimator may not be accurate
-    return !visionSubsystem.isPoseEstimatorReady();
+    return !RobotUtil.isPoseEstimatorReady;
   }
 
   public static Target getCurrentTarget() {

@@ -14,12 +14,13 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.RobotUtil;
 import frc.robot.commands.AutoAlign;
+import frc.robot.subsystems.vision.Vision;
 import swervelib.SwerveDrive;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
-  private final VisionSubsystem visionSubsystem;
 
   private final SparkMax leftMotor; // leader
   private final SparkMax rightMotor; // follower
@@ -35,9 +36,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private double distanceToTarget;
   private boolean isShooterReady;
 
-  public ShooterSubsystem(SwerveDrive swerveDrive, VisionSubsystem visionSubsystem) {
+  public ShooterSubsystem(SwerveDrive swerveDrive) {
     this.swerveDrive = swerveDrive;
-    this.visionSubsystem = visionSubsystem;
 
     leftMotor = new SparkMax(ShooterConstants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
     rightMotor = new SparkMax(ShooterConstants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
@@ -71,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
     distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
-    isShooterReady = visionSubsystem.isPoseEstimatorReady() && AutoAlign.isActive();
+    isShooterReady = RobotUtil.isPoseEstimatorReady && AutoAlign.isActive();
     leftActualRPM = leftMotorEncoder.getVelocity();
     rightActualRPM = rightMotorEncoder.getVelocity();
     SmartDashboard.putNumber("Shooter/Left Motor RPM", leftActualRPM);

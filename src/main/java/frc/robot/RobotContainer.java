@@ -17,12 +17,13 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.*;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.IntakeSubsystem.PivotState;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
 
 import java.io.File;
@@ -43,8 +44,12 @@ public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive(), visionSubsystem);
+  private final Vision visionSubsystem = new Vision(
+          (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
+                  swerveSubsystem.getSwerveDrive().addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs),
+          new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading),
+          new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading));
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive());
   private final FeederSubsystem feederSubsystem = new FeederSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
@@ -141,8 +146,8 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
-    Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
-    Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
+    Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
+    Command autoAlignBump = new AutoAlign(swerveSubsystem, m_driverController, Target.BUMP);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, true);
@@ -194,7 +199,6 @@ public class RobotContainer {
       operatorController.a().onTrue(agitateIntake);
       operatorController.b().whileTrue(reverseIntake);
       operatorController.povUp().onTrue(resetIntake);
-      operatorController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
     }
   }
 
