@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,12 +17,10 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.RobotUtil;
 import frc.robot.commands.AutoAlign;
-import frc.robot.subsystems.vision.Vision;
-import swervelib.SwerveDrive;
+
+import java.util.function.Supplier;
 
 public class ShooterSubsystem extends SubsystemBase {
-  private final SwerveDrive swerveDrive;
-
   private final SparkMax leftMotor; // leader
   private final SparkMax rightMotor; // follower
 
@@ -30,15 +29,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkClosedLoopController leftMotorPid;
   private final SlewRateLimiter limit;
 
+  private final Supplier<Pose2d> robotPoseSupplier;
+
   private double leftActualRPM;
   private double rightActualRPM;
   private double desiredRPM;
   private double distanceToTarget;
   private boolean isShooterReady;
 
-  public ShooterSubsystem(SwerveDrive swerveDrive) {
-    this.swerveDrive = swerveDrive;
-
+  public ShooterSubsystem(Supplier<Pose2d> robotPoseSupplier) {
     leftMotor = new SparkMax(ShooterConstants.LEFT_SHOOTER_MOTOR, MotorType.kBrushless);
     rightMotor = new SparkMax(ShooterConstants.RIGHT_SHOOTER_MOTOR, MotorType.kBrushless);
     SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
@@ -62,6 +61,8 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorPid = leftMotor.getClosedLoopController();
     limit = new SlewRateLimiter(5676, -ShooterConstants.NEGATIVE_RATE_LIMIT, 0);
 
+    this.robotPoseSupplier = robotPoseSupplier;
+
     SmartDashboard.setDefaultNumber("Shooter/Desired Shooter RPM", 0);
     SmartDashboard.setDefaultNumber("Shooter/Tuning RPM", 3000);
     SmartDashboard.putBoolean("Shooter/Tuning Mode Active", ShooterConstants.TUNING_MODE_ACTIVE);
@@ -69,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+    Translation2d robotTranslation = robotPoseSupplier.get().getTranslation();
     distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
     isShooterReady = RobotUtil.isPoseEstimatorReady && AutoAlign.isActive();
     leftActualRPM = leftMotorEncoder.getVelocity();

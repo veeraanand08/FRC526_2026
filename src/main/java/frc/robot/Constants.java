@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import swervelib.math.Matter;
 
 /**
@@ -24,6 +25,20 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static final class DrivebaseConstants
   {
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
@@ -154,10 +169,6 @@ public final class Constants
 
   public static final class VisionConstants
   {
-    // AprilTag layout
-    public static final AprilTagFieldLayout APRIL_TAG_LAYOUT =
-            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-
     // Camera names, must match names configured on coprocessor
     public static final String CAMERA_0_NAME = "limelight-left";
     public static final String CAMERA_1_NAME = "limelight-right";
@@ -195,6 +206,10 @@ public final class Constants
 
   public static final class FieldConstants
   {
+    // AprilTag layout
+    public static final AprilTagFieldLayout APRIL_TAG_LAYOUT =
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
     public static final Translation2d RED_HUB = new Translation2d(11.938, 4.0);
     public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.0);
     public static final Translation2d RED_LEFT_BUMP = new Translation2d(11.928, 2.408);

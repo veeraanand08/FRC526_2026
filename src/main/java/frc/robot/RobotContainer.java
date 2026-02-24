@@ -49,7 +49,7 @@ public class RobotContainer {
                   swerveSubsystem.getSwerveDrive().addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs),
           new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading),
           new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading));
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive());
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose);
   private final FeederSubsystem feederSubsystem = new FeederSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
