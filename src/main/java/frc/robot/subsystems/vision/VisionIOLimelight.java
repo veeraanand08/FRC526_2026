@@ -20,11 +20,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /** IO implementation for real Limelight hardware. */
 public class VisionIOLimelight implements VisionIO {
   private final Supplier<Rotation2d> rotationSupplier;
+  private final DoubleSupplier yawRateSupplier;
   private final DoubleArrayPublisher orientationPublisher;
 
   private final DoubleSubscriber latencySubscriber;
@@ -39,9 +41,10 @@ public class VisionIOLimelight implements VisionIO {
    * @param name The configured name of the Limelight.
    * @param rotationSupplier Supplier for the current estimated rotation, used for MegaTag 2.
    */
-  public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier) {
+  public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier, DoubleSupplier yawRateSupplier) {
     var table = NetworkTableInstance.getDefault().getTable(name);
     this.rotationSupplier = rotationSupplier;
+    this.yawRateSupplier = yawRateSupplier;
     orientationPublisher = table.getDoubleArrayTopic("robot_orientation_set").publish();
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
@@ -65,7 +68,7 @@ public class VisionIOLimelight implements VisionIO {
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(
-        new double[] {rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+        new double[] {rotationSupplier.get().getDegrees(), yawRateSupplier.getAsDouble(), 0.0, 0.0, 0.0, 0.0});
     NetworkTableInstance.getDefault()
         .flush(); // Increases network traffic but recommended by Limelight
 

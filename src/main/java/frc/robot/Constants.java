@@ -59,7 +59,7 @@ public final class Constants
 
   public static final class ShooterConstants
   {
-    public static final boolean TUNING_MODE_ACTIVE = false;
+    public static final boolean TUNING_MODE_ACTIVE = true;
 
     public static final int LEFT_SHOOTER_MOTOR = 15;
     public static final int RIGHT_SHOOTER_MOTOR = 16;
@@ -188,7 +188,7 @@ public final class Constants
     // Standard deviation baselines, for 1-meter distance and 1 tag
     // (Adjusted automatically based on distance and # of tags)
     public static double linearStdDevBaseline = 0.02; // Meters
-    public static double angularStdDevBaseline = 0.06; // Radians
+    public static double angularStdDevBaseline = 0.1; // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)

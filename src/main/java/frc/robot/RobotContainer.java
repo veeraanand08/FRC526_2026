@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -46,9 +47,13 @@ public class RobotContainer {
                                                                                 "swerve"));
   private final Vision visionSubsystem = new Vision(
           (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
-                  swerveSubsystem.getSwerveDrive().addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs),
-          new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading),
-          new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading));
+                  swerveSubsystem.getSwerveDrive().addVisionMeasurement(
+                          new Pose2d(visionRobotPoseMeters.getTranslation(), swerveSubsystem.getHeading()),
+                          timestampSeconds),
+          new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading,
+                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
+          new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
+                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose);
   private final FeederSubsystem feederSubsystem = new FeederSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();

@@ -46,11 +46,13 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorConfig.inverted(ShooterConstants.MOTORS_REVERSED);
     leftMotorConfig.idleMode(IdleMode.kCoast);
     leftMotorConfig.smartCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT);
+    leftMotorConfig.voltageCompensation(12.0);
     leftMotorConfig.closedLoop.pid(ShooterConstants.SHOOTER_P, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D)
                               .feedForward.kV(ShooterConstants.SHOOTER_FF);
 
     rightMotorConfig.idleMode(IdleMode.kCoast);
     rightMotorConfig.smartCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT);
+    rightMotorConfig.voltageCompensation(12.0);
     rightMotorConfig.follow(ShooterConstants.LEFT_SHOOTER_MOTOR, true);
 
     leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
