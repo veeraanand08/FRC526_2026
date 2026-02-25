@@ -20,6 +20,7 @@ public class AutoAlign extends Command {
   public enum Target {
     HUB,
     BUMP,
+    AUTO,
     NONE {
       @Override
       public String toString() {
@@ -78,19 +79,36 @@ public class AutoAlign extends Command {
         leftX,
         angleToTarget
     ));
+    
   }
 
+  public static Target getTarget(Translation2d robotTranslation, boolean isRedAlliance){
+    double robotX = robotTranslation.getX();
+    if (!isRedAlliance && robotX < FieldConstants.BLUE_ALLIANCE_BOUNDARY){
+        return Target.HUB;
+    } else if (isRedAlliance && robotX > FieldConstants.RED_ALLIANCE_BOUNDARY){
+      return Target.HUB;
+    }
+
+    return Target.BUMP;
+  }
+
+
   public static Translation2d getTargetTranslation(Target target, Translation2d robotTranslation) {
+    boolean isRedAlliance = RobotUtil.isRedAlliance();
     Translation2d targetTranslation;
     switch (target) {
       case NONE:
+      case AUTO:
+        target = getTarget(robotTranslation, isRedAlliance);
+        currentTarget = target;
       case HUB:
-        targetTranslation = RobotUtil.isRedAlliance() ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
+        targetTranslation = isRedAlliance ? FieldConstants.RED_HUB : FieldConstants.BLUE_HUB;
         break;
       case BUMP:
         Translation2d leftBump, rightBump;
 
-        if (RobotUtil.isRedAlliance()){
+        if (isRedAlliance) {
             leftBump = FieldConstants.RED_LEFT_BUMP;
             rightBump = FieldConstants.RED_RIGHT_BUMP;
         } else {

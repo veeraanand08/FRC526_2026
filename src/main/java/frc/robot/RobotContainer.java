@@ -152,7 +152,7 @@ public class RobotContainer {
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
-    Command autoAlignBump = new AutoAlign(swerveSubsystem, m_driverController, Target.BUMP);
+    Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, true);
@@ -177,8 +177,8 @@ public class RobotContainer {
 
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
-      m_driverController.a().whileTrue(autoAlignHub);
-      m_driverController.b().whileTrue(autoAlignBump);
+      m_driverController.a().whileTrue(autoAlign);
+      m_driverController.b().whileTrue(autoAlignHub);
       m_driverController.x().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       // operator controls (on driver controller)
@@ -193,8 +193,7 @@ public class RobotContainer {
     {
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
-      m_driverController.a().whileTrue(autoAlignHub);
-      m_driverController.b().whileTrue(autoAlignBump);
+      m_driverController.a().whileTrue(autoAlign);
       m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       // operator controls

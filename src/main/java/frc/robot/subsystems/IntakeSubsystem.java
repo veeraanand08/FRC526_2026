@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.Objects;
-
 public class IntakeSubsystem extends SubsystemBase {
   /* The current state of the pivot motor. */
   public enum PivotState {
