@@ -33,6 +33,7 @@ public class AutoAlign extends Command {
   private final Target target;
   // used in shooter subsystem to determine if bot is ready to shoot
   private static Target currentTarget = Target.NONE;
+  private static Translation2d virtualTarget = Translation2d.kZero;
 
   /**
    * Creates a new AutoAlign.
@@ -62,7 +63,7 @@ public class AutoAlign extends Command {
   public void execute() {
     Translation2d robotTranslation = swerveSubsystem.getPose().getTranslation();
     Translation2d targetTranslation = getTargetTranslation(target, robotTranslation);
-    Translation2d virtualTarget = getVirtualTarget(robotTranslation, targetTranslation);
+    virtualTarget = getVirtualTarget(swerveSubsystem.getFieldVelocity(), robotTranslation, targetTranslation);
 
     Translation2d difference = virtualTarget.minus(robotTranslation);
     Rotation2d angleToTarget = new Rotation2d(difference.getX(), difference.getY());
@@ -127,8 +128,11 @@ public class AutoAlign extends Command {
     return targetTranslation;
   }
 
-  private Translation2d getVirtualTarget(Translation2d robotTranslation, Translation2d targetTranslation) {    
-    ChassisSpeeds robotSpeed = swerveSubsystem.getFieldVelocity();
+  public static Translation2d getVirtualTarget() {
+    return virtualTarget;
+  }
+
+  private static Translation2d getVirtualTarget(ChassisSpeeds robotSpeed, Translation2d robotTranslation, Translation2d targetTranslation) {
     Translation2d virtualTargetTranslation = targetTranslation;
 
     for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){

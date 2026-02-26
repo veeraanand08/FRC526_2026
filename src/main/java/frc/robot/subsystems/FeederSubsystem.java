@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -96,8 +97,8 @@ public class FeederSubsystem extends SubsystemBase {
     }
   }
 
-  public void enableIndexer(boolean counterRotate) {
-    if (counterRotate) {
+  public void enableIndexer(boolean reversed) {
+    if (reversed) {
       indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
       indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
     }
@@ -117,5 +118,12 @@ public class FeederSubsystem extends SubsystemBase {
     indexerState = IndexerState.DISABLED;
     timer.stop();
     kickerMotor.set(0);
+  }
+
+  public Command reverse() {
+    return startEnd(() -> {
+      enableIndexer(true);
+      kickerPid.setSetpoint(FeederConstants.KICKER_RPM_REVERSED, ControlType.kVelocity);
+    }, this::stop);
   }
 }

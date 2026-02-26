@@ -73,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     Translation2d robotTranslation = robotPoseSupplier.get().getTranslation();
-    distanceToTarget = robotTranslation.getDistance(AutoAlign.getTargetTranslation(AutoAlign.getCurrentTarget(), robotTranslation));
+    distanceToTarget = robotTranslation.getDistance(AutoAlign.getVirtualTarget());
     isShooterReady = RobotUtil.isPoseEstimatorReady && AutoAlign.isActive();
     leftActualRPM = leftMotorEncoder.getVelocity();
     rightActualRPM = rightMotorEncoder.getVelocity();

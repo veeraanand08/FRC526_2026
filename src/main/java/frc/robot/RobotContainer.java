@@ -158,7 +158,7 @@ public class RobotContainer {
     Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, true);
+    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
     Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command agitateIntake = intakeSubsystem.agitateCommand();
