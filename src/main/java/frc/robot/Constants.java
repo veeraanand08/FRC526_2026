@@ -123,7 +123,7 @@ public final class Constants
     public static final double INDEXER_POWER = 0.8;
     public static final double KICKER_RPM = 5000;
 
-    public static final double INDEXER_PERIOD = 2.0;
+    public static final double INDEXER_PERIOD = 1.0;
   }
   
   public static final class IntakeConstants
@@ -160,7 +160,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 136; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 125; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
 

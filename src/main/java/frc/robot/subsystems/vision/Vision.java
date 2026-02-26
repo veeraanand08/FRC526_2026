@@ -19,6 +19,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
@@ -170,6 +171,8 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
+
+    SmartDashboard.putBoolean("AutoAlign/Pose Estimator Ready", RobotUtil.isPoseEstimatorReady);
   }
 
   @FunctionalInterface

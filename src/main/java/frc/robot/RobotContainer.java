@@ -48,8 +48,11 @@ public class RobotContainer {
   private final Vision visionSubsystem = new Vision(
           (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
                   swerveSubsystem.getSwerveDrive().addVisionMeasurement(
-                          new Pose2d(visionRobotPoseMeters.getTranslation(), swerveSubsystem.getHeading()),
-                          timestampSeconds),
+//                          new Pose2d(visionRobotPoseMeters.getTranslation(), swerveSubsystem.getHeading()),
+//                          timestampSeconds),
+                          visionRobotPoseMeters,
+                          timestampSeconds,
+                          visionMeasurementStdDevs),
           new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading,
                   () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
           new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
