@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Objects;
+
 public class IntakeSubsystem extends SubsystemBase {
   /* The current state of the pivot motor. */
   public enum PivotState {
@@ -82,8 +84,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     currentPivotDeg = getPivotDeg();
     SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
-    SmartDashboard.putNumber("Intake/Pivot Voltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Intake/Pivot Current", pivotMotor.getOutputCurrent());
     switch (pivotState) {
       case RAISING:
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
@@ -92,7 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         break;
       case AGITATING:
-        double pos = Math.sin(System.currentTimeMillis() * Math.PI / 2000.0) * 0.5 + 0.5;
+        double pos = Math.sin(System.currentTimeMillis() * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
         double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
         setPivotAngle(targetAngle);
         break;
@@ -102,6 +102,9 @@ public class IntakeSubsystem extends SubsystemBase {
           pivotState = PivotState.LOWERED;
           setRoller(true);
         }
+        break;
+      case LOWERED:
+        setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
         break;
       default:
     }
@@ -198,6 +201,24 @@ public class IntakeSubsystem extends SubsystemBase {
       () -> setRollerReversed(true), 
       () -> setRollerReversed(false)
     );
+  }
+
+  /**
+   * Toggle intake agitation
+   *
+   * @return a command to agitate the intake
+   */
+  public Command agitateCommand() {
+    return runOnce(() -> {
+      if (pivotState == PivotState.AGITATING) {
+        setRoller(true);
+        pivotState = PivotState.LOWERING;
+      }
+      else {
+        pivotState = PivotState.AGITATING;
+        slowRoller();
+      }
+    });
   }
 
   /**

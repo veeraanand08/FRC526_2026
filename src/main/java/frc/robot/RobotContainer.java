@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import java.io.File;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -21,11 +24,14 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.IntakeSubsystem.PivotState;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
+import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
-import java.io.File;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -141,6 +147,8 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+    Command xWheels = Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                               .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
     Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, false)
@@ -152,6 +160,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("toggleIntake", toggleIntake);
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
+    NamedCommands.registerCommand("xWheel", xWheels);
     NamedCommands.registerCommand("Shoot", shootAutoSpeed);
 
     if (RobotBase.isSimulation()) {
@@ -169,8 +178,7 @@ public class RobotContainer {
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlignHub);
       m_driverController.b().whileTrue(autoAlignBump);
-      m_driverController.x().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                               .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.x().whileTrue(xWheels);
       // operator controls (on driver controller)
       m_driverController.leftBumper().onTrue(toggleIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);

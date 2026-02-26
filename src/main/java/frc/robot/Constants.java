@@ -41,14 +41,14 @@ public final class Constants
 
   public static final class ShooterConstants
   {
-    public static final boolean TUNING_MODE_ACTIVE = true;
+    public static final boolean TUNING_MODE_ACTIVE = false;
 
     public static final int LEFT_SHOOTER_MOTOR = 15;
     public static final int RIGHT_SHOOTER_MOTOR = 16;
     public static final int SHOOTER_CURRENT_LIMIT = 60;
     public static final boolean MOTORS_REVERSED = false;
-    public static final double SHOOTER_P = 0.0004;
-    public static final double SHOOTER_I = 0;
+    public static final double SHOOTER_P = 0.00004;
+    public static final double SHOOTER_I = 0;//0.0000003;
     public static final double SHOOTER_D = 0;
     public static final double SHOOTER_FF = 1.0 / 5676.0;
     public static final double NEGATIVE_RATE_LIMIT = 3000;
@@ -58,17 +58,29 @@ public final class Constants
 
     /* Shoot on the fly */
     public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
-    public static final int MAX_ITERATIONS = 0;
+    public static final int MAX_ITERATIONS = 3;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
       // Distance, Time
-      DISTANCE_TO_TIME.put(3.0, 1.0); //Example
+      DISTANCE_TO_TIME.put(1.550492641, 1.02);
+      DISTANCE_TO_TIME.put(2.377278558, 0.96);
+      DISTANCE_TO_TIME.put(2.609581948, 1.24);
+      DISTANCE_TO_TIME.put(3.215580043, 1.41);
+      DISTANCE_TO_TIME.put(4.12515407, 1.41);
+      DISTANCE_TO_TIME.put(5.407194396, 1.66);
+      DISTANCE_TO_TIME.put(5.740540669, 1.73);
     }
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
       // Distance, RPM for Shot
-      DISTANCE_TO_RPM.put(1.0, 1.0); //Example
+      DISTANCE_TO_RPM.put(1.550492641, 2900.0);
+      DISTANCE_TO_RPM.put(2.377278558, 3000.0);
+      DISTANCE_TO_RPM.put(2.609581948, 3210.0);
+      DISTANCE_TO_RPM.put(3.215580043, 3350.0);
+      DISTANCE_TO_RPM.put(4.12515407, 3930.0);
+      DISTANCE_TO_RPM.put(5.407194396, 4420.0);
+      DISTANCE_TO_RPM.put(5.740540669, 4700.0);
     }
   }
 
@@ -92,6 +104,8 @@ public final class Constants
 
     public static final double INDEXER_POWER = 0.8;
     public static final double KICKER_RPM = 5000;
+
+    public static final double INDEXER_PERIOD = 2.0;
   }
   
   public static final class IntakeConstants
@@ -100,7 +114,7 @@ public final class Constants
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
-    public static final double ROLLER_POWER_SLOW = 0.6;
+    public static final double ROLLER_POWER_SLOW = 0.75;
     public static final double ROLLER_P = 0.0003;
     public static final double ROLLER_I = 0;
     public static final double ROLLER_D = 0;
@@ -128,9 +142,11 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 137; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 136; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
+
+    public static final double AGITATION_PERIOD = 2000; //Period is number * 2 in seconds
   }
 
   public static final class VisionConstants
