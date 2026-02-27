@@ -57,7 +57,7 @@ public class RobotContainer {
                   () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
           new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
                   () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose, swerveSubsystem::getFieldVelocity);
   private final FeederSubsystem feederSubsystem = new FeederSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 

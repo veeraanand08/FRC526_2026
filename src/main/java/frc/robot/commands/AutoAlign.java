@@ -128,11 +128,7 @@ public class AutoAlign extends Command {
     return targetTranslation;
   }
 
-  public static Translation2d getVirtualTarget() {
-    return virtualTarget;
-  }
-
-  private static Translation2d getVirtualTarget(ChassisSpeeds robotSpeed, Translation2d robotTranslation, Translation2d targetTranslation) {
+  public static Translation2d getVirtualTarget(ChassisSpeeds robotSpeed, Translation2d robotTranslation, Translation2d targetTranslation) {
     Translation2d virtualTargetTranslation = targetTranslation;
 
     for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){
@@ -148,6 +144,9 @@ public class AutoAlign extends Command {
     return virtualTargetTranslation;
   }
 
+  public static Translation2d getSavedVirtualTarget() {
+    return virtualTarget;
+  }
 
   // Called once the command ends or is interrupted.
   @Override

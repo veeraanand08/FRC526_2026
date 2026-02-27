@@ -70,15 +70,11 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-  }
-
-  @Override
-  public void robotInit() {
-    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   /**
@@ -100,6 +96,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    RobotUtil.shiftTimer.end();
     m_robotContainer.getIntakeSubsystem().setPivotBrake(false);
   }
 
@@ -109,6 +106,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotUtil.shiftTimer.end();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -123,6 +121,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    RobotUtil.shiftTimer.start();
+
     m_robotContainer.getIntakeSubsystem().setPivotBrake(true);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
@@ -136,10 +136,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    RobotUtil.shiftTimer.update();
+  }
 
   @Override
   public void testInit() {
+    RobotUtil.shiftTimer.end();
     m_robotContainer.getIntakeSubsystem().setPivotBrake(true);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
