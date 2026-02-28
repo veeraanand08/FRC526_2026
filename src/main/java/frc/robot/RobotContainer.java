@@ -156,6 +156,8 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+    Command lockSwerve = Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
     Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
@@ -168,7 +170,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("toggleIntake", toggleIntake);
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
-    NamedCommands.registerCommand("xWheel", xWheels);
+    NamedCommands.registerCommand("xWheel", lockSwerve);
     NamedCommands.registerCommand("Shoot", shootAutoSpeed);
 
     if (RobotBase.isSimulation()) {
@@ -186,8 +188,7 @@ public class RobotContainer {
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
       m_driverController.b().whileTrue(autoAlignHub);
-      m_driverController.x().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                               .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.x().whileTrue(lockSwerve);
       // operator controls (on driver controller)
       m_driverController.leftBumper().onTrue(toggleIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
