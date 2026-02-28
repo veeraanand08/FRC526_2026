@@ -663,15 +663,6 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.lockPose();
   }
 
-  public void enableIntakeRotation(){
-
-  }
-
-  public void disableIntakeRotation(){
-    
-  }
-
-
   /**
    * Gets the current pitch angle of the robot, as reported by the imu.
    *
