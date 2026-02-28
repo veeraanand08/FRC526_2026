@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import swervelib.math.Matter;
 
 /**
@@ -21,6 +25,20 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static final class DrivebaseConstants
   {
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
@@ -51,7 +69,7 @@ public final class Constants
     public static final double SHOOTER_I = 0;//0.0000003;
     public static final double SHOOTER_D = 0;
     public static final double SHOOTER_FF = 1.0 / 5676.0;
-    public static final double NEGATIVE_RATE_LIMIT = 3000;
+    public static final double NEGATIVE_RATE_LIMIT = 2000;
     // set speeds
     public static final double DEFAULT_RPM = 3500;
     public static final double REVERSED_RPM = 2500; // reversal if something is stuck
@@ -63,24 +81,32 @@ public final class Constants
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
     static {
       // Distance, Time
-      DISTANCE_TO_TIME.put(1.550492641, 1.02);
-      DISTANCE_TO_TIME.put(2.377278558, 0.96);
-      DISTANCE_TO_TIME.put(2.609581948, 1.24);
-      DISTANCE_TO_TIME.put(3.215580043, 1.41);
-      DISTANCE_TO_TIME.put(4.12515407, 1.41);
-      DISTANCE_TO_TIME.put(5.407194396, 1.66);
-      DISTANCE_TO_TIME.put(5.740540669, 1.73);
+      DISTANCE_TO_TIME.put(6.730068956, 1.786);
+      DISTANCE_TO_TIME.put(6.472743156, 1.733);
+      DISTANCE_TO_TIME.put(6.044155496, 1.693);
+      DISTANCE_TO_TIME.put(5.506356383, 1.483);
+      DISTANCE_TO_TIME.put(5.068445123, 1.4);
+      DISTANCE_TO_TIME.put(4.515344442, 1.35);
+      DISTANCE_TO_TIME.put(4.182420309, 1.25);
+      DISTANCE_TO_TIME.put(3.673340232, 1.25);
+      DISTANCE_TO_TIME.put(2.972515343, 1.283);
+      DISTANCE_TO_TIME.put(2.425870923, 1.133);
+      DISTANCE_TO_TIME.put(1.915421252, 0.957);
     }
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
       // Distance, RPM for Shot
-      DISTANCE_TO_RPM.put(1.550492641, 2900.0);
-      DISTANCE_TO_RPM.put(2.377278558, 3000.0);
-      DISTANCE_TO_RPM.put(2.609581948, 3210.0);
-      DISTANCE_TO_RPM.put(3.215580043, 3350.0);
-      DISTANCE_TO_RPM.put(4.12515407, 3930.0);
-      DISTANCE_TO_RPM.put(5.407194396, 4420.0);
-      DISTANCE_TO_RPM.put(5.740540669, 4700.0);
+      DISTANCE_TO_RPM.put(6.730068956, 4500d);
+      DISTANCE_TO_RPM.put(6.472743156, 4300d);
+      DISTANCE_TO_RPM.put(6.044155496, 4100d);
+      DISTANCE_TO_RPM.put(5.506356383, 3850d);
+      DISTANCE_TO_RPM.put(5.068445123, 3675d);
+      DISTANCE_TO_RPM.put(4.515344442, 3500d);
+      DISTANCE_TO_RPM.put(4.182420309, 3325d);
+      DISTANCE_TO_RPM.put(3.673340232, 3150d);
+      DISTANCE_TO_RPM.put(2.972515343, 3000d);
+      DISTANCE_TO_RPM.put(2.425870923, 2675d);
+      DISTANCE_TO_RPM.put(1.915421252, 2350d);
     }
   }
 
@@ -104,8 +130,9 @@ public final class Constants
 
     public static final double INDEXER_POWER = 0.8;
     public static final double KICKER_RPM = 5000;
+    public static final double KICKER_RPM_REVERSED = -3000;
 
-    public static final double INDEXER_PERIOD = 2.0;
+    public static final double INDEXER_PERIOD = 1.0;
   }
   
   public static final class IntakeConstants
@@ -142,7 +169,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 136; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 140; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
 
@@ -151,20 +178,56 @@ public final class Constants
 
   public static final class VisionConstants
   {
-    public static final String LIMELIGHT_LEFT_NAME = "limelight-left";
-    public static final String LIMELIGHT_RIGHT_NAME = "limelight-right";
-    public static final double MAX_TAG_AMBIGUITY = Double.MAX_VALUE;
-    public static final double MAX_TILT_DEG = 12.0;
+    // Camera names, must match names configured on coprocessor
+    public static final String CAMERA_0_NAME = "limelight-left";
+    public static final String CAMERA_1_NAME = "limelight-right";
+
+    // Robot to camera transforms
+    // (Not used by Limelight, configure in web UI instead)
+    public static Transform3d robotToCamera0 =
+            new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+    public static Transform3d robotToCamera1 =
+            new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+
+    // Basic filtering thresholds
+    public static final double MAX_AMBIGUITY = 0.3;
+    public static final double MAX_Z_ERROR = 0.75;
+    public static final double MAX_TILT_DEG = 15;
+
+    // Standard deviation baselines, for 1-meter distance and 1 tag
+    // (Adjusted automatically based on distance and # of tags)
+    public static double linearStdDevBaseline = 0.02; // Meters
+    public static double angularStdDevBaseline = 0.1; // Radians
+
+    // Standard deviation multipliers for each camera
+    // (Adjust to trust some cameras more than others)
+    public static double[] cameraStdDevFactors =
+            new double[] {
+                    1.0, // Camera 0
+                    1.0 // Camera 1
+            };
+
+    // Multipliers to apply for MegaTag 2 observations
+    public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
+    public static double angularStdDevMegatag2Factor =
+            Double.POSITIVE_INFINITY; // No rotation data available
   }
 
   public static final class FieldConstants
   {
+    // AprilTag layout
+    public static final AprilTagFieldLayout APRIL_TAG_LAYOUT =
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
     public static final Translation2d RED_HUB = new Translation2d(11.938, 4.0);
     public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.0);
     public static final Translation2d RED_LEFT_BUMP = new Translation2d(11.928, 2.408);
     public static final Translation2d RED_RIGHT_BUMP = new Translation2d(11.928, 5.598);
-    public static final Translation2d BLUE_LEFT_BUMP = Translation2d.kZero; // temp
-    public static final Translation2d BLUE_RIGHT_BUMP = Translation2d.kZero; // temp
+    public static final Translation2d BLUE_LEFT_BUMP = new Translation2d(4.617, 5.598);
+    public static final Translation2d BLUE_RIGHT_BUMP = new Translation2d(4.617, 2.408);
+
+    public static final double RED_ALLIANCE_BOUNDARY = RED_LEFT_BUMP.getX();
+    public static final double BLUE_ALLIANCE_BOUNDARY = BLUE_LEFT_BUMP.getX();
   }
 
   public static final class ControllerConstants
@@ -172,7 +235,7 @@ public final class Constants
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;
     // Joystick Deadband
-    public static final double DEADBAND         = 0.1;
+    public static final double DEADBAND         = 0.025;
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;

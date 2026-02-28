@@ -5,16 +5,14 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.PivotState;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ShooterCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ShooterSubsystem shooterSubsystem;
   private final FeederSubsystem feederSubsystem;
-  private final IntakeSubsystem intakeSubsystem;
+//  private final IntakeSubsystem intakeSubsystem;
   private final boolean isReversed;
   private boolean startShoot;
 
@@ -23,18 +21,18 @@ public class ShooterCommand extends Command {
    *
    * @param shooterSubsystem The shooter subsystem used by this command.
    * @param feederSubsystem The feeder subsystem used by this command.
-   * @param intakeSubsystem The intake subsystem used by this command.
+   * // @param intakeSubsystem The intake subsystem used by this command.
    * @param reversed Whether or not to run this command in reversed mode to get a ball unstuck.
    */
-  public ShooterCommand(ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem, IntakeSubsystem intakeSubsystem,
+  public ShooterCommand(ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem, /*IntakeSubsystem intakeSubsystem,*/
                         boolean reversed)
   {
     this.shooterSubsystem = shooterSubsystem;
     this.feederSubsystem = feederSubsystem;
-    this.intakeSubsystem = intakeSubsystem;
+//    this.intakeSubsystem = intakeSubsystem;
     this.isReversed = reversed;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem, feederSubsystem, intakeSubsystem);
+    addRequirements(shooterSubsystem, feederSubsystem/*, intakeSubsystem*/);
   }
 
   // Called when the command is initially scheduled.
@@ -51,9 +49,6 @@ public class ShooterCommand extends Command {
       startShoot = true;
       feederSubsystem.enableKicker();
       feederSubsystem.enableIndexer(isReversed);
-      intakeSubsystem.setRoller(false);
-      intakeSubsystem.pivotState = PivotState.AGITATING;
-      intakeSubsystem.slowRoller();
     }
   }
 
@@ -62,8 +57,6 @@ public class ShooterCommand extends Command {
   public void end(boolean interrupted) {
     feederSubsystem.stop();
     shooterSubsystem.stop();
-    intakeSubsystem.stopRoller();
-    intakeSubsystem.pivotState = PivotState.LOWERING;
   }
 
   // Returns true when the command should end.
