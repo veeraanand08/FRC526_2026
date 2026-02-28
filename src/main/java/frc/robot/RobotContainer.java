@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.File;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,8 +28,8 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
+import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
-import java.io.File;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -164,7 +166,9 @@ public class RobotContainer {
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
+    NamedCommands.registerCommand("toggleIntake", toggleIntake);
     NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
+    NamedCommands.registerCommand("xWheel", xWheels);
     NamedCommands.registerCommand("Shoot", shootAutoSpeed);
 
     if (RobotBase.isSimulation()) {
