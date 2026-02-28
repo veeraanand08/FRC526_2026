@@ -223,8 +223,8 @@ public final class Constants
     public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.0);
     public static final Translation2d RED_LEFT_BUMP = new Translation2d(11.928, 2.408);
     public static final Translation2d RED_RIGHT_BUMP = new Translation2d(11.928, 5.598);
-    public static final Translation2d BLUE_LEFT_BUMP = Translation2d.kZero; // temp
-    public static final Translation2d BLUE_RIGHT_BUMP = Translation2d.kZero; // temp
+    public static final Translation2d BLUE_LEFT_BUMP = new Translation2d(4.617, 5.598);
+    public static final Translation2d BLUE_RIGHT_BUMP = new Translation2d(4.617, 2.408);
 
     public static final double RED_ALLIANCE_BOUNDARY = RED_LEFT_BUMP.getX();
     public static final double BLUE_ALLIANCE_BOUNDARY = BLUE_LEFT_BUMP.getX();
