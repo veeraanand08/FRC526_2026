@@ -143,12 +143,12 @@ public class SwerveSubsystem extends SubsystemBase
     }
     double leftTrenchDist = robotPose.getDistance(leftTrench);
     double leftTrenchYDist = Math.abs( robotPose.getY() - leftTrench.getY() );
-    if (leftTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD){
+    if (leftTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
       return leftTrench;
     }
     double rightTrenchDist = robotPose.getDistance(rightTrench);
     double rightTrenchYDist = Math.abs( robotPose.getY() - rightTrench.getY() );
-    if (rightTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD){
+    if (rightTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
       return rightTrench;
     }
 

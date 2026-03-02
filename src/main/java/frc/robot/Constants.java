@@ -45,23 +45,24 @@ public final class Constants
   {
     public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
     public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
-    public static Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 0.586);
-    public static Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 7.423);
+    public static Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
+    public static Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
 
-    public static final double TRENCH_ALIGNMENT_THRESHOLD = 1.5;
+    public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
+    public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
 
-    public static final double Y_P = 0.0025;
+    public static final double Y_P = 12.5;
     public static final double Y_I = 0.0;
     public static final double Y_D = 0.0;
 
-    public static final double ANGLE_P = 0.0025;
+    public static final double ANGLE_P = 12.5;
     public static final double ANGLE_I = 0.0;
     public static final double ANGLE_D = 0.0;
 
 
     public static final double TRENCH_ROTATION_SETPOINT = 0.0;
 
-    public static final double STRENGTH_EXP = 3.0;
+    public static final double STRENGTH_EXP = 2;
 
   }
 
@@ -263,7 +264,7 @@ public final class Constants
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;
     // Joystick Deadband
-    public static final double DEADBAND         = 0.025;
+    public static final double DEADBAND         = 0.1;
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;

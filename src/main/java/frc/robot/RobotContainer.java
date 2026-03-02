@@ -166,7 +166,8 @@ public class RobotContainer {
     Command lockSwerve = Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                  .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
-    Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
+    Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO)
+                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
