@@ -207,7 +207,7 @@ public class RobotContainer {
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
-      m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem));
+      m_driverController.leftBumper().whileTrue(lockSwerve);
       // operator controls
       operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
