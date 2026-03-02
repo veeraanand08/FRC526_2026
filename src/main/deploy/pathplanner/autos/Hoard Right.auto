@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Trench LEFT"
+            "pathName": "Trench RIGHT"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Intake 1 LEFT"
+            "pathName": "Mid Intake 1 RIGHT"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Intake Return LEFT"
+            "pathName": "Mid Intake Return RIGHT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Hub Auto Align"
           }
         },
         {
@@ -32,12 +38,6 @@
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Hub Auto Align"
           }
         }
       ]
