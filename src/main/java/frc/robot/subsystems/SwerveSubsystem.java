@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.TrenchAlignmentConstants;
 import frc.robot.RobotUtil;
 import org.json.simple.parser.ParseException;
 import swervelib.SwerveController;
@@ -55,6 +57,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Rotation;
 
 public class SwerveSubsystem extends SubsystemBase
 {
@@ -64,13 +67,16 @@ public class SwerveSubsystem extends SubsystemBase
   private final SwerveDrive swerveDrive;
   private AHRS gyro;
 
+  private Translation2d trenchTarget; 
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
    * @param directory Directory of swerve drive config files.
    */
    public SwerveSubsystem(File directory)
-  { 
+  {
+    trenchTarget = Translation2d.kZero;
     boolean blueAlliance = !RobotUtil.isRedAlliance();
     Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(1),
                                                                       Meter.of(4)),
@@ -108,11 +114,45 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
+    trenchTarget = Translation2d.kZero;
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
                                   DrivebaseConstants.MAX_SPEED,
                                   new Pose2d(new Translation2d(Meter.of(0), Meter.of(0)),
                                              Rotation2d.fromDegrees(0)));
+  }
+
+  public boolean isNearTrench() {
+    trenchTarget = findNearestTrench();
+    return !trenchTarget.equals(Translation2d.kZero);
+  }
+
+  public Translation2d trenchTarget() {
+    return trenchTarget;
+  }
+
+  public Translation2d findNearestTrench() {
+    Translation2d robotPose = swerveDrive.getPose().getTranslation();
+    Translation2d leftTrench, rightTrench;
+    if (RobotUtil.isRedAlliance()){
+       leftTrench = TrenchAlignmentConstants.RED_LEFT_TRENCH;
+       rightTrench = TrenchAlignmentConstants.RED_RIGHT_TRENCH;
+    } else {
+      leftTrench = TrenchAlignmentConstants.BLUE_LEFT_TRENCH;
+      rightTrench = TrenchAlignmentConstants.BLUE_RIGHT_TRENCH;
+    }
+    double leftTrenchDist = robotPose.getDistance(leftTrench);
+    double leftTrenchYDist = Math.abs( robotPose.getY() - leftTrench.getY() );
+    if (leftTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD){
+      return leftTrench;
+    }
+    double rightTrenchDist = robotPose.getDistance(rightTrench);
+    double rightTrenchYDist = Math.abs( robotPose.getY() - rightTrench.getY() );
+    if (rightTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD){
+      return rightTrench;
+    }
+
+    return Translation2d.kZero;
   }
 
   @Override
