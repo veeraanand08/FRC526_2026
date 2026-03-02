@@ -291,7 +291,7 @@ public class SwerveSubsystem extends SubsystemBase
 
 
   /**
-   * Command to characterize the robot drive motorfs using SysId
+   * Command to characterize the robot drive motors using SysId
    *
    * @return SysId Drive Command
    */

@@ -208,9 +208,7 @@ public class RobotContainer {
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
-      m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-      m_driverController.y().onTrue(AutoBuilder.buildAuto("Auto Trench"));
+      m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem));
       // operator controls
       operatorController.leftBumper().onTrue(toggleIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
