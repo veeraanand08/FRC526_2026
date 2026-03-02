@@ -8,7 +8,7 @@ import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -20,15 +20,18 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.*;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
-import frc.robot.subsystems.IntakeSubsystem.PivotState;
 
 
 /**
@@ -124,6 +127,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
+    NamedCommands.registerCommand("Hub Auto Align", new AutoAlign(swerveSubsystem, m_driverController, Target.HUB));
+    NamedCommands.registerCommand("xWheel", Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false)
+                                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
     DriverStation.silenceJoystickConnectionWarning(true);
 
     //Have the autoChooser pull in all PathPlanner autos as options
@@ -168,11 +179,6 @@ public class RobotContainer {
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
-    NamedCommands.registerCommand("toggleIntake", toggleIntake);
-    NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
-    NamedCommands.registerCommand("xWheel", lockSwerve);
-    NamedCommands.registerCommand("Shoot", shootAutoSpeed);
-
     if (RobotBase.isSimulation()) {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
     }
@@ -204,6 +210,7 @@ public class RobotContainer {
       m_driverController.a().whileTrue(autoAlign);
       m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.y().onTrue(AutoBuilder.buildAuto("Auto Trench"));
       // operator controls
       operatorController.leftBumper().onTrue(toggleIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
