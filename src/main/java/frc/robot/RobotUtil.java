@@ -76,7 +76,7 @@ public final class RobotUtil {
                         SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
-                    shiftTimeRemaining = 11.0 - timer.get();
+                    shiftTimeRemaining = 10.0 - timer.get();
                     break;
                 case ALLIANCE:
                     if (timer.get() >= 25.0) {
@@ -91,17 +91,17 @@ public final class RobotUtil {
                         else SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
-                    shiftTimeRemaining = 26.0 - timer.get();
+                    shiftTimeRemaining = 25.0 - timer.get();
                     break;
                 case ENDGAME:
-                    shiftTimeRemaining = 31.0 - timer.get();
+                    shiftTimeRemaining = 30.0 - timer.get();
                     if (timer.get() >= 30.0) {
                         end();
                     }
                     break;
             }
             SmartDashboard.putBoolean("Match/Hub Active", isHubActive);
-            SmartDashboard.putNumber("Match/Shift Timer", shiftTimeRemaining);
+            SmartDashboard.putNumber("Match/Shift Timer", shiftTimeRemaining + 1);
         }
 
         public void end() {
