@@ -101,9 +101,6 @@ public class IntakeSubsystem extends SubsystemBase {
           setRoller(true);
         }
         break;
-      case LOWERED:
-        setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
-        break;
       default:
     }
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
@@ -163,6 +160,29 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setPivotBrake(boolean brake) {
     pivotConfig.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  /**
+   * Enable the intake roller. If the intake is raised, it will lower and then start.
+   *
+   * @return a command to toggle the intake
+   */
+  public Command intakeCommand() {
+    // Inline construction of command goes here.
+    return startEnd(
+            () -> {
+              switch (pivotState) {
+                case LOWERING:
+                case LOWERED:
+                  setRoller(true);
+                  break;
+                default:
+                  setRoller(true);
+                  pivotState = PivotState.LOWERING;
+                  break;
+              }
+            },
+            () -> setRoller(false));
   }
 
   /**

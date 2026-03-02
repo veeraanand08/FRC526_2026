@@ -50,8 +50,6 @@ public class RobotContainer {
   private final Vision visionSubsystem = new Vision(
           (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
                   swerveSubsystem.getSwerveDrive().addVisionMeasurement(
-//                          new Pose2d(visionRobotPoseMeters.getTranslation(), swerveSubsystem.getHeading()),
-//                          timestampSeconds),
                           visionRobotPoseMeters,
                           timestampSeconds,
                           visionMeasurementStdDevs),
@@ -163,6 +161,7 @@ public class RobotContainer {
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
+    Command holdIntake = intakeSubsystem.intakeCommand();
     Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command agitateIntake = intakeSubsystem.agitateCommand();
@@ -190,7 +189,7 @@ public class RobotContainer {
       m_driverController.b().whileTrue(autoAlignHub);
       m_driverController.x().whileTrue(lockSwerve);
       // operator controls (on driver controller)
-      m_driverController.leftBumper().onTrue(toggleIntake);
+      m_driverController.leftBumper().whileTrue(holdIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
       m_driverController.y().onTrue(agitateIntake);
       m_driverController.povUp().onTrue(resetIntake);
@@ -205,7 +204,7 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                                         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       // operator controls
-      operatorController.leftBumper().onTrue(toggleIntake);
+      operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
       operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       operatorController.a().onTrue(agitateIntake);

@@ -62,6 +62,7 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
+  private AHRS gyro;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -94,6 +95,7 @@ public class SwerveSubsystem extends SubsystemBase
     if (SwerveDriveTelemetry.isSimulation) swerveDrive.setCosineCompensator(false); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
+    gyro = (AHRS) swerveDrive.getGyro().getIMU();
 
     setupPathPlanner();
   }
@@ -116,7 +118,6 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    AHRS gyro = (AHRS) swerveDrive.getGyro().getIMU();
     if (gyro.getPitch() > VisionConstants.MAX_TILT_DEG &&
         gyro.getRoll() > VisionConstants.MAX_TILT_DEG)
     {
