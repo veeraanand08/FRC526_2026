@@ -4,7 +4,24 @@
 
 package frc.robot;
 
+import java.io.File;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
@@ -12,32 +29,10 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.PivotState;
-import limelight.networktables.LimelightSettings.LEDMode;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
 
-import java.io.File;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -55,8 +50,17 @@ public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem.getSwerveDrive(), visionSubsystem);
+  private final Vision visionSubsystem = new Vision(
+          (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
+                  swerveSubsystem.getSwerveDrive().addVisionMeasurement(
+                          visionRobotPoseMeters,
+                          timestampSeconds,
+                          visionMeasurementStdDevs),
+          new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading,
+                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
+          new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
+                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose, swerveSubsystem::getFieldVelocity);
   private final FeederSubsystem feederSubsystem = new FeederSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
@@ -68,9 +72,9 @@ public class RobotContainer {
    */
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
-                                                                () -> m_driverController.getLeftY(),
-                                                                () -> m_driverController.getLeftX())
-                                                            .withControllerRotationAxis(m_driverController::getRightX)
+                                                                () -> -m_driverController.getLeftY(),
+                                                                () -> -m_driverController.getLeftX())
+                                                            .withControllerRotationAxis(() -> -m_driverController.getRightX())
                                                             .deadband(ControllerConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true);
@@ -121,6 +125,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
+    NamedCommands.registerCommand("Hub Auto Align", new AutoAlign(swerveSubsystem, m_driverController, Target.HUB));
+    NamedCommands.registerCommand("xWheel", Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false)
+                                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
     DriverStation.silenceJoystickConnectionWarning(true);
 
     //Have the autoChooser pull in all PathPlanner autos as options
@@ -153,17 +165,18 @@ public class RobotContainer {
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
-    Command autoAlignHub = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.HUB);
-    Command autoAlignBump = new AutoAlign(swerveSubsystem, visionSubsystem, m_driverController, Target.BUMP);
-    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, false)
+    Command lockSwerve = Commands.run(swerveSubsystem::lock, swerveSubsystem)
+                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
+    Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
+    Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = new ShooterCommand(shooterSubsystem, feederSubsystem, intakeSubsystem, true);
+    Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
+    Command holdIntake = intakeSubsystem.intakeCommand();
     Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
+    Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
-
-    NamedCommands.registerCommand("Hub Auto Align", autoAlignHub);
-    NamedCommands.registerCommand("Shoot", shootAutoSpeed);
 
     if (RobotBase.isSimulation()) {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
@@ -178,14 +191,13 @@ public class RobotContainer {
 
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
-      m_driverController.a().whileTrue(autoAlignHub);
-      m_driverController.b().whileTrue(autoAlignBump);
-      m_driverController.x().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                               .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.a().whileTrue(autoAlign);
+      m_driverController.b().whileTrue(autoAlignHub);
+      m_driverController.x().whileTrue(lockSwerve);
       // operator controls (on driver controller)
-      m_driverController.leftBumper().onTrue(toggleIntake);
+      m_driverController.leftBumper().whileTrue(holdIntake);
       m_driverController.rightBumper().whileTrue(shootAutoSpeed);
-      m_driverController.y().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      m_driverController.y().onTrue(agitateIntake);
       m_driverController.povUp().onTrue(resetIntake);
       m_driverController.povDown().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       m_driverController.povRight().whileTrue(reverseIntake);
@@ -194,18 +206,15 @@ public class RobotContainer {
     {
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
-      m_driverController.a().whileTrue(autoAlignHub);
-      m_driverController.b().whileTrue(autoAlignBump);
-      m_driverController.leftBumper().whileTrue(Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      m_driverController.a().whileTrue(autoAlign);
+      m_driverController.leftBumper().whileTrue(lockSwerve);
       // operator controls
-      operatorController.leftBumper().onTrue(toggleIntake);
+      operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
       operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
-      operatorController.a().onTrue(Commands.runOnce(() -> intakeSubsystem.pivotState = PivotState.AGITATING, intakeSubsystem));
+      operatorController.a().onTrue(agitateIntake);
       operatorController.b().whileTrue(reverseIntake);
       operatorController.povUp().onTrue(resetIntake);
-      operatorController.povLeft().onTrue(Commands.runOnce(visionSubsystem::toggleLED));
     }
   }
 

@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench RIGHT"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Intake 1 RIGHT"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Intake Return RIGHT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Hub Auto Align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "xWheels"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

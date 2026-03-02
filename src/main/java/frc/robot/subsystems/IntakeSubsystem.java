@@ -1,5 +1,4 @@
 package frc.robot.subsystems;
-import org.dyn4j.geometry.Rotation;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -13,9 +12,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.IntakeConstants;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -37,8 +34,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final RelativeEncoder pivotEncoder;
   private final SparkClosedLoopController pivotPid;
+  private final SparkClosedLoopController rollerPid;
 
   private double currentPivotDeg;
+  private boolean rollerEnabled;
 
   public IntakeSubsystem() {
     pivotMotor = new SparkMax(IntakeConstants.PIVOT_MOTOR, MotorType.kBrushless);
@@ -62,6 +61,8 @@ public class IntakeSubsystem extends SubsystemBase {
     rollerConfig.inverted(IntakeConstants.ROLLER_REVERSED);
     rollerConfig.idleMode(IdleMode.kCoast);
     rollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT);
+    rollerConfig.closedLoop.pid(IntakeConstants.ROLLER_P, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D)
+                           .feedForward.kV(IntakeConstants.ROLLER_FF);
 
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -69,6 +70,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder = pivotMotor.getEncoder();
     pivotEncoder.setPosition(0);
     pivotPid = pivotMotor.getClosedLoopController();
+    rollerPid = rollerMotor.getClosedLoopController();
 
     SmartDashboard.setDefaultString("Intake/Pivot State", pivotState.toString());
     SmartDashboard.setDefaultBoolean("Intake/Intake Running", false);
@@ -80,8 +82,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     currentPivotDeg = getPivotDeg();
     SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
-    SmartDashboard.putNumber("Intake/Pivot Voltage", pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Intake/Pivot Current", pivotMotor.getOutputCurrent());
     switch (pivotState) {
       case RAISING:
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
@@ -90,7 +90,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         break;
       case AGITATING:
-        double pos = Math.sin(System.currentTimeMillis() * Math.PI / 2000.0) * 0.5 + 0.5;
+        double pos = Math.sin(System.currentTimeMillis() * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
         double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
         setPivotAngle(targetAngle);
         break;
@@ -98,6 +98,7 @@ public class IntakeSubsystem extends SubsystemBase {
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
         if (currentPivotDeg >= IntakeConstants.PIVOT_ENGAGED_ANGLE-5) {
           pivotState = PivotState.LOWERED;
+          setRoller(true);
         }
         break;
       default:
@@ -107,12 +108,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void toggleRoller() {
     // if roller motor is inactive, start it
-    setRoller(rollerMotor.get() == 0);
+    setRoller(!rollerEnabled);
   }
 
   public void setRoller(boolean enabled) {
-    rollerMotor.set(enabled ? IntakeConstants.ROLLER_POWER : 0);
-    SmartDashboard.putBoolean("Intake/Intake Running", enabled);
+    if (enabled) rollerPid.setSetpoint(IntakeConstants.ROLLER_RPM, ControlType.kVelocity);
+    else stopRoller();
+    rollerEnabled = enabled;
+    SmartDashboard.putBoolean("Intake/Intake Running", rollerEnabled);
   }
 
   public void slowRoller() {
@@ -120,7 +123,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setRollerReversed(boolean enabled) {
-    rollerMotor.set(enabled ? IntakeConstants.ROLLER_REVERSED_POWER : 0);
+    if (enabled) rollerPid.setSetpoint(IntakeConstants.ROLLER_RPM_REVERSED, ControlType.kVelocity);
+    else rollerMotor.set(0);
     SmartDashboard.putBoolean("Intake/Intake Reversing", enabled);
   }
 
@@ -148,9 +152,37 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor.stopMotor();
   }
 
+  /* Set the roller motor speed to 0. */
+  public void stopRoller() {
+    rollerMotor.stopMotor();
+  }
+
   public void setPivotBrake(boolean brake) {
     pivotConfig.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     pivotMotor.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  /**
+   * Enable the intake roller. If the intake is raised, it will lower and then start.
+   *
+   * @return a command to toggle the intake
+   */
+  public Command intakeCommand() {
+    // Inline construction of command goes here.
+    return startEnd(
+            () -> {
+              switch (pivotState) {
+                case LOWERING:
+                case LOWERED:
+                  setRoller(true);
+                  break;
+                default:
+                  setRoller(true);
+                  pivotState = PivotState.LOWERING;
+                  break;
+              }
+            },
+            () -> setRoller(false));
   }
 
   /**
@@ -164,6 +196,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           switch (pivotState) {
+            case LOWERING:
             case LOWERED:
               toggleRoller();
               break;
@@ -186,6 +219,24 @@ public class IntakeSubsystem extends SubsystemBase {
       () -> setRollerReversed(true), 
       () -> setRollerReversed(false)
     );
+  }
+
+  /**
+   * Toggle intake agitation
+   *
+   * @return a command to agitate the intake
+   */
+  public Command agitateCommand() {
+    return runOnce(() -> {
+      if (pivotState == PivotState.AGITATING) {
+        setRoller(true);
+        pivotState = PivotState.LOWERING;
+      }
+      else {
+        pivotState = PivotState.AGITATING;
+        slowRoller();
+      }
+    });
   }
 
   /**
