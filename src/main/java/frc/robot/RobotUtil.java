@@ -33,6 +33,7 @@ public final class RobotUtil {
         private ShiftSegment currentSegment;
         private int allianceShiftNum;
         private boolean isHubActive;
+        private double shiftTimeRemaining;
 
         private ShiftTimer() {
             timer = new Timer();
@@ -75,7 +76,7 @@ public final class RobotUtil {
                         SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
-                    SmartDashboard.putNumber("Match/Shift Timer", 11.0 - timer.get());
+                    shiftTimeRemaining = 11.0 - timer.get();
                     break;
                 case ALLIANCE:
                     if (timer.get() >= 25.0) {
@@ -90,16 +91,17 @@ public final class RobotUtil {
                         else SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
-                    SmartDashboard.putNumber("Match/Shift Timer", 26.0 - timer.get());
+                    shiftTimeRemaining = 26.0 - timer.get();
                     break;
                 case ENDGAME:
-                    SmartDashboard.putNumber("Match/Shift Timer", 31.0 - timer.get());
+                    shiftTimeRemaining = 31.0 - timer.get();
                     if (timer.get() >= 30.0) {
                         end();
                     }
                     break;
             }
             SmartDashboard.putBoolean("Match/Hub Active", isHubActive);
+            SmartDashboard.putNumber("Match/Shift Timer", shiftTimeRemaining);
         }
 
         public void end() {
@@ -108,6 +110,10 @@ public final class RobotUtil {
             SmartDashboard.putBoolean("Match/Hub Active", false);
             SmartDashboard.putString("Match/Current Shift", "N/A");
             SmartDashboard.putNumber("Match/Shift Timer", 0.0);
+        }
+
+        public double getTimeRemaining() {
+            return shiftTimeRemaining;
         }
     }
 }
