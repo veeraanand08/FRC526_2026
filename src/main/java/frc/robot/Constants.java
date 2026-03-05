@@ -173,7 +173,7 @@ public final class Constants
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
 
-    public static final double AGITATION_PERIOD = 2000; //Period is number * 2 in seconds
+    public static final double AGITATION_PERIOD = 4000; //Period is in nanoSeconds
   }
 
   public static final class VisionConstants

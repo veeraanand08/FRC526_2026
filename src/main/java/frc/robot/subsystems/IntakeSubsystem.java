@@ -18,14 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class IntakeSubsystem extends SubsystemBase {
   /* The current state of the pivot motor. */
   public enum PivotState {
-    RAISED,
     RAISING,
     AGITATING,
-    LOWERING,
-    LOWERED
+    LOWERING
   }
 
-  public PivotState pivotState = PivotState.RAISED;
+  public PivotState pivotState = PivotState.RAISING;
 
   private final SparkMax pivotMotor;
   private final SparkMax rollerMotor;
@@ -82,32 +80,34 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     currentPivotDeg = getPivotDeg();
     SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
-    switch (pivotState) {
-      case RAISING:
-        setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
-        if (currentPivotDeg <= IntakeConstants.PIVOT_RAISED_ANGLE) {
-          pivotState = PivotState.RAISED;
-        }
-        break;
-      case AGITATING:
-        double pos = Math.sin(System.currentTimeMillis() * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
-        double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
-        setPivotAngle(targetAngle);
-        break;
-      case LOWERING:
-        setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
-        if (currentPivotDeg >= IntakeConstants.PIVOT_ENGAGED_ANGLE-5) {
-          pivotState = PivotState.LOWERED;
-          setRoller(true);
-        }
-        break;
-      default:
-    }
+    
+   if (pivotState == PivotState.AGITATING){
+      double pos = Math.sin(System.currentTimeMillis() * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
+      double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
+      setPivotAngle(targetAngle);
+   }
+
+
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
   }
 
+  public void setPivotState(PivotState newState){
+    pivotState = newState;
+    switch (newState){
+      case RAISING:
+        setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
+        break;
+      case LOWERING:
+        setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
+        break;
+      case AGITATING:
+        break;
+      default:
+        break;
+    }
+  }
+
   public void toggleRoller() {
-    // if roller motor is inactive, start it
     setRoller(!rollerEnabled);
   }
 
@@ -125,7 +125,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setRollerReversed(boolean enabled) {
     if (enabled) rollerPid.setSetpoint(IntakeConstants.ROLLER_RPM_REVERSED, ControlType.kVelocity);
     else rollerMotor.set(0);
-    SmartDashboard.putBoolean("Intake/Intake Reversing", enabled);
+    SmartDashboard.putBoolean("Intake/Intake Reversed", enabled);
   }
 
   /**
@@ -173,12 +173,11 @@ public class IntakeSubsystem extends SubsystemBase {
             () -> {
               switch (pivotState) {
                 case LOWERING:
-                case LOWERED:
                   setRoller(true);
                   break;
                 default:
                   setRoller(true);
-                  pivotState = PivotState.LOWERING;
+                  setPivotState(PivotState.LOWERING);
                   break;
               }
             },
@@ -197,12 +196,11 @@ public class IntakeSubsystem extends SubsystemBase {
         () -> {
           switch (pivotState) {
             case LOWERING:
-            case LOWERED:
               toggleRoller();
               break;
             default:
               setRoller(true);
-              pivotState = PivotState.LOWERING;
+              setPivotState(PivotState.LOWERING);
               break;
           }
         });
@@ -229,11 +227,11 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command agitateCommand() {
     return runOnce(() -> {
       if (pivotState == PivotState.AGITATING) {
+        setPivotState(PivotState.LOWERING);
         setRoller(true);
-        pivotState = PivotState.LOWERING;
       }
       else {
-        pivotState = PivotState.AGITATING;
+        setPivotState(PivotState.AGITATING);
         slowRoller();
       }
     });
@@ -250,7 +248,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           setRoller(false);
-          pivotState = PivotState.RAISING;
+          setPivotState(PivotState.RAISING);
         });
   }
 
