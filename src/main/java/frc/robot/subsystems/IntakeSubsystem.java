@@ -86,13 +86,11 @@ public class IntakeSubsystem extends SubsystemBase {
       double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
       setPivotAngle(targetAngle);
    }
-
-
-    SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
   }
 
   public void setPivotState(PivotState newState){
     pivotState = newState;
+    SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
     switch (newState){
       case RAISING:
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
