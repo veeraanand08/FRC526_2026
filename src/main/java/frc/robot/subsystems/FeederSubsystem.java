@@ -27,7 +27,7 @@ public class FeederSubsystem extends SubsystemBase {
   }
 
   private IndexerState indexerState;
-  private Timer timer;
+  private final Timer timer;
 
   private final SparkMax indexerLeftMotor; // leader
   private final SparkMax indexerRightMotor; // follower
@@ -122,10 +122,7 @@ public class FeederSubsystem extends SubsystemBase {
   }
 
   public void stop() {
-    indexerLeftMotor.set(0);
-    indexerRightMotor.set(0);
-    indexerState = IndexerState.DISABLED;
-    timer.stop();
+    setIndexerState(IndexerState.DISABLED);
     kickerMotor.set(0);
   }
 

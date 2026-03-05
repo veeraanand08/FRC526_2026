@@ -98,8 +98,6 @@ public class IntakeSubsystem extends SubsystemBase {
       case LOWERING:
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
         break;
-      case AGITATING:
-        break;
       default:
         break;
     }
@@ -169,14 +167,12 @@ public class IntakeSubsystem extends SubsystemBase {
     // Inline construction of command goes here.
     return startEnd(
             () -> {
-              switch (pivotState) {
-                case LOWERING:
-                  setRoller(true);
-                  break;
-                default:
-                  setRoller(true);
-                  setPivotState(PivotState.LOWERING);
-                  break;
+              if (pivotState == PivotState.LOWERING) {
+                setRoller(true);
+              }
+              else {
+                setRoller(true);
+                setPivotState(PivotState.LOWERING);
               }
             },
             () -> setRoller(false));
@@ -192,14 +188,12 @@ public class IntakeSubsystem extends SubsystemBase {
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          switch (pivotState) {
-            case LOWERING:
-              toggleRoller();
-              break;
-            default:
-              setRoller(true);
-              setPivotState(PivotState.LOWERING);
-              break;
+          if (pivotState == PivotState.LOWERING) {
+            toggleRoller();
+          }
+          else {
+            setRoller(true);
+            setPivotState(PivotState.LOWERING);
           }
         });
   }
