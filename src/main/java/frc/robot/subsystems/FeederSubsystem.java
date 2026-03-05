@@ -76,35 +76,44 @@ public class FeederSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Kicker/Kicker RPM", kickerEncoder.getVelocity());
 
-    switch (indexerState) {
+    if (indexerState != IndexerState.DISABLED){
+      if (timer.get() > FeederConstants.INDEXER_PERIOD) {
+        setIndexerState(indexerState == IndexerState.LEFT_MOTOR_RUNNING
+            ? IndexerState.RIGHT_MOTOR_RUNNING
+            : IndexerState.LEFT_MOTOR_RUNNING);
+        timer.restart();
+      }
+    }
+  }
+
+  private void setIndexerState(IndexerState newState) {
+    indexerState = newState;
+    switch (newState) {
       case LEFT_MOTOR_RUNNING:
         indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
         indexerRightMotor.set(0);
-        if (timer.get() > FeederConstants.INDEXER_PERIOD) {
-          indexerState = IndexerState.RIGHT_MOTOR_RUNNING;
-          timer.restart();
-        }
         break;
       case RIGHT_MOTOR_RUNNING:
         indexerLeftMotor.set(0);
         indexerRightMotor.set(FeederConstants.INDEXER_POWER);
-        if (timer.get() > FeederConstants.INDEXER_PERIOD) {
-          indexerState = IndexerState.LEFT_MOTOR_RUNNING;
-          timer.restart();
-        }
         break;
-      default:
+      case DISABLED:
+        indexerLeftMotor.set(0);
+        indexerRightMotor.set(0);
+        timer.stop();
+        break;
     }
   }
 
   public void enableIndexer(boolean reversed) {
     if (reversed) {
+      setIndexerState(IndexerState.DISABLED);
       indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
       indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
     }
     else {
       timer.restart();
-      indexerState = IndexerState.LEFT_MOTOR_RUNNING;
+      setIndexerState(IndexerState.LEFT_MOTOR_RUNNING);
     }
   }
 
