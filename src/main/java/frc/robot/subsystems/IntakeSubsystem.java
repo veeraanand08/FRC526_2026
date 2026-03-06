@@ -116,6 +116,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void slowRoller() {
     rollerMotor.set(IntakeConstants.ROLLER_POWER_SLOW);
+    rollerEnabled = true;
+    SmartDashboard.putBoolean("Intake/Intake Running", false);
   }
 
   public void setRollerReversed(boolean enabled) {
@@ -188,7 +190,6 @@ public class IntakeSubsystem extends SubsystemBase {
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          System.out.println("OEIJFWEFWEFWEFPFEJWOEPFJOIWEJFIOJEFOWIJOEFWI\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
           if (pivotState == PivotState.LOWERING) {
             toggleRoller();
           }

@@ -27,7 +27,6 @@ import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.auton.AutoAlignOnce;
-import frc.robot.commands.auton.ShooterAuton;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -218,7 +217,8 @@ public class RobotContainer {
   private void configureAutoCommands() {
     NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
     NamedCommands.registerCommand("Hub Auto Align", new AutoAlignOnce(swerveSubsystem, Target.HUB));
-    NamedCommands.registerCommand("Shoot", new ShooterAuton(shooterSubsystem, feederSubsystem, false));
+    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false));
+    NamedCommands.registerCommand("Agitate", intakeSubsystem.agitateCommand());
   }
 
   /**
