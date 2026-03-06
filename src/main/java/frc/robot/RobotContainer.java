@@ -26,6 +26,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.ShooterFallback;
 import frc.robot.commands.auton.AutoAlignOnce;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
@@ -165,6 +166,7 @@ public class RobotContainer {
     Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    Command shootDefaultSpeed = new ShooterFallback(shooterSubsystem, feederSubsystem);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
     Command holdIntake = intakeSubsystem.intakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
@@ -207,9 +209,10 @@ public class RobotContainer {
       // operator controls
       operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
-      operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       operatorController.a().onTrue(agitateIntake);
       operatorController.b().whileTrue(reverseIntake);
+      operatorController.rightTrigger(0.7).whileTrue(shootDefaultSpeed);
+      operatorController.y().whileTrue(AHHH_INDEXER_STUCK_PLEASE_HELP_ME);
       operatorController.povUp().onTrue(resetIntake);
     }
   }

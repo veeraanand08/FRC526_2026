@@ -41,7 +41,7 @@ public final class Constants
     REPLAY
   }
 
-  public static final class TrenchAlignmentConstants
+  /*public static final class TrenchAlignmentConstants
   {
     public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
     public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
@@ -64,7 +64,7 @@ public final class Constants
 
     public static final double STRENGTH_EXP = 2;
 
-  }
+  }*/
 
 
 
@@ -105,7 +105,7 @@ public final class Constants
     public static final double SHOOTER_FF = 1.0 / 5676.0;
     public static final double NEGATIVE_RATE_LIMIT = 2000;
     // set speeds
-    public static final double DEFAULT_RPM = 3500;
+    public static final double DEFAULT_RPM = 3000;
     public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
     /* Shoot on the fly */
@@ -163,6 +163,7 @@ public final class Constants
     public static final double KICKER_FF = 1.0 / 5676.0;
 
     public static final double INDEXER_POWER = 0.8;
+    public static final double INDEXER_POWER_REVERSED = 0.6;
     public static final double KICKER_RPM = 5000;
     public static final double KICKER_RPM_REVERSED = -3000;
 

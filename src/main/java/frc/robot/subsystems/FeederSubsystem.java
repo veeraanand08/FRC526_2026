@@ -76,7 +76,7 @@ public class FeederSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Kicker/Kicker RPM", kickerEncoder.getVelocity());
 
-    if (indexerState != IndexerState.DISABLED){
+    if (indexerState != IndexerState.DISABLED) {
       if (timer.get() > FeederConstants.INDEXER_PERIOD) {
         setIndexerState(indexerState == IndexerState.LEFT_MOTOR_RUNNING
             ? IndexerState.RIGHT_MOTOR_RUNNING
@@ -108,8 +108,8 @@ public class FeederSubsystem extends SubsystemBase {
   public void enableIndexer(boolean reversed) {
     if (reversed) {
       setIndexerState(IndexerState.DISABLED);
-      indexerRightMotor.set(-FeederConstants.INDEXER_POWER);
-      indexerLeftMotor.set(FeederConstants.INDEXER_POWER);
+      indexerRightMotor.set(-FeederConstants.INDEXER_POWER_REVERSED);
+      indexerLeftMotor.set(-FeederConstants.INDEXER_POWER_REVERSED);
     }
     else {
       timer.restart();
