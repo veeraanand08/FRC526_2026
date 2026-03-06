@@ -77,11 +77,13 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     Translation2d robotTranslation = robotPose.get().getTranslation();
     Translation2d virtualTarget;
-    if (AutoAlign.isActive()) virtualTarget = AutoAlign.getSavedVirtualTarget();
+    boolean isActive = AutoAlign.isActive();
+
+    if (isActive) virtualTarget = AutoAlign.getSavedVirtualTarget();
     else virtualTarget = AutoAlign.getVirtualTarget(robotVelocity.get(), robotTranslation,
                                                     AutoAlign.getTargetTranslation(AutoAlign.Target.HUB, robotTranslation));
     distanceToTarget = robotTranslation.getDistance(virtualTarget);
-    isShooterReady = RobotUtil.isPoseEstimatorReady && AutoAlign.isActive();
+    isShooterReady = RobotUtil.isPoseEstimatorReady && isActive;
     leftActualRPM = leftMotorEncoder.getVelocity();
     rightActualRPM = rightMotorEncoder.getVelocity();
     SmartDashboard.putNumber("Shooter/Left Motor RPM", leftActualRPM);
@@ -108,7 +110,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public boolean hasSpunUp() {
-    return leftActualRPM > desiredRPM-100;
+    return leftActualRPM > desiredRPM - 100;
   }
 
   public void stop() {
