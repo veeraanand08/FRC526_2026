@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Mid Intake 1 RIGHT"
