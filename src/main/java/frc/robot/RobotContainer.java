@@ -25,10 +25,8 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.TrenchAlign;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
@@ -156,18 +154,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    Command driveFieldOrientedDirectAngle     = swerveSubsystem.driveFieldOriented(driveDirectAngle);
+//    Command driveFieldOrientedDirectAngle     = swerveSubsystem.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveAngularVelocity);
-    Command driveRobotOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveRobotOriented);
+//    Command driveRobotOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveRobotOriented);
     Command driveSetpointGen = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard     = swerveSubsystem.driveFieldOriented(driveDirectAngleKeyboard);
+//    Command driveFieldOrientedDirectAngleKeyboard     = swerveSubsystem.driveFieldOriented(driveDirectAngleKeyboard);
     Command driveFieldOrientedAngularVelocityKeyboard = swerveSubsystem.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngleKeyboard);
+//    Command driveSetpointGenKeyboard = swerveSubsystem.driveWithSetpointGeneratorFieldRelative(
+//        driveDirectAngleKeyboard);
     Command lockSwerve = Commands.run(swerveSubsystem::lock, swerveSubsystem)
                                  .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
+//    Command autoAlignHub = new AutoAlign(swerveSubsystem, m_driverController, Target.HUB);
     Command autoAlign = new AutoAlign(swerveSubsystem, m_driverController, Target.AUTO);
     Command shootAutoSpeed = new ShooterCommand(shooterSubsystem, feederSubsystem, false)
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
@@ -192,7 +190,7 @@ public class RobotContainer {
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
-      m_driverController.b().whileTrue(autoAlignHub);
+//      m_driverController.b().whileTrue(autoAlignHub);
       m_driverController.x().whileTrue(lockSwerve);
       // operator controls (on driver controller)
       m_driverController.leftBumper().whileTrue(holdIntake);
@@ -204,6 +202,9 @@ public class RobotContainer {
     }
     else
     {
+      // Triggers
+      new Trigger(swerveSubsystem::isNearTrench).whileTrue(new TrenchAlign(swerveSubsystem, m_driverController));
+
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
