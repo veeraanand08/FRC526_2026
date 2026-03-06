@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -38,6 +40,33 @@ public final class Constants
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public static final class TrenchAlignmentConstants
+  {
+    public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
+    public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
+    public static Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
+    public static Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
+
+    public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
+    public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
+
+    public static final double Y_P = 12.5;
+    public static final double Y_I = 0.0;
+    public static final double Y_D = 0.0;
+
+    public static final double ANGLE_P = 12.5;
+    public static final double ANGLE_I = 0.0;
+    public static final double ANGLE_D = 0.0;
+
+
+    public static final double TRENCH_ROTATION_SETPOINT = 0.0;
+
+    public static final double STRENGTH_EXP = 2;
+
+  }
+
+
 
   public static final class DrivebaseConstants
   {

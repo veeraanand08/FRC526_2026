@@ -25,10 +25,8 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.TrenchAlign;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
@@ -204,6 +202,9 @@ public class RobotContainer {
     }
     else
     {
+      // Triggers
+      new Trigger(swerveSubsystem::isNearTrench).whileTrue(new TrenchAlign(swerveSubsystem, m_driverController));
+
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
