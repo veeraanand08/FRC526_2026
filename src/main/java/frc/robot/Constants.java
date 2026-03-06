@@ -80,6 +80,11 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
+  public static final class AutoAlignConstants
+  {
+    public static final double TOLERANCE_DEG = 5.0;
+  }
+
   // public static final class AutonConstants
   // {
   //   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);

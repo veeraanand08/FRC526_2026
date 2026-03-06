@@ -25,19 +25,13 @@
         {
           "type": "named",
           "data": {
-            "name": "xWheels"
+            "name": "Hub Auto Align"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Hub Auto Align"
           }
         }
       ]

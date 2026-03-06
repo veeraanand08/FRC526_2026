@@ -188,6 +188,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
+          System.out.println("OEIJFWEFWEFWEFPFEJWOEPFJOIWEJFIOJEFOWIJOEFWI\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
           if (pivotState == PivotState.LOWERING) {
             toggleRoller();
           }
@@ -219,8 +220,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command agitateCommand() {
     return runOnce(() -> {
       if (pivotState == PivotState.AGITATING) {
+        stopRoller();
         setPivotState(PivotState.LOWERING);
-        setRoller(true);
       }
       else {
         setPivotState(PivotState.AGITATING);

@@ -9,6 +9,7 @@ import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -25,7 +26,8 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.commands.TrenchAlign;
+import frc.robot.commands.auton.AutoAlignOnce;
+import frc.robot.commands.auton.ShooterAuton;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -124,12 +126,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
-    NamedCommands.registerCommand("Hub Auto Align", new AutoAlign(swerveSubsystem, m_driverController, Target.HUB));
-    NamedCommands.registerCommand("xWheel", Commands.run(swerveSubsystem::lock, swerveSubsystem)
-                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false)
-                                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    configureAutoCommands();
 
     DriverStation.silenceJoystickConnectionWarning(true);
 
@@ -171,7 +168,6 @@ public class RobotContainer {
                                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     Command AHHH_INDEXER_STUCK_PLEASE_HELP_ME = feederSubsystem.reverse();
     Command holdIntake = intakeSubsystem.intakeCommand();
-    Command toggleIntake = intakeSubsystem.toggleIntakeCommand();
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
@@ -203,7 +199,7 @@ public class RobotContainer {
     else
     {
       // Triggers
-      new Trigger(swerveSubsystem::isNearTrench).whileTrue(new TrenchAlign(swerveSubsystem, m_driverController));
+//      new Trigger(swerveSubsystem::isNearTrench).whileTrue(new TrenchAlign(swerveSubsystem, m_driverController));
 
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
@@ -217,6 +213,12 @@ public class RobotContainer {
       operatorController.b().whileTrue(reverseIntake);
       operatorController.povUp().onTrue(resetIntake);
     }
+  }
+
+  private void configureAutoCommands() {
+    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
+    NamedCommands.registerCommand("Hub Auto Align", new AutoAlignOnce(swerveSubsystem, Target.HUB));
+    NamedCommands.registerCommand("Shoot", new ShooterAuton(shooterSubsystem, feederSubsystem, false));
   }
 
   /**

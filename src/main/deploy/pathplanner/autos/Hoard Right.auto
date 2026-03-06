@@ -31,12 +31,6 @@
         {
           "type": "named",
           "data": {
-            "name": "xWheels"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
           }
         }

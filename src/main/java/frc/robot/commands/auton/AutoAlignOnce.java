@@ -7,6 +7,7 @@ package frc.robot.commands.auton;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.RobotUtil;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
@@ -61,6 +62,6 @@ public class AutoAlignOnce extends Command {
   @Override
   public boolean isFinished() {
     // cancel command if pose estimator may not be accurate OR if bot is pointing towards hub
-    return !RobotUtil.isPoseEstimatorReady || swerveSubsystem.getHeading().equals(angleToTarget);
+    return !RobotUtil.isPoseEstimatorReady || Math.abs(swerveSubsystem.getHeading().getDegrees() - angleToTarget.getDegrees()) < Constants.AutoAlignConstants.TOLERANCE_DEG;
   }
 }
