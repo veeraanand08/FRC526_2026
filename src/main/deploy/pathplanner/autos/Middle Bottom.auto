@@ -9,6 +9,18 @@
           "data": {
             "pathName": "Middle Bottom"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Hub Auto Align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }
