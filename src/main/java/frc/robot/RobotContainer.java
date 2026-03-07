@@ -131,6 +131,7 @@ public class RobotContainer {
 
     //Set the default auto (do nothing) 
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
+    autoChooser.addOption("Hoard left", AutoBuilder.buildAuto("Hoard left"));
 
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);

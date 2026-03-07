@@ -17,6 +17,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
