@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Trench RIGHT"
+            "pathName": "Trench Left"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Intake 1 RIGHT"
+            "pathName": "Mid Intake 2 LEFT"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Intake Return RIGHT"
+            "pathName": "Mid Intake Return 2 LEFT"
           }
         },
         {
