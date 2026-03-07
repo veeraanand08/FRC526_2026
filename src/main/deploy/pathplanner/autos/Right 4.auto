@@ -5,33 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Trench LEFT"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Intake 1 LEFT"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Intake Return LEFT"
+            "pathName": "Outpost 4 RIGHT"
           }
         },
         {
