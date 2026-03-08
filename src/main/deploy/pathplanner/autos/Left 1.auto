@@ -23,15 +23,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Mid Intake Return 1 LEFT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
           }
         },
         {
