@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Trench RIGHT"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench RIGHT"
           }
         },
         {
@@ -23,15 +23,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Mid Intake Return 1  RIGHT NEW"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
           }
         },
         {

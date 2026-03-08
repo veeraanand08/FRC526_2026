@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Trench Left"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench Left"
           }
         },
         {
