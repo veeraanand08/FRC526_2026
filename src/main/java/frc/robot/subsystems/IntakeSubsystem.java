@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -36,6 +37,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private double currentPivotDeg;
   private boolean rollerEnabled;
+
+  private Timer timer;
 
   public IntakeSubsystem() {
     pivotMotor = new SparkMax(IntakeConstants.PIVOT_MOTOR, MotorType.kBrushless);
@@ -73,6 +76,8 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultString("Intake/Pivot State", pivotState.toString());
     SmartDashboard.setDefaultBoolean("Intake/Intake Running", false);
     SmartDashboard.setDefaultBoolean("Intake/Intake Reversed", false);
+
+    timer = new Timer();
   }
 
   @Override
@@ -83,15 +88,15 @@ public class IntakeSubsystem extends SubsystemBase {
   //AGITATION LOGIC
     if (pivotState == PivotState.AGITATING) {
 
-        double time = System.currentTimeMillis() / 1000.0;
+        double time = timer.get();
 
         double pos = Math.sin(time * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
 
         double upperAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE
-                - IntakeConstants.PIVOT_UPPER_AGITATION_DECAY_RATE * time;
+                -  (IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE - IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE_MIN) * (time / IntakeConstants.PIVOT_UPPER_AGITATION_DECAY_TIME);
 
         // Clamp so it never goes past the lower angle
-        upperAngle = Math.max(upperAngle, IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE);
+        upperAngle = Math.max(upperAngle, IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE_MIN);
 
         double targetAngle = upperAngle + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE - upperAngle) * pos;
 
@@ -105,10 +110,15 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putString("Intake/Pivot State", pivotState.toString());
     switch (newState){
       case RAISING:
+        timer.stop();
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
         break;
       case LOWERING:
+        timer.stop();
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
+        break;
+      case AGITATING:
+        timer.restart();
         break;
       default:
         break;

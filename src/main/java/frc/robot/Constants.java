@@ -205,11 +205,12 @@ public final class Constants
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
     public static final double PIVOT_ENGAGED_ANGLE = 140; // lowered
-    public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
+    public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; //where the upper bound starts
+    public static final double PIVOT_AGITATION_UPPER_ANGLE_MIN = 25; // where the upper bound ends
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
-    public static final double PIVOT_UPPER_AGITATION_DECAY_RATE = 0.5;
+    public static final double PIVOT_UPPER_AGITATION_DECAY_TIME = 12.0; //time it takes to decay in seconds
 
-    public static final double AGITATION_PERIOD = 4000; //Period is in nanoSeconds
+    public static final double AGITATION_PERIOD = 4; //Period is in seconds
   }
 
   public static final class VisionConstants
