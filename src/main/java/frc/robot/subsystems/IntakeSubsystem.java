@@ -80,13 +80,25 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     currentPivotDeg = getPivotDeg();
     SmartDashboard.putNumber("Intake/Pivot Degrees", currentPivotDeg);
-    
-   if (pivotState == PivotState.AGITATING){
-      double pos = Math.sin(System.currentTimeMillis() * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
-      double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
-      setPivotAngle(targetAngle);
-   }
+  //AGITATION LOGIC
+    if (pivotState == PivotState.AGITATING) {
+
+        double time = System.currentTimeMillis() / 1000.0;
+
+        double pos = Math.sin(time * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
+
+        double upperAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE
+                - IntakeConstants.PIVOT_UPPER_AGITATION_DECAY_RATE * time;
+
+        // Clamp so it never goes past the lower angle
+        upperAngle = Math.max(upperAngle, IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE);
+
+        double targetAngle = upperAngle + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE - upperAngle) * pos;
+
+        setPivotAngle(targetAngle);
+    }
   }
+  
 
   public void setPivotState(PivotState newState){
     pivotState = newState;

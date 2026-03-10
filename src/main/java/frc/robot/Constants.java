@@ -207,6 +207,7 @@ public final class Constants
     public static final double PIVOT_ENGAGED_ANGLE = 140; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
+    public static final double PIVOT_UPPER_AGITATION_DECAY_RATE = 0.5;
 
     public static final double AGITATION_PERIOD = 4000; //Period is in nanoSeconds
   }
