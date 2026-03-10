@@ -41,7 +41,7 @@ public final class Constants
     REPLAY
   }
 
-  /*public static final class TrenchAlignmentConstants
+  public static final class TrenchAlignmentConstants
   {
     public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
     public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
@@ -64,7 +64,7 @@ public final class Constants
 
     public static final double STRENGTH_EXP = 2;
 
-  }*/
+  }
 
 
 
@@ -76,8 +76,15 @@ public final class Constants
     public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
     // Maximum speed of the robot in meters per second, used to limit acceleration.
     public static final double MAX_SPEED  = 4;
+    public static final double MAX_ACCEL = 2.0;
+    public static final double MAX_ANGULAR_SPEED = 180.0;
+    public static final double MAX_ANGULAR_ACCEL = 90.0
+
+
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
+
+
   }
 
   public static final class AutoAlignConstants
