@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
@@ -54,6 +56,10 @@ import swervelib.SwerveInputStream;
  */
 @SuppressWarnings("unused")
 public class RobotContainer {
+
+  private final edu.wpi.first.wpilibj2.command.button.CommandGenericHID m_keyboard = 
+    new edu.wpi.first.wpilibj2.command.button.CommandGenericHID(2); //SIM STUFF DELETE LATER
+
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
@@ -221,6 +227,13 @@ public class RobotContainer {
 
     if (RobotBase.isSimulation()) {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
+      m_keyboard.button(1).whileTrue(holdIntake);
+        
+        // Press Button 2 (usually 'S' key) to reverse
+      m_keyboard.button(2).whileTrue(reverseIntake);
+        
+        // Press Button 3 (usually 'D' key) to agitate
+      m_keyboard.button(3).onTrue(intakeSubsystem.agitateCommand());
     }
     else {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);

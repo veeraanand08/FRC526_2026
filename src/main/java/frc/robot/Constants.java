@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,10 +42,10 @@ public final class Constants
 
   /*public static final class TrenchAlignmentConstants
   {
-    public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
-    public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
-    public static Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
-    public static Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
+    public static final Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
+    public static final Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
+    public static final Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
+    public static final Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
 
     public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
     public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
@@ -174,6 +172,9 @@ public final class Constants
   
   public static final class IntakeConstants
   {
+    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double ROLLER_MOI = 0.001; // random number i choose whoopsie
+
     public static final int ROLLER_MOTOR = 14;
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_RPM = 5000;

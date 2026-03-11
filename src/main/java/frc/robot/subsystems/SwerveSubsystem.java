@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -58,7 +57,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.Rotation;
 
 public class SwerveSubsystem extends SubsystemBase
 {
@@ -68,7 +66,7 @@ public class SwerveSubsystem extends SubsystemBase
   private final SwerveDrive swerveDrive;
   private AHRS gyro;
 
-  private Translation2d trenchTarget; 
+  //private Translation2d trenchTarget; 
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -77,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
    public SwerveSubsystem(File directory)
   {
-    trenchTarget = Translation2d.kZero;
+    //trenchTarget = Translation2d.kZero;
     boolean blueAlliance = !RobotUtil.isRedAlliance();
     Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(1),
                                                                       Meter.of(4)),
@@ -115,7 +113,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
-    trenchTarget = Translation2d.kZero;
+    //trenchTarget = Translation2d.kZero;
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
                                   DrivebaseConstants.MAX_SPEED,
