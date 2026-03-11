@@ -39,6 +39,7 @@ import frc.robot.Constants.DrivebaseConstants;
 // import frc.robot.Constants.TrenchAlignmentConstants;
 import frc.robot.RobotUtil;
 import org.json.simple.parser.ParseException;
+import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -158,6 +159,8 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
+    Logger.recordOutput("Drive/Robot Pose", getPose());
+
     if (gyro.getPitch() > VisionConstants.MAX_TILT_DEG &&
         gyro.getRoll() > VisionConstants.MAX_TILT_DEG)
     {
@@ -293,9 +296,9 @@ public class SwerveSubsystem extends SubsystemBase
                                                    DriveFeedforwards.zeros(swerveDrive.getModules().length)));
     AtomicReference<Double> previousTime = new AtomicReference<>();
 
-    return startRun(() -> previousTime.set(Timer.getFPGATimestamp()),
+    return startRun(() -> previousTime.set(Timer.getTimestamp()),
                     () -> {
-                      double newTime = Timer.getFPGATimestamp();
+                      double newTime = Timer.getTimestamp();
                       SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
                                                                                       robotRelativeChassisSpeed.get(),
                                                                                       newTime - previousTime.get());

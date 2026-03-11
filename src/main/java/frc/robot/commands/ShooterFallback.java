@@ -6,13 +6,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class ShooterFallback extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ShooterSubsystem shooterSubsystem;
-  private final FeederSubsystem feederSubsystem;
+  private final Shooter shooterSubsystem;
+  private final Feeder feederSubsystem;
   private boolean startShoot;
 
   /**
@@ -22,7 +22,7 @@ public class ShooterFallback extends Command {
    * @param shooterSubsystem The shooter subsystem used by this command.
    * @param feederSubsystem The feeder subsystem used by this command.
    */
-  public ShooterFallback(ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem)
+  public ShooterFallback(Shooter shooterSubsystem, Feeder feederSubsystem)
   {
     this.shooterSubsystem = shooterSubsystem;
     this.feederSubsystem = feederSubsystem;
@@ -39,7 +39,7 @@ public class ShooterFallback extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooterSubsystem.setAngularVelocity(ShooterConstants.DEFAULT_RPM);
+    shooterSubsystem.setAngularVelocity(ShooterConstants.DEFAULT_RPM.get());
     if (!startShoot && shooterSubsystem.hasSpunUp()) {
       startShoot = true;
       feederSubsystem.enableKicker();

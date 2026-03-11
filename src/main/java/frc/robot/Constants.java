@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import swervelib.math.Matter;
 
 /**
@@ -105,7 +106,8 @@ public final class Constants
     public static final double SHOOTER_FF = 1.0 / 5676.0;
     public static final double NEGATIVE_RATE_LIMIT = 2000;
     // set speeds
-    public static final double DEFAULT_RPM = 3000;
+    public static final LoggedNetworkNumber DEFAULT_RPM =
+            new LoggedNetworkNumber("/Tuning/Shooter/RPM", 3000);
     public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
     /* Shoot on the fly */
@@ -176,7 +178,7 @@ public final class Constants
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
-    public static final double ROLLER_POWER_SLOW = 0.75;
+    public static final double ROLLER_RPM_SLOW = 4000;
     public static final double ROLLER_P = 0.0003;
     public static final double ROLLER_I = 0;
     public static final double ROLLER_D = 0;

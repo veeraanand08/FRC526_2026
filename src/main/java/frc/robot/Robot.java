@@ -97,7 +97,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     RobotUtil.shiftTimer.end();
-    m_robotContainer.getIntakeSubsystem().setPivotBrake(false);
+    m_robotContainer.intakeSubsystem.setPivotBrake(false);
   }
 
   @Override
@@ -123,7 +123,7 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     RobotUtil.shiftTimer.start();
 
-    m_robotContainer.getIntakeSubsystem().setPivotBrake(true);
+    m_robotContainer.intakeSubsystem.setPivotBrake(true);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -143,7 +143,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     RobotUtil.shiftTimer.end();
-    m_robotContainer.getIntakeSubsystem().setPivotBrake(true);
+    m_robotContainer.intakeSubsystem.setPivotBrake(true);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     SignalLogger.enableAutoLogging(true);

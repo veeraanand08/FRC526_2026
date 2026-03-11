@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotUtil;
+import frc.robot.commands.AutoAlign;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,11 +51,6 @@ public class Vision extends SubsystemBase {
       disconnectedAlerts[i] =
           new Alert(
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
-    }
-
-    if (Constants.currentMode == Constants.Mode.SIM) {
-      // pose estimator doesn't rely on vision in sim
-      RobotUtil.isPoseEstimatorReady = true;
     }
   }
 
@@ -177,8 +173,8 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
-
-    SmartDashboard.putBoolean("AutoAlign/Pose Estimator Ready", RobotUtil.isPoseEstimatorReady);
+    Logger.recordOutput("Vision/Pose Estimator Ready", RobotUtil.isPoseEstimatorReady);
+    Logger.recordOutput("AutoAlign/Current Target", AutoAlign.getCurrentTarget().toString());
   }
 
   @FunctionalInterface
