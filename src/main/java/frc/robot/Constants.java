@@ -149,6 +149,9 @@ public final class Constants
 
   public static final class FeederConstants
   {
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
+
     public static final int LEFT_INDEXER_MOTOR = 18;
     public static final int RIGHT_INDEXER_MOTOR = 19;
     public static final int KICKER_MOTOR = 17;
