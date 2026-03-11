@@ -92,6 +92,9 @@ public final class Constants
 
   public static final class ShooterConstants
   {
+    public static final double SHOOTER_MOI = 0.001;
+    public static final double SHOOTER_GEAR_RATIO = 1.0;
+
     public static final boolean TUNING_MODE_ACTIVE = false;
 
     public static final int LEFT_SHOOTER_MOTOR = 15;

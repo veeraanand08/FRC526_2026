@@ -229,11 +229,11 @@ public class RobotContainer {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
       m_keyboard.button(1).whileTrue(holdIntake);
         
-        // Press Button 2 (usually 'S' key) to reverse
       m_keyboard.button(2).whileTrue(reverseIntake);
         
-        // Press Button 3 (usually 'D' key) to agitate
       m_keyboard.button(3).onTrue(intakeSubsystem.agitateCommand());
+
+      m_keyboard.button(4).whileTrue(shootAutoSpeed);
     }
     else {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
