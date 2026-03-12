@@ -2,13 +2,13 @@ package frc.robot.subsystems.sensors;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
-import frc.robot.Constants.LaserCanConstants;
+import frc.robot.Constants.FeederConstants;
 
 public class BallSensorIOLaserCan implements BallSensorIO {
     private final LaserCan laserCan;
 
     public BallSensorIOLaserCan() {
-        laserCan = new LaserCan(LaserCanConstants.KICKER_LASERCAN);
+        laserCan = new LaserCan(FeederConstants.BALL_SENSOR);
         try {
             laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
             laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 4, 4));

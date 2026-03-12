@@ -95,8 +95,4 @@ public class IntakeIOSim implements IntakeIO {
     public void stopRoller() {
         setRoller(0);
     }
-
-    public void setPivotBrake(boolean brake) {}
-
-
 }

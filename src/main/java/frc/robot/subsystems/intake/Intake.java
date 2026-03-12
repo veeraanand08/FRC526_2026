@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
@@ -20,8 +21,12 @@ public class Intake extends SubsystemBase {
 
   private boolean rollerEnabled;
 
+  private final Timer agitationTimer;
+
   public Intake(IntakeIO io) {
     this.io = io;
+
+    agitationTimer = new Timer();
 
     Logger.recordOutput("Intake/Pivot State", pivotState.toString());
     Logger.recordOutput("Intake/Intake Running", rollerEnabled);
@@ -34,8 +39,18 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
 
     if (pivotState == PivotState.AGITATING){
-      double pos = Math.sin(System.currentTimeMillis() * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
-      double targetAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE-IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE) * pos;
+      double time = agitationTimer.get();
+
+      double pos = Math.sin(time * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
+
+      double upperAngle = IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE
+              -  (IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE - IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE_MIN) * (time / IntakeConstants.PIVOT_UPPER_AGITATION_DECAY_TIME);
+
+      // Clamp so it never goes past the lower angle
+      upperAngle = Math.max(upperAngle, IntakeConstants.PIVOT_AGITATION_UPPER_ANGLE_MIN);
+
+      double targetAngle = upperAngle + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE - upperAngle) * pos;
+
       setPivotAngle(targetAngle);
     }
   }
@@ -45,10 +60,15 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Pivot State", pivotState.toString());
     switch (newState){
       case RAISING:
+        agitationTimer.stop();
         setPivotAngle(IntakeConstants.PIVOT_RAISED_ANGLE);
         break;
       case LOWERING:
+        agitationTimer.stop();
         setPivotAngle(IntakeConstants.PIVOT_ENGAGED_ANGLE);
+        break;
+      case AGITATING:
+        agitationTimer.restart();
         break;
       default:
         break;
