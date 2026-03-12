@@ -84,45 +84,7 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "toggleIntake",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 2.569646569646568,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Hub Auto Align"
-              }
-            },
-            {
-              "type": "parallel",
-              "data": {
-                "commands": [
-                  {
-                    "type": "wait",
-                    "data": {
-                      "waitTime": 1.0
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "Agitate"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 2.5,
