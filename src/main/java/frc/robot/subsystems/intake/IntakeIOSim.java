@@ -3,38 +3,43 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeIOSim implements IntakeIO {
+    private final SingleJointedArmSim pivotSim;
+    private final FlywheelSim rollerSim;
+
+    private final PIDController pivotPID;
+    private final PIDController rollerPID;
+
+    private double pivotVolts;
+    private double rollerVolts;
+    private boolean isClosedLoopPivot;
+    private boolean isClosedLoopRoller;
 
 
-    private final SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1),
-        IntakeConstants.PIVOT_GEAR_RATIO,
-        SingleJointedArmSim.estimateMOI(0.5, 2),
-        0.5,
-        0,
-        Math.toRadians(145.0),
-        false,
-        0);
+    public IntakeIOSim() {
+        pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1),
+                IntakeConstants.PIVOT_GEAR_RATIO,
+                SingleJointedArmSim.estimateMOI(0.5, 2),
+                0.5,
+                0,
+                Math.toRadians(145.0),
+                true,
+                0);
 
-    private final FlywheelSim rollerSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), IntakeConstants.ROLLER_MOI, IntakeConstants.ROLLER_GEAR_RATIO), 
-    DCMotor.getNEO(1)
-    );
+        rollerSim = new FlywheelSim(
+                LinearSystemId.createFlywheelSystem(
+                        DCMotor.getNEO(1),
+                        IntakeConstants.ROLLER_MOI,
+                        IntakeConstants.ROLLER_GEAR_RATIO),
+                DCMotor.getNEO(1));
 
-    private final PIDController pivotPID = new PIDController(IntakeConstants.PIVOT_P * 125.0 , IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
-    private final PIDController rollerPID = new PIDController(IntakeConstants.ROLLER_P * 10.0, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D);
-
-
-    private double pivotVolts = 0.0;
-    private double rollerVolts = 0.0;
-    private boolean isClosedLoopPivot = false;
-    private boolean isClosedLoopRoller = false;
-
-
-    public IntakeIOSim(){
+        pivotPID = new PIDController(IntakeConstants.PIVOT_P * 125.0 , IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
+        rollerPID = new PIDController(IntakeConstants.ROLLER_P * 10.0, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D);
     }
 
     public void updateInputs(IntakeIOInputs inputs) {

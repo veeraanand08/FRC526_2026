@@ -7,18 +7,26 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOSim implements ShooterIO {
+    private final FlywheelSim shooterSim;
 
-    private final FlywheelSim shooterSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(DCMotor.getNEO(2), ShooterConstants.SHOOTER_MOI, ShooterConstants.SHOOTER_GEAR_RATIO), 
-    DCMotor.getNEO(1)
-    );
-
-    private PIDController shooterPID = new PIDController(ShooterConstants.SHOOTER_P * 125.0, ShooterConstants.SHOOTER_I, ShooterConstants.SHOOTER_D);
+    private final PIDController shooterPID;
     
-    private double shooterVolts = 0.0;
-    private boolean isClosedLoopShooter = false;
+    private double shooterVolts;
+    private boolean isClosedLoopShooter;
 
-    public ShooterIOSim(){}
+    public ShooterIOSim() {
+        shooterSim = new FlywheelSim(
+                LinearSystemId.createFlywheelSystem(
+                        DCMotor.getNEO(2),
+                        ShooterConstants.SHOOTER_MOI,
+                        ShooterConstants.SHOOTER_GEAR_RATIO),
+                DCMotor.getNEO(1));
+
+        shooterPID = new PIDController(
+                ShooterConstants.SHOOTER_P * 125.0,
+                ShooterConstants.SHOOTER_I,
+                ShooterConstants.SHOOTER_D);
+    }
 
     public void updateInputs(ShooterIOInputs inputs) {
         if (isClosedLoopShooter){
@@ -32,8 +40,6 @@ public class ShooterIOSim implements ShooterIO {
         inputs.leaderAppliedVolts = shooterVolts;
         inputs.leaderCurrentAmps = shooterSim.getCurrentDrawAmps();
         inputs.leaderCurrentRPM = shooterSim.getAngularVelocityRPM();
-
-
     }
 
     public void set(double speed) {

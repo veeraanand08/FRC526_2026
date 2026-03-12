@@ -65,16 +65,7 @@ public final class Constants
 
   }*/
 
-  public static final class LaserCanConstants
-  {
-    public static final int KICKER_LASERCAN = 4;
-
-    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; //in mm
-  }
-
-
-
-  public static final class DrivebaseConstants
+  public static final class DriveConstants
   {
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
@@ -102,8 +93,6 @@ public final class Constants
     public static final double SHOOTER_MOI = 0.001;
     public static final double SHOOTER_GEAR_RATIO = 1.0;
 
-    public static final boolean TUNING_MODE_ACTIVE = false;
-
     public static final int LEFT_SHOOTER_MOTOR = 15;
     public static final int RIGHT_SHOOTER_MOTOR = 16;
     public static final int SHOOTER_CURRENT_LIMIT = 60;
@@ -119,7 +108,6 @@ public final class Constants
     public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
     /* Shoot on the fly */
-    public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 3;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
@@ -156,9 +144,6 @@ public final class Constants
 
   public static final class FeederConstants
   {
-    public static final double ROLLER_MOI = 0.001;
-    public static final double ROLLER_GEAR_RATIO = 1.0;
-
     public static final int LEFT_INDEXER_MOTOR = 18;
     public static final int RIGHT_INDEXER_MOTOR = 19;
     public static final int KICKER_MOTOR = 17;
@@ -169,6 +154,10 @@ public final class Constants
     public static final boolean LEFT_INDEXER_MOTOR_REVERSED = false;
     public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = true;
     public static final boolean KICKER_MOTOR_REVERSED = false;
+
+    public static final double INDEXER_MOI = 0.001;
+    public static final double KICKER_MOI = 0.001;
+    public static final double KICKER_GEAR_RATIO = 1.0;
 
     public static final double KICKER_P = 0.0004;
     public static final double KICKER_I = 0;
@@ -181,15 +170,18 @@ public final class Constants
     public static final double KICKER_RPM_REVERSED = -3000;
 
     public static final double INDEXER_PERIOD = 1.0;
+
+    public static final int BALL_SENSOR = 20;
+    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; // mm
+    public static final int LOW_BPS = 3;
   }
   
   public static final class IntakeConstants
   {
-    public static final double ROLLER_GEAR_RATIO = 1.0;
-    public static final double ROLLER_MOI = 0.001; // random number i choose whoopsie
-
     public static final int ROLLER_MOTOR = 14;
     public static final int ROLLER_CURRENT_LIMIT = 60;
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
     public static final double ROLLER_RPM_SLOW = 4000;

@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.DriveConstants;
 // import frc.robot.Constants.TrenchAlignmentConstants;
 import frc.robot.RobotUtil;
 import org.json.simple.parser.ParseException;
@@ -87,7 +87,7 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try
     {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(DrivebaseConstants.MAX_SPEED, startingPose);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(DriveConstants.MAX_SPEED, startingPose);
     } catch (Exception e)
     {
       throw new RuntimeException(e);
@@ -116,7 +116,7 @@ public class SwerveSubsystem extends SubsystemBase
     //trenchTarget = Translation2d.kZero;
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
-                                  DrivebaseConstants.MAX_SPEED,
+                                  DriveConstants.MAX_SPEED,
                                   new Pose2d(new Translation2d(Meter.of(0), Meter.of(0)),
                                              Rotation2d.fromDegrees(0)));
   }
@@ -615,7 +615,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         headingX,
                                                         headingY,
                                                         getHeading().getRadians(),
-                                                        DrivebaseConstants.MAX_SPEED);
+                                                        DriveConstants.MAX_SPEED);
   }
 
   /**
@@ -635,7 +635,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
-                                                        DrivebaseConstants.MAX_SPEED);
+                                                        DriveConstants.MAX_SPEED);
   }
 
   /**
@@ -653,7 +653,7 @@ public class SwerveSubsystem extends SubsystemBase
             MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),
             angle.getRadians(),
             getHeading().getRadians(),
-            DrivebaseConstants.MAX_SPEED
+            DriveConstants.MAX_SPEED
         );
   }
 
