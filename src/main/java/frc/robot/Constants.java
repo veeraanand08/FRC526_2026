@@ -65,6 +65,13 @@ public final class Constants
 
   }*/
 
+  public static final class LaserCanConstants
+  {
+    public static final int KICKER_LASERCAN = 4;
+
+    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; //in mm
+  }
+
 
 
   public static final class DrivebaseConstants

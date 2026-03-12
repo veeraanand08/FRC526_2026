@@ -10,7 +10,7 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeIOSim implements IntakeIO {
 
 
-    private final SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getNeo550(1),
+    private final SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1),
         IntakeConstants.PIVOT_GEAR_RATIO,
         SingleJointedArmSim.estimateMOI(0.5, 2),
         0.5,

@@ -4,10 +4,10 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface BallSensorIO {
     @AutoLog
-    public static class FeederIOInputs {
-        public double distanceMeters = 0.0;
+    public static class BallSensorIOInputs {
+        public double distanceMiliMeters = 0.0;
         public boolean valid = false;
     }
 
-    public default void updateInputs(FeederIOInputs inputs) {}
+    public default void updateInputs(BallSensorIOInputs inputs) {}
 }
