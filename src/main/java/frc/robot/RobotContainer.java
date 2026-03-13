@@ -8,8 +8,8 @@ import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -28,7 +28,10 @@ import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ShooterFallback;
 import frc.robot.commands.auton.AutoAlignOnce;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import swervelib.SwerveInputStream;
@@ -218,10 +221,14 @@ public class RobotContainer {
   }
 
   private void configureAutoCommands() {
-    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
-    NamedCommands.registerCommand("Hub Auto Align", new AutoAlignOnce(swerveSubsystem, Target.HUB));
-    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false));
-    NamedCommands.registerCommand("Agitate", intakeSubsystem.agitateCommand());
+    //NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
+    //NamedCommands.registerCommand("Hub Auto Align", new AutoAlignOnce(swerveSubsystem, Target.HUB));
+    //NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false));
+    //NamedCommands.registerCommand("Agitate", intakeSubsystem.agitateCommand());
+    new EventTrigger("toggleIntake").onTrue(intakeSubsystem.intakeCommand());
+    new EventTrigger("shoot").onTrue(new ShooterCommand(shooterSubsystem, feederSubsystem, false));
+    new EventTrigger("agitate").onTrue(intakeSubsystem.agitateCommand());
+    new EventTrigger("autoAlign").onTrue(new AutoAlignOnce(swerveSubsystem, Target.HUB));
   }
 
   /**
