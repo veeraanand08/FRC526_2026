@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.sensors;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FeederConstants;
@@ -17,14 +18,14 @@ public class BallSensor extends SubsystemBase {
   private final BallSensorIO io;
   private final BallSensorIOInputsAutoLogged inputs = new BallSensorIOInputsAutoLogged();
 
-  private int framesChanged;
+  private final Debouncer debouncer;
   private boolean ballInFront;
 
   private final Deque<Double> currentBalls;
 
   public BallSensor(BallSensorIO io) {
     this.io = io;
-    framesChanged = 0;
+    debouncer = new Debouncer(0.06);
     ballInFront = false;
     currentBalls = new ArrayDeque<>();
 
@@ -38,24 +39,15 @@ public class BallSensor extends SubsystemBase {
     Logger.processInputs("BallSensor", inputs);
 
     double currentTimeSecs = Timer.getTimestamp();
+    boolean statusChanged = ballInFront;
+
     if (inputs.valid) {
-      if (inputs.distanceMillimeters < FeederConstants.MAXIMUM_BALL_IN_FRONT_DISTANCE != ballInFront) {
-        framesChanged++;
-      }
-      else {
-        framesChanged = 0;
-      }
+      ballInFront = debouncer.calculate(inputs.distanceMillimeters < FeederConstants.MAXIMUM_BALL_IN_FRONT_DISTANCE);
+      statusChanged = statusChanged != ballInFront;
     }
-    
-
-    if (framesChanged > 3){
-      framesChanged = 0;
-      ballInFront = !ballInFront;
-      if (ballInFront) {
-        currentBalls.add(currentTimeSecs);
-      }
+    if (statusChanged && !ballInFront) {
+      currentBalls.add(currentTimeSecs);
     }
-
     
     while (!currentBalls.isEmpty() && currentBalls.peek() < currentTimeSecs - 1.0) {
       currentBalls.poll();
