@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.RobotUtil;
+import frc.robot.util.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class AutoAlign extends Command {

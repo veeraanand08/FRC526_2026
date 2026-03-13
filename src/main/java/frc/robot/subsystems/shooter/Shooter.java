@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.RobotUtil;
+import frc.robot.util.RobotUtil;
 import frc.robot.commands.AutoAlign;
 import org.littletonrobotics.junction.Logger;
 

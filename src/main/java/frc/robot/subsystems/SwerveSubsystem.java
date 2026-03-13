@@ -36,7 +36,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 // import frc.robot.Constants.TrenchAlignmentConstants;
-import frc.robot.RobotUtil;
+import frc.robot.util.RobotUtil;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveController;
