@@ -25,7 +25,7 @@ public class BallSensor extends SubsystemBase {
 
   public BallSensor(BallSensorIO io) {
     this.io = io;
-    debouncer = new Debouncer(0.06);
+    debouncer = new Debouncer(0.05);
     ballInFront = false;
     currentBalls = new ArrayDeque<>();
 
