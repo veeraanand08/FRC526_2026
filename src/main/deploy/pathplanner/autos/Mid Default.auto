@@ -5,27 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Depot Left"
+            "pathName": "Mid Default"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Hub Auto Align"
+            "name": "autoAlign"
           }
         },
         {
@@ -35,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "shoot"
                 }
               },
               {
@@ -45,13 +33,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.0
+                        "waitTime": 2.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Agitate"
+                        "name": "agitate"
                       }
                     }
                   ]

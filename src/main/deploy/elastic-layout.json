@@ -185,7 +185,7 @@
           },
           {
             "title": "FMSInfo",
-            "x": 896.0,
+            "x": 1280.0,
             "y": 384.0,
             "width": 384.0,
             "height": 128.0,
@@ -227,6 +227,53 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Current Shift",
+            "x": 1152.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Match/Current Shift",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Hub Active",
+            "x": 896.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Match/Hub Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shift Timer",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Match/Shift Timer",
+              "period": 0.033,
+              "data_type": "double",
+              "time_display_mode": "Seconds Only",
+              "red_start_time": 5,
+              "yellow_start_time": 10
             }
           }
         ]

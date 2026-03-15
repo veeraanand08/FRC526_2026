@@ -7,72 +7,86 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Trench RIGHT"
+            "pathName": "Left Cycle 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "toggleIntake"
+            "name": "autoAlign"
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Intake 1 RIGHT"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggleIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Intake Return 1 RIGHT"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Hub Auto Align"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "shoot"
                 }
               },
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.0
+                        "waitTime": 1.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Agitate"
+                        "name": "autoAlign"
                       }
                     }
                   ]
                 }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Cycle 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
               },
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "Outpost 3 RIGHT"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "autoAlign"
+                      }
+                    }
+                  ]
                 }
               }
             ]
