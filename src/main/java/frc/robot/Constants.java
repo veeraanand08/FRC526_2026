@@ -70,7 +70,7 @@ public final class Constants
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(3)), ROBOT_MASS);
-    public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms spark max velocity lag
     // Maximum speed of the robot in meters per second, used to limit acceleration.
     public static final double MAX_SPEED  = 4;
     // Hold time on motor brakes when disabled
@@ -157,7 +157,7 @@ public final class Constants
 
     public static final double INDEXER_MOI = 0.001;
     public static final double KICKER_MOI = 0.001;
-    public static final double KICKER_GEAR_RATIO = 1.0;
+    public static final double KICKER_GEAR_RATIO = 1.0; // adjust
 
     public static final double KICKER_P = 0.0004;
     public static final double KICKER_I = 0;
@@ -165,13 +165,13 @@ public final class Constants
     public static final double KICKER_FF = 1.0 / 5676.0;
 
     public static final double INDEXER_POWER = 0.8;
-    public static final double INDEXER_POWER_REVERSED = 0.6;
+    public static final double INDEXER_POWER_REVERSED = 0.7;
     public static final double KICKER_RPM = 5000;
-    public static final double KICKER_RPM_REVERSED = -3000;
+    public static final double KICKER_RPM_REVERSED = -3500;
 
     public static final double INDEXER_PERIOD = 1.0;
 
-    public static final int BALL_SENSOR = 20;
+    public static final int BALL_SENSOR_LASERCAN = 20;
     public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; // mm
     public static final int LOW_BPS = 3;
   }
@@ -181,7 +181,7 @@ public final class Constants
     public static final int ROLLER_MOTOR = 14;
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_MOI = 0.001;
-    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0; // adjust
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
     public static final double ROLLER_RPM_SLOW = 4000;
@@ -195,8 +195,10 @@ public final class Constants
     
     public static final int PIVOT_MOTOR = 13;
     public static final int PIVOT_CURRENT_LIMIT = 40;
+    public static final double PIVOT_ENCODER_OFFSET = 0.0; // adjust
     public static final double PIVOT_GEAR_RATIO = 75;
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
+    public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
     public static final double PIVOT_P = 0.008;
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
@@ -206,7 +208,7 @@ public final class Constants
     public static final double PIVOT_FF_COS_RATIO = PIVOT_GEAR_RATIO / 360;
 
     // MAXMotion
-    public static final double PIVOT_CRUISE_VELOCITY = 30; // RPM
+    public static final double PIVOT_CRUISE_VELOCITY = 30; // degrees per sec
     public static final double PIVOT_MAX_ACCEL = 10; // RPM/s
     public static final double ALLOWED_PROFILE_ERROR = 1;
     
@@ -224,8 +226,8 @@ public final class Constants
   public static final class VisionConstants
   {
     // Camera names, must match names configured on coprocessor
-    public static final String CAMERA_0_NAME = "limelight-left";
-    public static final String CAMERA_1_NAME = "limelight-right";
+    public static final String CAMERA_0_NAME = "Camera_Left";
+    public static final String CAMERA_1_NAME = "Camera_Right";
 
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)

@@ -1,56 +1,60 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeIOSparkMax implements IntakeIO {
     private final SparkMax pivot;
     private final SparkMax roller;
     private final SparkMaxConfig pivotConfig;
 
-    private final RelativeEncoder pivotEncoder;
+    private final AbsoluteEncoder pivotEncoder;
     private final RelativeEncoder rollerEncoder;
     private final SparkClosedLoopController pivotPid;
     private final SparkClosedLoopController rollerPid;
 
     public IntakeIOSparkMax() {
-        pivot = new SparkMax(Constants.IntakeConstants.PIVOT_MOTOR, SparkLowLevel.MotorType.kBrushless);
-        roller = new SparkMax(Constants.IntakeConstants.ROLLER_MOTOR, SparkLowLevel.MotorType.kBrushless);
+        pivot = new SparkMax(IntakeConstants.PIVOT_MOTOR, SparkLowLevel.MotorType.kBrushless);
+        roller = new SparkMax(IntakeConstants.ROLLER_MOTOR, SparkLowLevel.MotorType.kBrushless);
         pivotConfig = new SparkMaxConfig();
         SparkMaxConfig rollerConfig = new SparkMaxConfig();
 
-        pivotConfig.inverted(Constants.IntakeConstants.PIVOT_REVERSED);
+        pivotConfig.inverted(IntakeConstants.PIVOT_REVERSED);
         pivotConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
-        pivotConfig.smartCurrentLimit(Constants.IntakeConstants.PIVOT_CURRENT_LIMIT);
-        pivotConfig.encoder.positionConversionFactor(Constants.IntakeConstants.PIVOT_ROT_TO_DEG);
-        pivotConfig.closedLoop.pid(Constants.IntakeConstants.PIVOT_P, Constants.IntakeConstants.PIVOT_I, Constants.IntakeConstants.PIVOT_D)
+        pivotConfig.smartCurrentLimit(IntakeConstants.PIVOT_CURRENT_LIMIT);
+        pivotConfig.absoluteEncoder
+                .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG)
+                .velocityConversionFactor(IntakeConstants.PIVOT_RPM_TO_DEG_PER_SEC)
+                .zeroOffset(IntakeConstants.PIVOT_ENCODER_OFFSET);
+        pivotConfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D)
                 .feedForward/*.kS(IntakeConstants.PIVOT_FF_S)*/
-                            .kV(Constants.IntakeConstants.PIVOT_FF_V);
+                            .kV(IntakeConstants.PIVOT_FF_V);
                             // .kCos(IntakeConstants.PIVOT_FF_COS)
                             // .kCosRatio(IntakeConstants.PIVOT_FF_COS_RATIO);
-        pivotConfig.closedLoop.maxMotion.cruiseVelocity(Constants.IntakeConstants.PIVOT_CRUISE_VELOCITY)
-                .maxAcceleration(Constants.IntakeConstants.PIVOT_MAX_ACCEL)
-                .allowedProfileError(Constants.IntakeConstants.ALLOWED_PROFILE_ERROR);
+        pivotConfig.closedLoop.maxMotion
+                .cruiseVelocity(IntakeConstants.PIVOT_CRUISE_VELOCITY)
+                .maxAcceleration(IntakeConstants.PIVOT_MAX_ACCEL)
+                .allowedProfileError(IntakeConstants.ALLOWED_PROFILE_ERROR);
 
-        rollerConfig.inverted(Constants.IntakeConstants.ROLLER_REVERSED);
+        rollerConfig.inverted(IntakeConstants.ROLLER_REVERSED);
         rollerConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
-        rollerConfig.smartCurrentLimit(Constants.IntakeConstants.ROLLER_CURRENT_LIMIT);
-        rollerConfig.closedLoop.pid(Constants.IntakeConstants.ROLLER_P, Constants.IntakeConstants.ROLLER_I, Constants.IntakeConstants.ROLLER_D)
-                .feedForward.kV(Constants.IntakeConstants.ROLLER_FF);
+        rollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT);
+        rollerConfig.closedLoop
+                .pid(IntakeConstants.ROLLER_P, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D)
+                .feedForward.kV(IntakeConstants.ROLLER_FF);
 
         pivot.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         roller.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        pivotEncoder = pivot.getEncoder();
-        pivotEncoder.setPosition(0);
+        pivotEncoder = pivot.getAbsoluteEncoder();
         rollerEncoder = roller.getEncoder();
         pivotPid = pivot.getClosedLoopController();
         rollerPid = roller.getClosedLoopController();

@@ -8,7 +8,7 @@ public class BallSensorIOLaserCan implements BallSensorIO {
     private final LaserCan laserCan;
 
     public BallSensorIOLaserCan() {
-        laserCan = new LaserCan(FeederConstants.BALL_SENSOR);
+        laserCan = new LaserCan(FeederConstants.BALL_SENSOR_LASERCAN);
         try {
             laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
             laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 4, 4));

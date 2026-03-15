@@ -35,14 +35,14 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.sensors.BallSensor;
+import frc.robot.subsystems.sensors.BallSensorIO;
+import frc.robot.subsystems.sensors.BallSensorIOLaserCan;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import swervelib.SwerveInputStream;
 
@@ -64,7 +64,9 @@ public class RobotContainer {
   
   private final CommandXboxController operatorController =
       new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
-  
+
+  private final BallSensor ballSensor;
+
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
   private final Vision visionSubsystem;
@@ -133,12 +135,13 @@ public class RobotContainer {
   public RobotContainer() {
     switch (currentMode) {
       case REAL:
+        ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading,
-                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
-                new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
-                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
+                  new VisionIO() {});
+//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0));
+//                new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
+//                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
         shooterSubsystem = new Shooter(
                 new ShooterIOSparkMax(),
                 swerveSubsystem::getPose,
@@ -147,6 +150,7 @@ public class RobotContainer {
         intakeSubsystem = new Intake(new IntakeIOSparkMax());
         break;
       case SIM:
+        ballSensor = new BallSensor(new BallSensorIO() {});
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
@@ -164,7 +168,8 @@ public class RobotContainer {
         feederSubsystem = new Feeder(new FeederIOSim());
         intakeSubsystem = new Intake(new IntakeIOSim());
         break;
-      default:
+      default: // REPLAY
+        ballSensor = new BallSensor(new BallSensorIO() {});
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
                 new VisionIO() {},

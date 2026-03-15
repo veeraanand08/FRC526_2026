@@ -158,12 +158,6 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
     Logger.recordOutput("Drive/Robot Pose", getPose());
-
-    if (gyro.getPitch() > VisionConstants.MAX_TILT_DEG &&
-        gyro.getRoll() > VisionConstants.MAX_TILT_DEG)
-    {
-      RobotUtil.isPoseEstimatorReady = false;
-    };
   }
 
   @Override
