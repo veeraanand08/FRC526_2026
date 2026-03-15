@@ -78,6 +78,12 @@ public class IntakeIOSim implements IntakeIO {
         rollerVolts = speed * 12.0;
     }
 
+    public void setPivotSetpoint(double deg) {
+        isClosedLoopPivot = true;
+        pivotPID.setSetpoint(Math.toRadians(deg));
+    }
+
+    // at some point we'll make this use a profiled pid controller
     public void setPivotDeg(double deg) {
         isClosedLoopPivot = true;
         pivotPID.setSetpoint(Math.toRadians(deg));

@@ -98,11 +98,12 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Set the pivot motor speed according to a given angle. 
-   * @param angle : Angle (in degrees) to rotate.
+   * Set the pivot motor's setpoint to a given angle.
+   * @param angle Angle (in degrees) to rotate.
    */
   public void setPivotAngle(double angle) {
-    io.setPivotDeg(angle);
+    Logger.recordOutput("Intake/Pivot Setpoint", angle);
+    io.setPivotSetpoint(angle);
   }
 
   /* Set the pivot and roller motor speeds to 0. */

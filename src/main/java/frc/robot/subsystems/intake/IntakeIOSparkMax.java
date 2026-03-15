@@ -34,11 +34,11 @@ public class IntakeIOSparkMax implements IntakeIO {
                 .zeroOffset(IntakeConstants.PIVOT_ENCODER_OFFSET);
         pivotConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-                .pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D)
-                .feedForward/*.kS(IntakeConstants.PIVOT_FF_S)*/
-                            .kV(IntakeConstants.PIVOT_FF_V);
-                            // .kCos(IntakeConstants.PIVOT_FF_COS)
-                            // .kCosRatio(IntakeConstants.PIVOT_FF_COS_RATIO);
+                .pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
+//                .feedForward.kS(IntakeConstants.PIVOT_FF_S)
+//                            .kV(IntakeConstants.PIVOT_FF_V);
+//                            .kCos(IntakeConstants.PIVOT_FF_COS)
+//                            .kCosRatio(IntakeConstants.PIVOT_FF_COS_RATIO);
         pivotConfig.closedLoop.maxMotion
                 .cruiseVelocity(IntakeConstants.PIVOT_CRUISE_VELOCITY)
                 .maxAcceleration(IntakeConstants.PIVOT_MAX_ACCEL)
@@ -91,8 +91,13 @@ public class IntakeIOSparkMax implements IntakeIO {
     }
 
     @Override
-    public void setPivotDeg(double deg) {
+    public void setPivotSetpoint(double deg) {
         pivotPid.setSetpoint(deg, SparkBase.ControlType.kPosition);
+    }
+
+    @Override
+    public void setPivotDeg(double deg) {
+        pivotPid.setSetpoint(deg, SparkBase.ControlType.kMAXMotionPositionControl);
     }
 
     @Override

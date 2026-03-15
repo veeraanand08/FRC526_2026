@@ -30,7 +30,9 @@ public interface IntakeIO {
     public default void setRoller(double speed) {}
 
     /** Sets the intake pivot's angle given a degree input */
-    public default void setPivotDeg(double deg) {}
+    public default void setPivotSetpoint(double deg) {} // Standard PID
+
+    public default void setPivotDeg(double deg) {} // Profiled PID
 
     /** Sets the motor's speed given an RPM input */
     public default void setRollerRPM(double rpm) {}

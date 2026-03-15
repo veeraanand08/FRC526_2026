@@ -80,13 +80,26 @@ public final class Constants
   public static final class AutoAlignConstants
   {
     public static final double TOLERANCE_DEG = 5.0;
-  }
 
-  // public static final class AutonConstants
-  // {
-  //   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-  //   public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-  // }
+    /* Shoot on the fly */
+    public static final int MAX_ITERATIONS = 3;
+
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
+    static {
+      // Distance, Time
+      DISTANCE_TO_TIME.put(6.730068956, 1.786);
+      DISTANCE_TO_TIME.put(6.472743156, 1.733);
+      DISTANCE_TO_TIME.put(6.044155496, 1.693);
+      DISTANCE_TO_TIME.put(5.506356383, 1.483);
+      DISTANCE_TO_TIME.put(5.068445123, 1.4);
+      DISTANCE_TO_TIME.put(4.515344442, 1.35);
+      DISTANCE_TO_TIME.put(4.182420309, 1.25);
+      DISTANCE_TO_TIME.put(3.673340232, 1.25);
+      DISTANCE_TO_TIME.put(2.972515343, 1.283);
+      DISTANCE_TO_TIME.put(2.425870923, 1.133);
+      DISTANCE_TO_TIME.put(1.915421252, 0.957);
+    }
+  }
 
   public static final class ShooterConstants
   {
@@ -107,24 +120,6 @@ public final class Constants
             new LoggedNetworkNumber("/Tuning/Shooter/RPM", 3000);
     public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
-    /* Shoot on the fly */
-    public static final int MAX_ITERATIONS = 3;
-
-    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
-    static {
-      // Distance, Time
-      DISTANCE_TO_TIME.put(6.730068956, 1.786);
-      DISTANCE_TO_TIME.put(6.472743156, 1.733);
-      DISTANCE_TO_TIME.put(6.044155496, 1.693);
-      DISTANCE_TO_TIME.put(5.506356383, 1.483);
-      DISTANCE_TO_TIME.put(5.068445123, 1.4);
-      DISTANCE_TO_TIME.put(4.515344442, 1.35);
-      DISTANCE_TO_TIME.put(4.182420309, 1.25);
-      DISTANCE_TO_TIME.put(3.673340232, 1.25);
-      DISTANCE_TO_TIME.put(2.972515343, 1.283);
-      DISTANCE_TO_TIME.put(2.425870923, 1.133);
-      DISTANCE_TO_TIME.put(1.915421252, 0.957);
-    }
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
       // Distance, RPM for Shot
@@ -209,7 +204,7 @@ public final class Constants
 
     // MAXMotion
     public static final double PIVOT_CRUISE_VELOCITY = 30; // degrees per sec
-    public static final double PIVOT_MAX_ACCEL = 10; // RPM/s
+    public static final double PIVOT_MAX_ACCEL = 10; // degrees per sec^2 (i think)
     public static final double ALLOWED_PROFILE_ERROR = 1;
     
     // setpoints, in degrees
