@@ -4,18 +4,16 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,8 +27,23 @@ import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ShooterFallback;
 import frc.robot.commands.auton.AutoAlignOnce;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.feeder.FeederIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.sensors.BallSensor;
+import frc.robot.subsystems.sensors.BallSensorIO;
+import frc.robot.subsystems.sensors.BallSensorIOLaserCan;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.vision.*;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import swervelib.SwerveInputStream;
 
 
@@ -42,30 +55,27 @@ import swervelib.SwerveInputStream;
  */
 @SuppressWarnings("unused")
 public class RobotContainer {
+
+  private final edu.wpi.first.wpilibj2.command.button.CommandGenericHID m_keyboard = 
+    new edu.wpi.first.wpilibj2.command.button.CommandGenericHID(2); //SIM STUFF DELETE LATER
+
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
   private final CommandXboxController operatorController =
       new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
-  
+
+  private final BallSensor ballSensor;
+
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
-  private final Vision visionSubsystem = new Vision(
-          (visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs) ->
-                  swerveSubsystem.getSwerveDrive().addVisionMeasurement(
-                          visionRobotPoseMeters,
-                          timestampSeconds,
-                          visionMeasurementStdDevs),
-          new VisionIOLimelight(VisionConstants.CAMERA_0_NAME, swerveSubsystem::getHeading,
-                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond),
-          new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
-                  () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(swerveSubsystem::getPose, swerveSubsystem::getFieldVelocity);
-  private final FeederSubsystem feederSubsystem = new FeederSubsystem();
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final Vision visionSubsystem;
+  private final Shooter shooterSubsystem;
+  private final Feeder feederSubsystem;
+  public final Intake intakeSubsystem;
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
-  private final SendableChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -123,6 +133,56 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    switch (currentMode) {
+      case REAL:
+        ballSensor = new BallSensor(new BallSensorIOLaserCan());
+        visionSubsystem = new Vision(
+                swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
+                  new VisionIO() {});
+//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0));
+//                new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
+//                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
+        shooterSubsystem = new Shooter(
+                new ShooterIOSparkMax(),
+                swerveSubsystem::getPose,
+                swerveSubsystem::getFieldVelocity);
+        feederSubsystem = new Feeder(new FeederIOSparkMax());
+        intakeSubsystem = new Intake(new IntakeIOSparkMax());
+        break;
+      case SIM:
+        ballSensor = new BallSensor(new BallSensorIO() {});
+        visionSubsystem = new Vision(
+                swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                        VisionConstants.CAMERA_0_NAME,
+                        VisionConstants.robotToCamera0,
+                        swerveSubsystem::getPose),
+                new VisionIOPhotonVisionSim(
+                        VisionConstants.CAMERA_1_NAME,
+                        VisionConstants.robotToCamera1,
+                        swerveSubsystem::getPose));
+        shooterSubsystem = new Shooter(
+                new ShooterIOSim(),
+                swerveSubsystem::getPose,
+                swerveSubsystem::getFieldVelocity);
+        feederSubsystem = new Feeder(new FeederIOSim());
+        intakeSubsystem = new Intake(new IntakeIOSim());
+        break;
+      default: // REPLAY
+        ballSensor = new BallSensor(new BallSensorIO() {});
+        visionSubsystem = new Vision(
+                swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
+                new VisionIO() {},
+                new VisionIO() {}
+        );
+        shooterSubsystem = new Shooter(
+                new ShooterIO() {},
+                swerveSubsystem::getPose,
+                swerveSubsystem::getFieldVelocity);
+        feederSubsystem = new Feeder(new FeederIO() {});
+        intakeSubsystem = new Intake(new IntakeIO() {});
+    }
+
     // Configure the trigger bindings
     configureBindings();
 
@@ -130,15 +190,11 @@ public class RobotContainer {
 
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    //Have the autoChooser pull in all PathPlanner autos as options
-    autoChooser = AutoBuilder.buildAutoChooser();
+    // Have the autoChooser pull in all PathPlanner autos as options
+    autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
 
-    //Set the default auto (do nothing) 
-    autoChooser.setDefaultOption("Do Nothing", Commands.none());
-
-    //Put the autoChooser on the SmartDashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
+    // Set the default auto (do nothing)
+    autoChooser.addDefaultOption("Do Nothing", Commands.none());
   }
 
   /**
@@ -173,8 +229,15 @@ public class RobotContainer {
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
-    if (RobotBase.isSimulation()) {
+    if (currentMode == Mode.SIM) {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
+      m_keyboard.button(1).whileTrue(holdIntake);
+        
+      m_keyboard.button(2).whileTrue(reverseIntake);
+        
+      m_keyboard.button(3).onTrue(intakeSubsystem.agitateCommand());
+
+      m_keyboard.button(4).whileTrue(shootAutoSpeed);
     }
     else {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
@@ -230,8 +293,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return autoChooser.get();
   }
-
-  public IntakeSubsystem getIntakeSubsystem() { return intakeSubsystem; }
 }

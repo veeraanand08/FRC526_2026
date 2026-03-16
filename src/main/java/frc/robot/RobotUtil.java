@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class contains methods that are used throughout the
@@ -37,9 +37,9 @@ public final class RobotUtil {
 
         private ShiftTimer() {
             timer = new Timer();
-            SmartDashboard.setDefaultBoolean("Match/Hub Active", false);
-            SmartDashboard.setDefaultString("Match/Current Shift", "N/A");
-            SmartDashboard.setDefaultNumber("Match/Shift Timer", 0.0);
+            Logger.recordOutput("Match/Hub Active", false);
+            Logger.recordOutput("Match/Current Shift", "N/A");
+            Logger.recordOutput("Match/Shift Timer", 0.0);
         }
 
         public void start() {
@@ -47,14 +47,14 @@ public final class RobotUtil {
             currentSegment = ShiftSegment.TRANSITION;
             allianceShiftNum = 0;
             isHubActive = true;
-            SmartDashboard.putBoolean("Match/Hub Active", isHubActive);
-            SmartDashboard.putString("Match/Current Shift", currentSegment.toString());
+            Logger.recordOutput("Match/Hub Active", isHubActive);
+            Logger.recordOutput("Match/Current Shift", currentSegment.toString());
         }
 
         public void update() {
             switch (currentSegment) {
                 case TRANSITION:
-                    if (timer.get() >= 10.0) {
+                    if (timer.hasElapsed(10.0)) {
                         timer.restart();
                         String gameData = DriverStation.getGameSpecificMessage();
                         char firstInactiveHub;
@@ -73,43 +73,43 @@ public final class RobotUtil {
                         }
                         currentSegment = ShiftSegment.ALLIANCE;
                         allianceShiftNum = 1;
-                        SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
+                        Logger.recordOutput("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
                     shiftTimeRemaining = 10.0 - timer.get();
                     break;
                 case ALLIANCE:
-                    if (timer.get() >= 25.0) {
+                    if (timer.hasElapsed(25.0)) {
                         timer.restart();
                         allianceShiftNum++;
                         isHubActive = !isHubActive;
                         if (allianceShiftNum > 4) {
                             currentSegment = ShiftSegment.ENDGAME;
                             isHubActive = true;
-                            SmartDashboard.putString("Match/Current Shift", currentSegment.toString());
+                            Logger.recordOutput("Match/Current Shift", currentSegment.toString());
                         }
-                        else SmartDashboard.putString("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
+                        else Logger.recordOutput("Match/Current Shift", currentSegment.toString() + " " + allianceShiftNum);
                         break;
                     }
                     shiftTimeRemaining = 25.0 - timer.get();
                     break;
                 case ENDGAME:
                     shiftTimeRemaining = 30.0 - timer.get();
-                    if (timer.get() >= 30.0) {
+                    if (timer.hasElapsed(30.0)) {
                         end();
                     }
                     break;
             }
-            SmartDashboard.putBoolean("Match/Hub Active", isHubActive);
-            SmartDashboard.putNumber("Match/Shift Timer", shiftTimeRemaining + 1);
+            Logger.recordOutput("Match/Hub Active", isHubActive);
+            Logger.recordOutput("Match/Shift Timer", shiftTimeRemaining + 1);
         }
 
         public void end() {
             timer.stop();
             isHubActive = false;
-            SmartDashboard.putBoolean("Match/Hub Active", false);
-            SmartDashboard.putString("Match/Current Shift", "N/A");
-            SmartDashboard.putNumber("Match/Shift Timer", 0.0);
+            Logger.recordOutput("Match/Hub Active", false);
+            Logger.recordOutput("Match/Current Shift", "N/A");
+            Logger.recordOutput("Match/Shift Timer", 0.0);
         }
 
         public double getTimeRemaining() {

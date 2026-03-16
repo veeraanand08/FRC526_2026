@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import swervelib.math.Matter;
 
 /**
@@ -63,14 +64,12 @@ public final class Constants
 
   }
 
-
-
-  public static final class DrivebaseConstants
+  public static final class DriveConstants
   {
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(3)), ROBOT_MASS);
-    public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms spark max velocity lag
     // Maximum speed of the robot in meters per second, used to limit acceleration.
     public static final double MAX_SPEED  = 4;
 
@@ -84,33 +83,8 @@ public final class Constants
   public static final class AutoAlignConstants
   {
     public static final double TOLERANCE_DEG = 5.0;
-  }
-
-  // public static final class AutonConstants
-  // {
-  //   public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-  //   public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-  // }
-
-  public static final class ShooterConstants
-  {
-    public static final boolean TUNING_MODE_ACTIVE = false;
-
-    public static final int LEFT_SHOOTER_MOTOR = 15;
-    public static final int RIGHT_SHOOTER_MOTOR = 16;
-    public static final int SHOOTER_CURRENT_LIMIT = 60;
-    public static final boolean MOTORS_REVERSED = false;
-    public static final double SHOOTER_P = 0.00004;
-    public static final double SHOOTER_I = 0;//0.0000003;
-    public static final double SHOOTER_D = 0;
-    public static final double SHOOTER_FF = 1.0 / 5676.0;
-    public static final double NEGATIVE_RATE_LIMIT = 2000;
-    // set speeds
-    public static final double DEFAULT_RPM = 3000;
-    public static final double REVERSED_RPM = 2500; // reversal if something is stuck
 
     /* Shoot on the fly */
-    public static final double MAX_DISTANCE = Double.MAX_VALUE; //temp
     public static final int MAX_ITERATIONS = 3;
 
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
@@ -128,6 +102,27 @@ public final class Constants
       DISTANCE_TO_TIME.put(2.425870923, 1.133);
       DISTANCE_TO_TIME.put(1.915421252, 0.957);
     }
+  }
+
+  public static final class ShooterConstants
+  {
+    public static final double SHOOTER_MOI = 0.001;
+    public static final double SHOOTER_GEAR_RATIO = 1.0;
+
+    public static final int LEFT_SHOOTER_MOTOR = 15;
+    public static final int RIGHT_SHOOTER_MOTOR = 16;
+    public static final int SHOOTER_CURRENT_LIMIT = 60;
+    public static final boolean MOTORS_REVERSED = false;
+    public static final double SHOOTER_P = 0.00004;
+    public static final double SHOOTER_I = 0;//0.0000003;
+    public static final double SHOOTER_D = 0;
+    public static final double SHOOTER_FF = 1.0 / 5676.0;
+    public static final double NEGATIVE_RATE_LIMIT = 2000;
+    // set speeds
+    public static final LoggedNetworkNumber DEFAULT_RPM =
+            new LoggedNetworkNumber("/Tuning/Shooter/RPM", 3000);
+    public static final double REVERSED_RPM = 2500; // reversal if something is stuck
+
     public static final InterpolatingDoubleTreeMap DISTANCE_TO_RPM = new InterpolatingDoubleTreeMap();
     static {
       // Distance, RPM for Shot
@@ -158,26 +153,37 @@ public final class Constants
     public static final boolean RIGHT_INDEXER_MOTOR_REVERSED = true;
     public static final boolean KICKER_MOTOR_REVERSED = false;
 
+    public static final double INDEXER_MOI = 0.001;
+    public static final double KICKER_MOI = 0.001;
+    public static final double KICKER_GEAR_RATIO = 1.0; // adjust
+
     public static final double KICKER_P = 0.0004;
     public static final double KICKER_I = 0;
     public static final double KICKER_D = 0;
     public static final double KICKER_FF = 1.0 / 5676.0;
 
     public static final double INDEXER_POWER = 0.8;
-    public static final double INDEXER_POWER_REVERSED = 0.6;
+    public static final double INDEXER_POWER_REVERSED = 0.7;
     public static final double KICKER_RPM = 5000;
-    public static final double KICKER_RPM_REVERSED = -3000;
+    public static final double KICKER_RPM_REVERSED = -3500;
 
     public static final double INDEXER_PERIOD = 1.0;
+
+    public static final int BALL_SENSOR_LASERCAN = 20;
+    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; // mm
+    public static final int LOW_BPS = 3;
   }
   
   public static final class IntakeConstants
   {
     public static final int ROLLER_MOTOR = 14;
     public static final int ROLLER_CURRENT_LIMIT = 60;
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0; // adjust
+    public static final double ROLLER_STALL_VELOCITY = 200;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
-    public static final double ROLLER_POWER_SLOW = 0.75;
+    public static final double ROLLER_RPM_SLOW = 4000;
     public static final double ROLLER_P = 0.0003;
     public static final double ROLLER_I = 0;
     public static final double ROLLER_D = 0;
@@ -188,8 +194,11 @@ public final class Constants
     
     public static final int PIVOT_MOTOR = 13;
     public static final int PIVOT_CURRENT_LIMIT = 40;
+    public static final double PIVOT_ENCODER_OFFSET = 0.0; // adjust
     public static final double PIVOT_GEAR_RATIO = 75;
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
+    public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
+    public static final double PIVOT_STALL_VELOCITY = 0.5;
     public static final double PIVOT_P = 0.008;
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
@@ -199,24 +208,26 @@ public final class Constants
     public static final double PIVOT_FF_COS_RATIO = PIVOT_GEAR_RATIO / 360;
 
     // MAXMotion
-    public static final double PIVOT_CRUISE_VELOCITY = 30; // RPM
-    public static final double PIVOT_MAX_ACCEL = 10; // RPM/s
+    public static final double PIVOT_CRUISE_VELOCITY = 30; // degrees per sec
+    public static final double PIVOT_MAX_ACCEL = 10; // degrees per sec^2 (i think)
     public static final double ALLOWED_PROFILE_ERROR = 1;
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
     public static final double PIVOT_ENGAGED_ANGLE = 140; // lowered
-    public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; 
+    public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; //where the upper bound starts
+    public static final double PIVOT_AGITATION_UPPER_ANGLE_MIN = 25; // where the upper bound ends
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
+    public static final double PIVOT_UPPER_AGITATION_DECAY_TIME = 12.0; // time it takes to decay in seconds
 
-    public static final double AGITATION_PERIOD = 4000; //Period is in nanoSeconds
+    public static final double AGITATION_PERIOD = 4; // Period is in seconds
   }
 
   public static final class VisionConstants
   {
     // Camera names, must match names configured on coprocessor
-    public static final String CAMERA_0_NAME = "limelight-left";
-    public static final String CAMERA_1_NAME = "limelight-right";
+    public static final String CAMERA_0_NAME = "Camera_Left";
+    public static final String CAMERA_1_NAME = "Camera_Right";
 
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)

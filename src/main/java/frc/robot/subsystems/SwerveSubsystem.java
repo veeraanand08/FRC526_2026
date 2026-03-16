@@ -37,6 +37,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.RobotUtil;
 import org.json.simple.parser.ParseException;
+import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -82,7 +83,7 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try
     {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(DrivebaseConstants.MAX_SPEED, startingPose);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(DriveConstants.MAX_SPEED, startingPose);
     } catch (Exception e)
     {
       throw new RuntimeException(e);
@@ -110,7 +111,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
-                                  DrivebaseConstants.MAX_SPEED,
+                                  DriveConstants.MAX_SPEED,
                                   new Pose2d(new Translation2d(Meter.of(0), Meter.of(0)),
                                              Rotation2d.fromDegrees(0)));
   }
@@ -118,11 +119,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    if (gyro.getPitch() > VisionConstants.MAX_TILT_DEG &&
-        gyro.getRoll() > VisionConstants.MAX_TILT_DEG)
-    {
-      RobotUtil.isPoseEstimatorReady = false;
-    };
+    Logger.recordOutput("Drive/Robot Pose", getPose());
   }
 
   @Override
@@ -253,9 +250,9 @@ public class SwerveSubsystem extends SubsystemBase
                                                    DriveFeedforwards.zeros(swerveDrive.getModules().length)));
     AtomicReference<Double> previousTime = new AtomicReference<>();
 
-    return startRun(() -> previousTime.set(Timer.getFPGATimestamp()),
+    return startRun(() -> previousTime.set(Timer.getTimestamp()),
                     () -> {
-                      double newTime = Timer.getFPGATimestamp();
+                      double newTime = Timer.getTimestamp();
                       SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
                                                                                       robotRelativeChassisSpeed.get(),
                                                                                       newTime - previousTime.get());
@@ -574,7 +571,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         headingX,
                                                         headingY,
                                                         getHeading().getRadians(),
-                                                        DrivebaseConstants.MAX_SPEED);
+                                                        DriveConstants.MAX_SPEED);
   }
 
   /**
@@ -594,7 +591,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
-                                                        DrivebaseConstants.MAX_SPEED);
+                                                        DriveConstants.MAX_SPEED);
   }
 
   /**
@@ -612,7 +609,7 @@ public class SwerveSubsystem extends SubsystemBase
             MathUtil.applyDeadband(yInput, ControllerConstants.DEADBAND),
             angle.getRadians(),
             getHeading().getRadians(),
-            DrivebaseConstants.MAX_SPEED
+            DriveConstants.MAX_SPEED
         );
   }
 
