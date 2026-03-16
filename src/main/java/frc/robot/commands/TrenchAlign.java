@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.TrenchAlignmentConstants;
+import frc.robot.Constants.TrenchAlignConstants;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -38,16 +38,16 @@ public class TrenchAlign extends Command {
     this.swerveSubsystem = swerveSubsystem;
     this.driverController = driverController;
     this.trenchTarget = Translation2d.kZero;
-    yController = new ProfiledPIDController(TrenchAlignmentConstants.Y_P, TrenchAlignmentConstants.Y_I, TrenchAlignmentConstants.Y_D,
+    yController = new ProfiledPIDController(TrenchAlignConstants.Y_P, TrenchAlignConstants.Y_I, TrenchAlignConstants.Y_D,
     new TrapezoidProfile.Constraints(
-        DrivebaseConstants.MAX_SPEED,     
-        TrenchAlignmentConstants.MAX_ACCEL
+        DriveConstants.MAX_SPEED,
+        TrenchAlignConstants.MAX_ACCEL
     )
     );
-    angleController = new ProfiledPIDController(TrenchAlignmentConstants.ANGLE_P, TrenchAlignmentConstants.ANGLE_I, TrenchAlignmentConstants.ANGLE_D,
+    angleController = new ProfiledPIDController(TrenchAlignConstants.ANGLE_P, TrenchAlignConstants.ANGLE_I, TrenchAlignConstants.ANGLE_D,
     new TrapezoidProfile.Constraints(
-        TrenchAlignmentConstants.MAX_ANGULAR_SPEED,
-        TrenchAlignmentConstants.MAX_ANGULAR_ACCEL
+        TrenchAlignConstants.MAX_ANGULAR_SPEED,
+        TrenchAlignConstants.MAX_ANGULAR_ACCEL
     )
     );
     
@@ -77,17 +77,17 @@ public class TrenchAlign extends Command {
     leftX = MathUtil.applyDeadband(leftX, ControllerConstants.DEADBAND);
     rightX = MathUtil.applyDeadband(rightX, ControllerConstants.DEADBAND);
 
-    leftX *= DrivebaseConstants.MAX_SPEED;
-    leftY *= DrivebaseConstants.MAX_SPEED;
+    leftX *= DriveConstants.MAX_SPEED;
+    leftY *= DriveConstants.MAX_SPEED;
 
     if (!trenchTarget.equals(Translation2d.kZero)){
       double ySpeed = yController.calculate(swerveSubsystem.getPose().getY(), trenchTarget.getY());
 
-      double angleSpeed = angleController.calculate(swerveSubsystem.getHeading().getRadians(), Math.toRadians(TrenchAlignmentConstants.TRENCH_ROTATION_SETPOINT));
+      double angleSpeed = angleController.calculate(swerveSubsystem.getHeading().getRadians(), Math.toRadians(TrenchAlignConstants.TRENCH_ROTATION_SETPOINT));
       
       double distance = Math.abs(swerveSubsystem.getPose().getX() - trenchTarget.getX());
 
-      SmartDashboard.putNumber("TrenchAlign/Desired Angle", TrenchAlignmentConstants.TRENCH_ROTATION_SETPOINT);
+      SmartDashboard.putNumber("TrenchAlign/Desired Angle", TrenchAlignConstants.TRENCH_ROTATION_SETPOINT);
 
       SmartDashboard.putNumber("TrenchAlign/Desired Y", trenchTarget.getY());
 
@@ -96,10 +96,10 @@ public class TrenchAlign extends Command {
 
       double adjustedDistance = Math.max(0.0, distance - fullStrengthDist);
 
-      double adjustedThreshold = TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD - fullStrengthDist;
+      double adjustedThreshold = TrenchAlignConstants.TRENCH_ALIGNMENT_THRESHOLD - fullStrengthDist;
 
       double normalizedDist = MathUtil.clamp(1.0 - (adjustedDistance / Math.max(0.001, adjustedThreshold)), 0.0, 1.0);
-      double strength = Math.pow(normalizedDist, TrenchAlignmentConstants.STRENGTH_EXP);
+      double strength = Math.pow(normalizedDist, TrenchAlignConstants.STRENGTH_EXP);
 
 
       SmartDashboard.putNumber("TrenchAlign/strength", strength);
@@ -127,12 +127,12 @@ public class TrenchAlign extends Command {
     }
     double leftTrenchDist = robotPose.getDistance(leftTrench);
     double leftTrenchYDist = Math.abs( robotPose.getY() - leftTrench.getY() );
-    if (leftTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
+    if (leftTrenchDist < TrenchAlignConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
       return leftTrench;
     }
     double rightTrenchDist = robotPose.getDistance(rightTrench);
     double rightTrenchYDist = Math.abs( robotPose.getY() - rightTrench.getY() );
-    if (rightTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
+    if (rightTrenchDist < TrenchAlignConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
       return rightTrench;
     }
 

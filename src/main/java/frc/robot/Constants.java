@@ -40,30 +40,6 @@ public final class Constants
     REPLAY
   }
 
-  public static final class TrenchAlignmentConstants
-  {
-
-    public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
-    public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
-
-    public static final double Y_P = 12.5;
-    public static final double Y_I = 0.0;
-    public static final double Y_D = 0.0;
-
-    public static final double ANGLE_P = 12.5;
-    public static final double ANGLE_I = 0.0;
-    public static final double ANGLE_D = 0.0;
-
-    public static final double MAX_ACCEL = 2.0;
-    public static final double MAX_ANGULAR_SPEED = 180.0;
-    public static final double MAX_ANGULAR_ACCEL = 90.0;
-
-    public static final double TRENCH_ROTATION_SETPOINT = 0.0;
-
-    public static final double STRENGTH_EXP = 2;
-
-  }
-
   public static final class DriveConstants
   {
     public static final Rotation3d GYRO_OFFSET = Rotation3d.kZero;
@@ -73,35 +49,8 @@ public final class Constants
     // Maximum speed of the robot in meters per second, used to limit acceleration.
     public static final double MAX_SPEED  = 4;
 
-
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
-
-
-  }
-
-  public static final class AutoAlignConstants
-  {
-    public static final double TOLERANCE_DEG = 5.0;
-
-    /* Shoot on the fly */
-    public static final int MAX_ITERATIONS = 3;
-
-    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
-    static {
-      // Distance, Time
-      DISTANCE_TO_TIME.put(6.730068956, 1.786);
-      DISTANCE_TO_TIME.put(6.472743156, 1.733);
-      DISTANCE_TO_TIME.put(6.044155496, 1.693);
-      DISTANCE_TO_TIME.put(5.506356383, 1.483);
-      DISTANCE_TO_TIME.put(5.068445123, 1.4);
-      DISTANCE_TO_TIME.put(4.515344442, 1.35);
-      DISTANCE_TO_TIME.put(4.182420309, 1.25);
-      DISTANCE_TO_TIME.put(3.673340232, 1.25);
-      DISTANCE_TO_TIME.put(2.972515343, 1.283);
-      DISTANCE_TO_TIME.put(2.425870923, 1.133);
-      DISTANCE_TO_TIME.put(1.915421252, 0.957);
-    }
   }
 
   public static final class ShooterConstants
@@ -279,6 +228,52 @@ public final class Constants
 
     public static final double RED_ALLIANCE_BOUNDARY = RED_LEFT_BUMP.getX();
     public static final double BLUE_ALLIANCE_BOUNDARY = BLUE_LEFT_BUMP.getX();
+  }
+
+  public static final class AutoAlignConstants
+  {
+    public static final double TOLERANCE_DEG = 5.0;
+
+    /* Shoot on the fly */
+    public static final int MAX_ITERATIONS = 3;
+
+    public static final InterpolatingDoubleTreeMap DISTANCE_TO_TIME = new InterpolatingDoubleTreeMap();
+    static {
+      // Distance, Time
+      DISTANCE_TO_TIME.put(6.730068956, 1.786);
+      DISTANCE_TO_TIME.put(6.472743156, 1.733);
+      DISTANCE_TO_TIME.put(6.044155496, 1.693);
+      DISTANCE_TO_TIME.put(5.506356383, 1.483);
+      DISTANCE_TO_TIME.put(5.068445123, 1.4);
+      DISTANCE_TO_TIME.put(4.515344442, 1.35);
+      DISTANCE_TO_TIME.put(4.182420309, 1.25);
+      DISTANCE_TO_TIME.put(3.673340232, 1.25);
+      DISTANCE_TO_TIME.put(2.972515343, 1.283);
+      DISTANCE_TO_TIME.put(2.425870923, 1.133);
+      DISTANCE_TO_TIME.put(1.915421252, 0.957);
+    }
+  }
+
+  public static final class TrenchAlignConstants
+  {
+    public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
+    public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
+
+    public static final double Y_P = 12.5;
+    public static final double Y_I = 0.0;
+    public static final double Y_D = 0.0;
+
+    public static final double ANGLE_P = 12.5;
+    public static final double ANGLE_I = 0.0;
+    public static final double ANGLE_D = 0.0;
+
+    public static final double MAX_ACCEL = 2.0;
+    public static final double MAX_ANGULAR_SPEED = 180.0;
+    public static final double MAX_ANGULAR_ACCEL = 90.0;
+
+    public static final double TRENCH_ROTATION_SETPOINT = 0.0;
+
+    public static final double STRENGTH_EXP = 2;
   }
 
   public static final class ControllerConstants
