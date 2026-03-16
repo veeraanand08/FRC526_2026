@@ -177,6 +177,7 @@ public final class Constants
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 1.0; // adjust
+    public static final double ROLLER_STALL_VELOCITY = 200;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
     public static final double ROLLER_RPM_SLOW = 4000;
@@ -194,6 +195,7 @@ public final class Constants
     public static final double PIVOT_GEAR_RATIO = 75;
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
     public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
+    public static final double PIVOT_STALL_VELOCITY = 0.5;
     public static final double PIVOT_P = 0.008;
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;

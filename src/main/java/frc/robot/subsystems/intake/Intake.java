@@ -7,7 +7,6 @@ import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
-  /* The current state of the pivot motor. */
   public enum PivotState {
     RAISING,
     AGITATING,
@@ -38,7 +37,10 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
 
-    if (pivotState == PivotState.AGITATING){
+    if (pivotState == PivotState.AGITATING) {
+      // safety check
+      if (isPivotStalled()) setPivotState(PivotState.LOWERING);
+
       double time = agitationTimer.get();
 
       double pos = Math.sin(time * 2 * Math.PI / IntakeConstants.AGITATION_PERIOD) * 0.5 + 0.5;
@@ -56,8 +58,6 @@ public class Intake extends SubsystemBase {
   }
 
   public void setPivotState(PivotState newState) {
-    pivotState = newState;
-    Logger.recordOutput("Intake/Pivot State", pivotState.toString());
     switch (newState){
       case RAISING:
         agitationTimer.stop();
@@ -73,6 +73,8 @@ public class Intake extends SubsystemBase {
       default:
         break;
     }
+    pivotState = newState;
+    Logger.recordOutput("Intake/Pivot State", pivotState.toString());
   }
 
   public void toggleRoller() {
@@ -88,13 +90,15 @@ public class Intake extends SubsystemBase {
 
   public void slowRoller() {
     io.setRollerRPM(IntakeConstants.ROLLER_RPM_SLOW);
-    rollerEnabled = true;
+    rollerEnabled = false;
     Logger.recordOutput("Intake/Intake Running", false);
   }
 
   public void setRollerReversed(boolean enabled) {
     if (enabled) io.setRollerRPM(IntakeConstants.ROLLER_RPM_REVERSED);
     else io.stopRoller();
+    rollerEnabled = false;
+    Logger.recordOutput("Intake/Intake Running", false);
   }
 
   /**
@@ -116,6 +120,16 @@ public class Intake extends SubsystemBase {
     io.setPivotBrake(brake);
   }
 
+  public boolean isPivotStalled() {
+    return inputs.pivotCurrentAmps > IntakeConstants.PIVOT_CURRENT_LIMIT &&
+            Math.abs(inputs.pivotVelocityDegPerSec) < IntakeConstants.PIVOT_STALL_VELOCITY;
+  }
+
+  public boolean isRollerStalled() {
+    return inputs.rollerCurrentAmps > IntakeConstants.ROLLER_CURRENT_LIMIT &&
+            Math.abs(inputs.rollerCurrentRPM) < IntakeConstants.ROLLER_STALL_VELOCITY;
+  }
+
   /**
    * Enable the intake roller. If the intake is raised, it will lower and then start.
    *
@@ -133,7 +147,8 @@ public class Intake extends SubsystemBase {
                 setPivotState(PivotState.LOWERING);
               }
             },
-            () -> setRoller(false));
+            () -> setRoller(false))
+            .until(this::isRollerStalled);
   }
 
   /**
@@ -177,7 +192,7 @@ public class Intake extends SubsystemBase {
   public Command agitateCommand() {
     return runOnce(() -> {
       if (pivotState == PivotState.AGITATING) {
-        io.stopRoller();
+        setRoller(false);
         setPivotState(PivotState.LOWERING);
       }
       else {
