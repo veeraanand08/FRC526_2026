@@ -6,9 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,12 +17,8 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TrenchAlignmentConstants;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
-import swervelib.math.SwerveMath;
-import frc.robot.Constants;;
 
 public class TrenchAlign extends Command {
-
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveSubsystem swerveSubsystem;
   private final CommandXboxController driverController;
   private Translation2d trenchTarget;
@@ -39,7 +33,7 @@ public class TrenchAlign extends Command {
     * @param driverController The CommandXboxController object of the driver's controller.
     */
   public TrenchAlign(SwerveSubsystem swerveSubsystem,
-    CommandXboxController driverController)
+                     CommandXboxController driverController)
   {
     this.swerveSubsystem = swerveSubsystem;
     this.driverController = driverController;
@@ -47,13 +41,13 @@ public class TrenchAlign extends Command {
     yController = new ProfiledPIDController(TrenchAlignmentConstants.Y_P, TrenchAlignmentConstants.Y_I, TrenchAlignmentConstants.Y_D,
     new TrapezoidProfile.Constraints(
         DrivebaseConstants.MAX_SPEED,     
-        DrivebaseConstants.MAX_ACCEL
+        TrenchAlignmentConstants.MAX_ACCEL
     )
     );
     angleController = new ProfiledPIDController(TrenchAlignmentConstants.ANGLE_P, TrenchAlignmentConstants.ANGLE_I, TrenchAlignmentConstants.ANGLE_D,
     new TrapezoidProfile.Constraints(
-        DrivebaseConstants.MAX_ANGULAR_SPEED,     
-        DrivebaseConstants.MAX_ANGULAR_ACCEL
+        TrenchAlignmentConstants.MAX_ANGULAR_SPEED,
+        TrenchAlignmentConstants.MAX_ANGULAR_ACCEL
     )
     );
     
@@ -66,11 +60,10 @@ public class TrenchAlign extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    trenchTarget = swerveSubsystem.trenchTarget();
+    trenchTarget = findNearestTrench();
     yController.reset(swerveSubsystem.getPose().getY());
     angleController.reset(swerveSubsystem.getHeading().getRadians());
     SmartDashboard.putBoolean("TrenchAlign/Trench Align Running", true);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -116,23 +109,46 @@ public class TrenchAlign extends Command {
         true
       );
     }
-    
-    
+  }
+
+  public boolean isNearTrench() {
+    return findNearestTrench() != null;
+  }
+
+  public Translation2d findNearestTrench() {
+    Translation2d robotPose = swerveSubsystem.getPose().getTranslation();
+    Translation2d leftTrench, rightTrench;
+    if (RobotUtil.isRedAlliance()) {
+      leftTrench = FieldConstants.RED_LEFT_TRENCH;
+      rightTrench = FieldConstants.RED_RIGHT_TRENCH;
+    } else {
+      leftTrench = FieldConstants.BLUE_LEFT_TRENCH;
+      rightTrench = FieldConstants.BLUE_RIGHT_TRENCH;
+    }
+    double leftTrenchDist = robotPose.getDistance(leftTrench);
+    double leftTrenchYDist = Math.abs( robotPose.getY() - leftTrench.getY() );
+    if (leftTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && leftTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
+      return leftTrench;
+    }
+    double rightTrenchDist = robotPose.getDistance(rightTrench);
+    double rightTrenchYDist = Math.abs( robotPose.getY() - rightTrench.getY() );
+    if (rightTrenchDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_THRESHOLD && rightTrenchYDist < TrenchAlignmentConstants.TRENCH_ALIGNMENT_Y_THRESHOLD){
+      return rightTrench;
+    }
+
+    return null;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    trenchTarget = Translation2d.kZero;
+    trenchTarget = null;
     SmartDashboard.putBoolean("TrenchAlign/Trench Align Running", false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
     return false;
   }
-
-    
 }

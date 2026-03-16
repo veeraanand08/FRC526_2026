@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -43,10 +41,6 @@ public final class Constants
 
   public static final class TrenchAlignmentConstants
   {
-    public static Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
-    public static Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
-    public static Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
-    public static Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
 
     public static final double TRENCH_ALIGNMENT_THRESHOLD = 2.0;
     public static final double TRENCH_ALIGNMENT_Y_THRESHOLD = 2.0;
@@ -59,6 +53,9 @@ public final class Constants
     public static final double ANGLE_I = 0.0;
     public static final double ANGLE_D = 0.0;
 
+    public static final double MAX_ACCEL = 2.0;
+    public static final double MAX_ANGULAR_SPEED = 180.0;
+    public static final double MAX_ANGULAR_ACCEL = 90.0;
 
     public static final double TRENCH_ROTATION_SETPOINT = 0.0;
 
@@ -76,9 +73,6 @@ public final class Constants
     public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
     // Maximum speed of the robot in meters per second, used to limit acceleration.
     public static final double MAX_SPEED  = 4;
-    public static final double MAX_ACCEL = 2.0;
-    public static final double MAX_ANGULAR_SPEED = 180.0;
-    public static final double MAX_ANGULAR_ACCEL = 90.0
 
 
     // Hold time on motor brakes when disabled
@@ -267,6 +261,10 @@ public final class Constants
     public static final Translation2d RED_RIGHT_BUMP = new Translation2d(11.928, 5.598);
     public static final Translation2d BLUE_LEFT_BUMP = new Translation2d(4.617, 5.598);
     public static final Translation2d BLUE_RIGHT_BUMP = new Translation2d(4.617, 2.408);
+    public static final Translation2d RED_LEFT_TRENCH = new Translation2d(11.928, 0.586);
+    public static final Translation2d RED_RIGHT_TRENCH = new Translation2d(11.928, 7.423);
+    public static final Translation2d BLUE_LEFT_TRENCH = new Translation2d(4.617, 7.423);
+    public static final Translation2d BLUE_RIGHT_TRENCH = new Translation2d(4.617, 0.586);
 
     public static final double RED_ALLIANCE_BOUNDARY = RED_LEFT_BUMP.getX();
     public static final double BLUE_ALLIANCE_BOUNDARY = BLUE_LEFT_BUMP.getX();
