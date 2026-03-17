@@ -25,6 +25,7 @@ import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutoAlign.Target;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.ShooterFallback;
+import frc.robot.commands.TrenchAlign;
 import frc.robot.commands.auton.AutoAlignOnce;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.feeder.Feeder;
@@ -227,6 +228,8 @@ public class RobotContainer {
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
+    TrenchAlign trenchAlign = new TrenchAlign(swerveSubsystem, m_driverController);
+
     if (DriverStation.isTest())
     {
       swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides drive command above!
@@ -247,7 +250,7 @@ public class RobotContainer {
     else
     {
       // Triggers
-//      new Trigger(swerveSubsystem::isNearTrench).whileTrue(new TrenchAlign(swerveSubsystem, m_driverController));
+      //new Trigger(trenchAlign::isNearTrench).whileTrue(trenchAlign);
 
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
