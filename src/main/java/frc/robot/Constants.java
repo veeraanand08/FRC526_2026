@@ -128,8 +128,8 @@ public final class Constants
     public static final int ROLLER_MOTOR = 14;
     public static final int ROLLER_CURRENT_LIMIT = 60;
     public static final double ROLLER_MOI = 0.001;
-    public static final double ROLLER_GEAR_RATIO = 1.0; // adjust
-    public static final double ROLLER_STALL_VELOCITY = 200;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double ROLLER_STALL_VELOCITY = 100;
     public static final double ROLLER_RPM = 5000;
     public static final double ROLLER_RPM_REVERSED = -4500;
     public static final double ROLLER_RPM_SLOW = 4000;
@@ -213,7 +213,7 @@ public final class Constants
   {
     // AprilTag layout
     public static final AprilTagFieldLayout APRIL_TAG_LAYOUT =
-            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+            AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark); // Chesapeake = AndyMark, FIRST Championship = Welded
 
     public static final Translation2d RED_HUB = new Translation2d(11.938, 4.0);
     public static final Translation2d BLUE_HUB = new Translation2d(4.597, 4.0);

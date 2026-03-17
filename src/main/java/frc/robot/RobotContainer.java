@@ -55,10 +55,6 @@ import swervelib.SwerveInputStream;
  */
 @SuppressWarnings("unused")
 public class RobotContainer {
-
-  private final edu.wpi.first.wpilibj2.command.button.CommandGenericHID m_keyboard = 
-    new edu.wpi.first.wpilibj2.command.button.CommandGenericHID(2); //SIM STUFF DELETE LATER
-
   private final CommandXboxController m_driverController =
       new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_PORT);
   
@@ -138,8 +134,7 @@ public class RobotContainer {
         ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                  new VisionIO() {});
-//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0));
+                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0));
 //                new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
 //                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
         shooterSubsystem = new Shooter(
@@ -207,6 +202,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    RobotUtil.setDriverController(m_driverController);
+    RobotUtil.setOperatorController(operatorController);
+
 //    Command driveFieldOrientedDirectAngle     = swerveSubsystem.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 //    Command driveRobotOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(driveRobotOriented);
@@ -228,20 +226,6 @@ public class RobotContainer {
     Command reverseIntake = intakeSubsystem.reverseIntakeCommand();
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
-
-    if (currentMode == Mode.SIM) {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocityKeyboard);
-      m_keyboard.button(1).whileTrue(holdIntake);
-        
-      m_keyboard.button(2).whileTrue(reverseIntake);
-        
-      m_keyboard.button(3).onTrue(intakeSubsystem.agitateCommand());
-
-      m_keyboard.button(4).whileTrue(shootAutoSpeed);
-    }
-    else {
-      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
-    }
 
     if (DriverStation.isTest())
     {

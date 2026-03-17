@@ -47,6 +47,7 @@ public class IntakeIOSparkMax implements IntakeIO {
         rollerConfig.inverted(IntakeConstants.ROLLER_REVERSED);
         rollerConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
         rollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT);
+        rollerConfig.voltageCompensation(12.0);
         rollerConfig.closedLoop
                 .pid(IntakeConstants.ROLLER_P, IntakeConstants.ROLLER_I, IntakeConstants.ROLLER_D)
                 .feedForward.kV(IntakeConstants.ROLLER_FF);

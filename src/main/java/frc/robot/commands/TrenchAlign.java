@@ -8,7 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
@@ -17,6 +16,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TrenchAlignConstants;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class TrenchAlign extends Command {
   private final SwerveSubsystem swerveSubsystem;
@@ -27,7 +27,7 @@ public class TrenchAlign extends Command {
 
 
   /**
-    * Creates a new AutoAlign.
+    * Creates a new TrenchAlign.
     *
     * @param swerveSubsystem The swerve subsystem used by this command.
     * @param driverController The CommandXboxController object of the driver's controller.
@@ -37,7 +37,7 @@ public class TrenchAlign extends Command {
   {
     this.swerveSubsystem = swerveSubsystem;
     this.driverController = driverController;
-    this.trenchTarget = Translation2d.kZero;
+    this.trenchTarget = null;
     yController = new ProfiledPIDController(TrenchAlignConstants.Y_P, TrenchAlignConstants.Y_I, TrenchAlignConstants.Y_D,
     new TrapezoidProfile.Constraints(
         DriveConstants.MAX_SPEED,
@@ -63,7 +63,7 @@ public class TrenchAlign extends Command {
     trenchTarget = findNearestTrench();
     yController.reset(swerveSubsystem.getPose().getY());
     angleController.reset(swerveSubsystem.getHeading().getRadians());
-    SmartDashboard.putBoolean("TrenchAlign/Trench Align Running", true);
+    Logger.recordOutput("TrenchAlign/Trench Align Running", true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -80,16 +80,16 @@ public class TrenchAlign extends Command {
     leftX *= DriveConstants.MAX_SPEED;
     leftY *= DriveConstants.MAX_SPEED;
 
-    if (!trenchTarget.equals(Translation2d.kZero)){
+    if (trenchTarget != null) {
       double ySpeed = yController.calculate(swerveSubsystem.getPose().getY(), trenchTarget.getY());
 
       double angleSpeed = angleController.calculate(swerveSubsystem.getHeading().getRadians(), Math.toRadians(TrenchAlignConstants.TRENCH_ROTATION_SETPOINT));
       
       double distance = Math.abs(swerveSubsystem.getPose().getX() - trenchTarget.getX());
 
-      SmartDashboard.putNumber("TrenchAlign/Desired Angle", TrenchAlignConstants.TRENCH_ROTATION_SETPOINT);
+      Logger.recordOutput("TrenchAlign/Desired Angle", TrenchAlignConstants.TRENCH_ROTATION_SETPOINT);
 
-      SmartDashboard.putNumber("TrenchAlign/Desired Y", trenchTarget.getY());
+      Logger.recordOutput("TrenchAlign/Desired Y", trenchTarget.getY());
 
  
       double fullStrengthDist = 0.2;
@@ -101,8 +101,7 @@ public class TrenchAlign extends Command {
       double normalizedDist = MathUtil.clamp(1.0 - (adjustedDistance / Math.max(0.001, adjustedThreshold)), 0.0, 1.0);
       double strength = Math.pow(normalizedDist, TrenchAlignConstants.STRENGTH_EXP);
 
-
-      SmartDashboard.putNumber("TrenchAlign/strength", strength);
+      Logger.recordOutput("TrenchAlign/strength", strength);
       swerveSubsystem.drive(
         new Translation2d(leftY, leftX * (1.0 - strength) + ySpeed * strength),
         rightX * (1.0 - strength) + angleSpeed * strength,
@@ -143,7 +142,7 @@ public class TrenchAlign extends Command {
   @Override
   public void end(boolean interrupted) {
     trenchTarget = null;
-    SmartDashboard.putBoolean("TrenchAlign/Trench Align Running", false);
+    Logger.recordOutput("TrenchAlign/Trench Align Running", false);
   }
 
   // Returns true when the command should end.

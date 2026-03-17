@@ -27,7 +27,6 @@ public class AutoAlign extends Command {
     }
   }
 
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveSubsystem swerveSubsystem;
   private final CommandXboxController driverController;
   private final Target target;

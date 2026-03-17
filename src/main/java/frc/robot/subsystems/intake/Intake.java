@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.RobotUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -137,7 +138,7 @@ public class Intake extends SubsystemBase {
    */
   public Command intakeCommand() {
     // Inline construction of command goes here.
-    return startEnd(
+    return startRun(
             () -> {
               if (pivotState == PivotState.LOWERING) {
                 setRoller(true);
@@ -147,8 +148,15 @@ public class Intake extends SubsystemBase {
                 setPivotState(PivotState.LOWERING);
               }
             },
-            () -> setRoller(false))
-            .until(this::isRollerStalled);
+            () -> {
+              if (isRollerStalled()) {
+                RobotUtil.setOperatorRumble(0.7, 0.7);
+              }
+            })
+            .finallyDo(() -> {
+              RobotUtil.setOperatorRumble(0.0, 0.0);
+              setRoller(false);
+            });
   }
 
   /**
