@@ -34,7 +34,7 @@ public class AbsoluteDriveAdv extends Command
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
    * torwards/away from alliance wall and y is left/right. Heading Adjust changes the current heading after being
    * multipied by a constant. The look booleans are shortcuts to get the robot to face a certian direction. Based off of
-   * ideas in https://www.chiefdelphi.com/t/experiments-with-a-swerve-steering-knob/446172
+   * ideas in <a href="https://www.chiefdelphi.com/t/experiments-with-a-swerve-steering-knob/446172">...</a>
    *
    * @param swerve        The swerve drivebase subsystem.
    * @param vX            DoubleSupplier that supplies the x-translation joystick input.  Should be in the range -1 to 1

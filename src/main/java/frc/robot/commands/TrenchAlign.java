@@ -110,9 +110,9 @@ public class TrenchAlign extends Command {
     }
   }
 
-  public boolean isNearTrench() {
-    return findNearestTrench() != null;
-  }
+//  public boolean isNearTrench() {
+//    return findNearestTrench() != null;
+//  }
 
   public Translation2d findNearestTrench() {
     Translation2d robotPose = swerveSubsystem.getPose().getTranslation();
