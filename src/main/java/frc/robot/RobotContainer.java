@@ -249,13 +249,11 @@ public class RobotContainer {
     }
     else
     {
-      // Triggers
-      //new Trigger(trenchAlign::isNearTrench).whileTrue(trenchAlign);
-
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
       m_driverController.leftBumper().whileTrue(lockSwerve);
+      m_driverController.rightBumper().whileTrue(trenchAlign);
       // operator controls
       operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);
