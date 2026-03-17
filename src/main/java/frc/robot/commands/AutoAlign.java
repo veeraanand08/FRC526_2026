@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.RobotUtil;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -27,7 +27,6 @@ public class AutoAlign extends Command {
     }
   }
 
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveSubsystem swerveSubsystem;
   private final CommandXboxController driverController;
   private final Target target;
@@ -131,9 +130,9 @@ public class AutoAlign extends Command {
   public static Translation2d getVirtualTarget(ChassisSpeeds robotSpeed, Translation2d robotTranslation, Translation2d targetTranslation) {
     Translation2d virtualTargetTranslation = targetTranslation;
 
-    for (int i = 0; i < ShooterConstants.MAX_ITERATIONS; i++){
+    for (int i = 0; i < AutoAlignConstants.MAX_ITERATIONS; i++){
       double distanceToTarget = robotTranslation.getDistance(virtualTargetTranslation);
-      double shotTime = ShooterConstants.DISTANCE_TO_TIME.get(distanceToTarget);
+      double shotTime = AutoAlignConstants.DISTANCE_TO_TIME.get(distanceToTarget);
 
       double xTranslation = robotSpeed.vxMetersPerSecond * shotTime;
       double yTranslation = robotSpeed.vyMetersPerSecond * shotTime;
