@@ -133,9 +133,9 @@ public class RobotContainer {
         ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                new VisionIO() {});
-//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
-//                new VisionIOPhotonVision(VisionConstants.CAMERA_1_NAME, VisionConstants.robotToCamera0));
+//                new VisionIO() {});
+                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(VisionConstants.CAMERA_1_NAME, VisionConstants.robotToCamera1));
         shooterSubsystem = new Shooter(
                 new ShooterIOSparkMax(),
                 swerveSubsystem::getPose,
