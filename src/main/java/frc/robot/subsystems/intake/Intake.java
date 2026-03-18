@@ -40,7 +40,7 @@ public class Intake extends SubsystemBase {
 
     if (pivotState == PivotState.AGITATING) {
       // safety check
-      if (isPivotStalled()) setPivotState(PivotState.LOWERING);
+//      if (isPivotStalled()) setPivotState(PivotState.LOWERING);
 
       double time = agitationTimer.get();
 
@@ -150,9 +150,9 @@ public class Intake extends SubsystemBase {
               }
             },
             () -> {
-              if (isRollerStalled()) {
-                RobotUtil.setOperatorRumble(0.7, 0.7);
-              }
+//              if (isRollerStalled()) {
+//                RobotUtil.setOperatorRumble(0.7, 0.7);
+//              }
             })
             .finallyDo(() -> {
               RobotUtil.setOperatorRumble(0.0, 0.0);

@@ -29,8 +29,9 @@ public class IntakeIOSparkMax implements IntakeIO {
         pivotConfig.inverted(IntakeConstants.PIVOT_REVERSED);
         pivotConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
         pivotConfig.smartCurrentLimit(IntakeConstants.PIVOT_CURRENT_LIMIT);
+        pivotConfig.voltageCompensation(12.0);
         pivotConfig.encoder
-                .positionConversionFactor(IntakeConstants.PIVOT_GEAR_RATIO)
+                .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG)
                 .velocityConversionFactor(IntakeConstants.PIVOT_RPM_TO_DEG_PER_SEC);
         pivotConfig.absoluteEncoder
                 .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG_ABS)
@@ -104,7 +105,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     @Override
     public void setPivotDeg(double deg) {
-        pivotPid.setSetpoint(deg, SparkBase.ControlType.kMAXMotionPositionControl);
+        pivotPid.setSetpoint(deg, SparkBase.ControlType.kPosition);
     }
 
     @Override

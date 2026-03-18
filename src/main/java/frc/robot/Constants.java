@@ -119,7 +119,7 @@ public final class Constants
     public static final double INDEXER_PERIOD = 1.0;
 
     public static final int BALL_SENSOR_LASERCAN = 20;
-    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; // mm
+    public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 50.0; // mm
     public static final int LOW_BPS = 2;
   }
   

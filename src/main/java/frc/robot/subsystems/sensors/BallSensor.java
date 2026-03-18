@@ -41,10 +41,9 @@ public class BallSensor extends SubsystemBase {
     double currentTimeSecs = Timer.getTimestamp();
     boolean statusChanged = ballInFront;
 
-    if (inputs.valid) {
-      ballInFront = debouncer.calculate(inputs.distanceMillimeters < FeederConstants.MAXIMUM_BALL_IN_FRONT_DISTANCE);
-      statusChanged = statusChanged != ballInFront;
-    }
+    ballInFront = inputs.distanceMillimeters < FeederConstants.MAXIMUM_BALL_IN_FRONT_DISTANCE;
+    statusChanged = statusChanged != ballInFront;
+
     if (statusChanged && !ballInFront) {
       currentBalls.add(currentTimeSecs);
     }

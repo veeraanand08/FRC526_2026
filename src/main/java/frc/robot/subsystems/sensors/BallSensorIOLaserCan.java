@@ -20,13 +20,12 @@ public class BallSensorIOLaserCan implements BallSensorIO {
 
     public void updateInputs(BallSensorIOInputs inputs) {
         LaserCan.Measurement measurement = laserCan.getMeasurement();
-        if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT){
+        if (measurement != null) {
+            inputs.valid = measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
             inputs.distanceMillimeters = measurement.distance_mm;
-            inputs.valid = true;
         }
         else {
             inputs.valid = false;
         }
-        
     }
 }
