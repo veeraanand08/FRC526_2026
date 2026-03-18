@@ -14,7 +14,8 @@ public class IntakeIOSparkMax implements IntakeIO {
     private final SparkMax roller;
     private final SparkMaxConfig pivotConfig;
 
-    private final AbsoluteEncoder pivotEncoder;
+    private final RelativeEncoder pivotEncoder;
+//    private final AbsoluteEncoder pivotAbsoluteEncoder;
     private final RelativeEncoder rollerEncoder;
     private final SparkClosedLoopController pivotPid;
     private final SparkClosedLoopController rollerPid;
@@ -28,9 +29,11 @@ public class IntakeIOSparkMax implements IntakeIO {
         pivotConfig.inverted(IntakeConstants.PIVOT_REVERSED);
         pivotConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
         pivotConfig.smartCurrentLimit(IntakeConstants.PIVOT_CURRENT_LIMIT);
+        pivotConfig.encoder
+                .positionConversionFactor(IntakeConstants.PIVOT_GEAR_RATIO)
+                .velocityConversionFactor(IntakeConstants.PIVOT_RPM_TO_DEG_PER_SEC);
         pivotConfig.absoluteEncoder
-                .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG)
-                .velocityConversionFactor(IntakeConstants.PIVOT_RPM_TO_DEG_PER_SEC)
+                .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG_ABS)
                 .zeroOffset(IntakeConstants.PIVOT_ENCODER_OFFSET);
         pivotConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -55,10 +58,13 @@ public class IntakeIOSparkMax implements IntakeIO {
         pivot.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         roller.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        pivotEncoder = pivot.getAbsoluteEncoder();
+        pivotEncoder = pivot.getEncoder();
+//        pivotAbsoluteEncoder = pivot.getAbsoluteEncoder();
         rollerEncoder = roller.getEncoder();
         pivotPid = pivot.getClosedLoopController();
         rollerPid = roller.getClosedLoopController();
+
+        pivotEncoder.setPosition(0);
     }
 
     @Override

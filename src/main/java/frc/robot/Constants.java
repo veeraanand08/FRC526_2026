@@ -120,7 +120,7 @@ public final class Constants
 
     public static final int BALL_SENSOR_LASERCAN = 20;
     public static final double MAXIMUM_BALL_IN_FRONT_DISTANCE = 20.0; // mm
-    public static final int LOW_BPS = 3;
+    public static final int LOW_BPS = 2;
   }
   
   public static final class IntakeConstants
@@ -145,7 +145,9 @@ public final class Constants
     public static final int PIVOT_CURRENT_LIMIT = 40;
     public static final double PIVOT_ENCODER_OFFSET = 0.0; // adjust
     public static final double PIVOT_GEAR_RATIO = 75;
+    public static final double PIVOT_CHAIN_GEAR_RATIO = 3;
     public static final double PIVOT_ROT_TO_DEG = 360 / PIVOT_GEAR_RATIO;
+    public static final double PIVOT_ROT_TO_DEG_ABS = 360 / PIVOT_CHAIN_GEAR_RATIO;
     public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
     public static final double PIVOT_STALL_VELOCITY = 0.5;
     public static final double PIVOT_P = 0.008;
@@ -181,9 +183,9 @@ public final class Constants
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)
     public static Transform3d robotToCamera0 =
-            new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+            new Transform3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
     public static Transform3d robotToCamera1 =
-            new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+            new Transform3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
 
     // Basic filtering thresholds
     public static final double MAX_AMBIGUITY = 0.3;

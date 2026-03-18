@@ -133,9 +133,9 @@ public class RobotContainer {
         ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0));
-//                new VisionIOLimelight(VisionConstants.CAMERA_1_NAME, swerveSubsystem::getHeading,
-//                        () -> swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond));
+                new VisionIO() {});
+//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
+//                new VisionIOPhotonVision(VisionConstants.CAMERA_1_NAME, VisionConstants.robotToCamera0));
         shooterSubsystem = new Shooter(
                 new ShooterIOSparkMax(),
                 swerveSubsystem::getPose,
@@ -147,14 +147,15 @@ public class RobotContainer {
         ballSensor = new BallSensor(new BallSensorIO() {});
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                        VisionConstants.CAMERA_0_NAME,
-                        VisionConstants.robotToCamera0,
-                        swerveSubsystem::getPose),
-                new VisionIOPhotonVisionSim(
-                        VisionConstants.CAMERA_1_NAME,
-                        VisionConstants.robotToCamera1,
-                        swerveSubsystem::getPose));
+                new VisionIO() {});
+//                new VisionIOPhotonVisionSim(
+//                        VisionConstants.CAMERA_0_NAME,
+//                        VisionConstants.robotToCamera0,
+//                        swerveSubsystem::getPose),
+//                new VisionIOPhotonVisionSim(
+//                        VisionConstants.CAMERA_1_NAME,
+//                        VisionConstants.robotToCamera1,
+//                        swerveSubsystem::getPose));
         shooterSubsystem = new Shooter(
                 new ShooterIOSim(),
                 swerveSubsystem::getPose,

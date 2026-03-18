@@ -54,7 +54,8 @@ public class Intake extends SubsystemBase {
 
       double targetAngle = upperAngle + (IntakeConstants.PIVOT_AGITATION_LOWER_ANGLE - upperAngle) * pos;
 
-      setPivotAngle(targetAngle);
+      io.setPivotSetpoint(targetAngle);
+      Logger.recordOutput("Intake/Pivot Setpoint", targetAngle);
     }
   }
 
@@ -107,8 +108,8 @@ public class Intake extends SubsystemBase {
    * @param angle Angle (in degrees) to rotate.
    */
   public void setPivotAngle(double angle) {
+    io.setPivotDeg(angle);
     Logger.recordOutput("Intake/Pivot Setpoint", angle);
-    io.setPivotSetpoint(angle);
   }
 
   /* Set the pivot and roller motor speeds to 0. */
