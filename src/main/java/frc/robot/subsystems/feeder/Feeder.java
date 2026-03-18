@@ -35,14 +35,14 @@ public class Feeder extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
 
-    if (indexerState != IndexerState.DISABLED) {
-      if (timer.get() > FeederConstants.INDEXER_PERIOD) {
-        setIndexerState(indexerState == IndexerState.LEFT_MOTOR_RUNNING
-            ? IndexerState.RIGHT_MOTOR_RUNNING
-            : IndexerState.LEFT_MOTOR_RUNNING);
-        timer.restart();
-      }
-    }
+//    if (indexerState != IndexerState.DISABLED) {
+//      if (timer.get() > FeederConstants.INDEXER_PERIOD) {
+//        setIndexerState(indexerState == IndexerState.LEFT_MOTOR_RUNNING
+//            ? IndexerState.RIGHT_MOTOR_RUNNING
+//            : IndexerState.LEFT_MOTOR_RUNNING);
+//        timer.restart();
+//      }
+//    }
   }
 
   private void setIndexerState(IndexerState newState) {
@@ -71,8 +71,10 @@ public class Feeder extends SubsystemBase {
       io.setIndexerRight(-FeederConstants.INDEXER_POWER_REVERSED);
     }
     else {
-      timer.restart();
-      setIndexerState(IndexerState.LEFT_MOTOR_RUNNING);
+//      timer.restart();
+//      setIndexerState(IndexerState.LEFT_MOTOR_RUNNING);
+      io.setIndexerLeft(FeederConstants.INDEXER_POWER);
+      io.setIndexerRight(FeederConstants.INDEXER_POWER);
     }
   }
 
