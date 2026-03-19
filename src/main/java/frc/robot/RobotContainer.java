@@ -248,6 +248,8 @@ public class RobotContainer {
     }
     else
     {
+      swerveSubsystem.setDefaultCommand(driveFieldOrientedAngularVelocity);
+
       // driver controls
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
