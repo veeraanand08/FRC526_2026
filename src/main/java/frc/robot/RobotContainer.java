@@ -11,6 +11,7 @@ import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -133,9 +134,8 @@ public class RobotContainer {
         ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
-                new VisionIO() {});
-//                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
-//                new VisionIOPhotonVision(VisionConstants.CAMERA_1_NAME, VisionConstants.robotToCamera1));
+                new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(VisionConstants.CAMERA_1_NAME, VisionConstants.robotToCamera1));
         shooterSubsystem = new Shooter(
                 new ShooterIOSparkMax(),
                 swerveSubsystem::getPose,
@@ -267,10 +267,12 @@ public class RobotContainer {
   }
 
   private void configureAutoCommands() {
-    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.toggleIntakeCommand());
-    NamedCommands.registerCommand("Hub Auto Align", new AutoAlignOnce(swerveSubsystem, Target.HUB));
-    NamedCommands.registerCommand("Shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false));
-    NamedCommands.registerCommand("Agitate", intakeSubsystem.agitateCommand());
+    NamedCommands.registerCommand("toggleIntake", intakeSubsystem.agitateCommand());
+    NamedCommands.registerCommand("autoAlign", new AutoAlignOnce(swerveSubsystem, Target.HUB));
+    NamedCommands.registerCommand("shoot", new ShooterCommand(shooterSubsystem, feederSubsystem, false));
+    NamedCommands.registerCommand("agitate", intakeSubsystem.agitateCommand());
+
+    new EventTrigger("toggleIntake").onTrue(intakeSubsystem.intakeCommand());
   }
 
   /**

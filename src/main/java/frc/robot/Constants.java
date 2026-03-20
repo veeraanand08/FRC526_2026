@@ -150,12 +150,12 @@ public final class Constants
     public static final double PIVOT_ROT_TO_DEG_ABS = 360 / PIVOT_CHAIN_GEAR_RATIO;
     public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
     public static final double PIVOT_STALL_VELOCITY = 0.5;
-    public static final double PIVOT_P = 0.008;
+    public static final double PIVOT_P = 0.01;
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
-    public static final double PIVOT_FF_S = 0;
+    public static final double PIVOT_FF_S = 0.15;
     public static final double PIVOT_FF_V = 1.0 / 5676.0;
-    public static final double PIVOT_FF_COS = 0; // gravity feedforward
+    public static final double PIVOT_FF_COS = 0.25; // gravity feedforward
     public static final double PIVOT_FF_COS_RATIO = PIVOT_GEAR_RATIO / 360;
 
     // MAXMotion
@@ -165,7 +165,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 140; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 130; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; //where the upper bound starts
     public static final double PIVOT_AGITATION_UPPER_ANGLE_MIN = 25; // where the upper bound ends
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
@@ -183,19 +183,32 @@ public final class Constants
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)
     public static Transform3d robotToCamera0 =
-            new Transform3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+            new Transform3d(
+                    Units.inchesToMeters(-12.5), // x
+                    Units.inchesToMeters(16), // y
+                    Units.inchesToMeters(7.5), // z
+                    new Rotation3d(
+                            Units.degreesToRadians(2.0), // roll
+                            Units.degreesToRadians(-6.0), // pitch
+                            Units.degreesToRadians(150.0))); // yaw
     public static Transform3d robotToCamera1 =
-            new Transform3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+            new Transform3d(
+                    Units.inchesToMeters(-12.5), // x
+                    Units.inchesToMeters(-16), // y
+                    Units.inchesToMeters(7.5), // z
+                    new Rotation3d(
+                            Units.degreesToRadians(0.0), // roll
+                            Units.degreesToRadians(-1.6), // pitch
+                            Units.degreesToRadians(-150.0))); // yaw
 
     // Basic filtering thresholds
-    public static final double MAX_AMBIGUITY = 0.3;
-    public static final double MAX_Z_ERROR = 0.75;
-    public static final double MAX_TILT_DEG = 15;
+    public static final LoggedNetworkNumber MAX_AMBIGUITY = new LoggedNetworkNumber("/Tuning/Vision/Max Ambiguity", 0.3);
+    public static final LoggedNetworkNumber MAX_Z_ERROR = new LoggedNetworkNumber("/Tuning/Vision/Max Z Error", 0.75);
 
     // Standard deviation baselines, for 1-meter distance and 1 tag
     // (Adjusted automatically based on distance and # of tags)
-    public static double linearStdDevBaseline = 0.02; // Meters
-    public static double angularStdDevBaseline = 0.1; // Radians
+    public static LoggedNetworkNumber linearStdDevBaseline = new LoggedNetworkNumber("/Tuning/Vision/linearStdDevBaseline", 0.02); // Meters
+    public static LoggedNetworkNumber angularStdDevBaseline = new LoggedNetworkNumber("/Tuning/Vision/angularStdDevBaseline", 0.1); // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
@@ -205,7 +218,7 @@ public final class Constants
                     1.0 // Camera 1
             };
 
-    // Multipliers to apply for MegaTag 2 observations
+    // Multipliers to apply for MegaTag 2 observations (Limelight only)
     public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
     public static double angularStdDevMegatag2Factor =
             Double.POSITIVE_INFINITY; // No rotation data available
