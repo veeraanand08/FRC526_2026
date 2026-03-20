@@ -37,9 +37,8 @@ public class IntakeIOSparkMax implements IntakeIO {
                 .positionConversionFactor(IntakeConstants.PIVOT_ROT_TO_DEG_ABS)
                 .zeroOffset(IntakeConstants.PIVOT_ENCODER_OFFSET);
         pivotConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                 .pid(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D);
-//                .feedForward.kS(IntakeConstants.PIVOT_FF_S)
+//                .feedForward.kS(IntakeConstants.PIVOT_FF_S);
 //                            .kV(IntakeConstants.PIVOT_FF_V);
 //                            .kCos(IntakeConstants.PIVOT_FF_COS)
 //                            .kCosRatio(IntakeConstants.PIVOT_FF_COS_RATIO);

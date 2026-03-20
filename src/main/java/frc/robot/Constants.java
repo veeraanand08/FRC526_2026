@@ -142,7 +142,7 @@ public final class Constants
     public static final boolean PIVOT_REVERSED = false;
     
     public static final int PIVOT_MOTOR = 13;
-    public static final int PIVOT_CURRENT_LIMIT = 40;
+    public static final int PIVOT_CURRENT_LIMIT = 60;
     public static final double PIVOT_ENCODER_OFFSET = 0.0; // adjust
     public static final double PIVOT_GEAR_RATIO = 75;
     public static final double PIVOT_CHAIN_GEAR_RATIO = 3;
@@ -165,7 +165,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 130; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 120; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; //where the upper bound starts
     public static final double PIVOT_AGITATION_UPPER_ANGLE_MIN = 25; // where the upper bound ends
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;
