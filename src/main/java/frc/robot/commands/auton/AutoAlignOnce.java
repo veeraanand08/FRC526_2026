@@ -62,6 +62,6 @@ public class AutoAlignOnce extends Command {
   @Override
   public boolean isFinished() {
     // cancel command if pose estimator may not be accurate OR if bot is pointing towards hub
-    return !RobotUtil.isPoseEstimatorReady || Math.abs(swerveSubsystem.getHeading().getDegrees() - angleToTarget.getDegrees()) < Constants.AutoAlignConstants.TOLERANCE_DEG;
+    return Math.abs(swerveSubsystem.getHeading().getDegrees() - angleToTarget.getDegrees()) < Constants.AutoAlignConstants.TOLERANCE_DEG;
   }
 }

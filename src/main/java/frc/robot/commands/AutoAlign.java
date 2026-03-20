@@ -157,7 +157,7 @@ public class AutoAlign extends Command {
   @Override
   public boolean isFinished() {
     // cancel command if pose estimator may not be accurate
-    return !RobotUtil.isPoseEstimatorReady;
+    return false;
   }
 
   public static Target getCurrentTarget() {

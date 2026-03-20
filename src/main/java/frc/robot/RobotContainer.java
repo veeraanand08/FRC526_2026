@@ -227,7 +227,7 @@ public class RobotContainer {
     Command agitateIntake = intakeSubsystem.agitateCommand();
     Command resetIntake = intakeSubsystem.resetIntakeCommand();
 
-    TrenchAlign trenchAlign = new TrenchAlign(swerveSubsystem, m_driverController);
+//    TrenchAlign trenchAlign = new TrenchAlign(swerveSubsystem, m_driverController);
 
     if (DriverStation.isTest())
     {
@@ -254,7 +254,7 @@ public class RobotContainer {
       m_driverController.povLeft().onTrue((Commands.runOnce(swerveSubsystem::zeroGyroWithAlliance)));
       m_driverController.a().whileTrue(autoAlign);
       m_driverController.leftBumper().whileTrue(lockSwerve);
-      m_driverController.rightBumper().whileTrue(trenchAlign);
+//      m_driverController.rightBumper().whileTrue(trenchAlign);
       // operator controls
       operatorController.leftBumper().whileTrue(holdIntake);
       operatorController.rightBumper().whileTrue(shootAutoSpeed);

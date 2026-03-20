@@ -81,17 +81,26 @@ public class TrenchAlign extends Command {
     leftY *= DriveConstants.MAX_SPEED;
 
     if (trenchTarget != null) {
+      double heading = swerveSubsystem.getHeading().getDegrees();
+      double target0 = 0.0;
+      double target180 = 180.0;
+
+      double distTo0 = Math.abs(MathUtil.inputModulus(heading - 0.0, -180, 180));
+      double distTo180 = Math.abs(MathUtil.inputModulus(heading - 180, -180, 180));
+
+      double targetAngleRad = Math.toRadians(distTo0 <= distTo180 ? target0 : target180);
+
       double ySpeed = yController.calculate(swerveSubsystem.getPose().getY(), trenchTarget.getY());
 
-      double angleSpeed = angleController.calculate(swerveSubsystem.getHeading().getRadians(), Math.toRadians(TrenchAlignConstants.TRENCH_ROTATION_SETPOINT));
-      
+      double angleSpeed = angleController.calculate(heading, targetAngleRad);
+
       double distance = Math.abs(swerveSubsystem.getPose().getX() - trenchTarget.getX());
 
       Logger.recordOutput("TrenchAlign/Desired Angle", TrenchAlignConstants.TRENCH_ROTATION_SETPOINT);
 
       Logger.recordOutput("TrenchAlign/Desired Y", trenchTarget.getY());
 
- 
+
       double fullStrengthDist = 0.2;
 
       double adjustedDistance = Math.max(0.0, distance - fullStrengthDist);
@@ -103,9 +112,9 @@ public class TrenchAlign extends Command {
 
       Logger.recordOutput("TrenchAlign/strength", strength);
       swerveSubsystem.drive(
-        new Translation2d(leftY, leftX * (1.0 - strength) + ySpeed * strength),
-        rightX * (1.0 - strength) + angleSpeed * strength,
-        true
+              new Translation2d(leftY, leftX * (1.0 - strength) + ySpeed * strength),
+              rightX * (1.0 - strength) + angleSpeed * strength,
+              true
       );
     }
   }

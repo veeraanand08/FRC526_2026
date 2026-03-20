@@ -139,7 +139,7 @@ public class Intake extends SubsystemBase {
    */
   public Command intakeCommand() {
     // Inline construction of command goes here.
-    return startRun(
+    return startEnd(
             () -> {
               if (pivotState == PivotState.LOWERING) {
                 setRoller(true);
@@ -149,15 +149,7 @@ public class Intake extends SubsystemBase {
                 setPivotState(PivotState.LOWERING);
               }
             },
-            () -> {
-//              if (isRollerStalled()) {
-//                RobotUtil.setOperatorRumble(0.7, 0.7);
-//              }
-            })
-            .finallyDo(() -> {
-              RobotUtil.setOperatorRumble(0.0, 0.0);
-              setRoller(false);
-            });
+            () -> setRoller(false));
   }
 
   /**
