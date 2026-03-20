@@ -143,5 +143,9 @@ public final class RobotUtil {
         public double getTimeRemaining() {
             return shiftTimeRemaining;
         }
+
+        public boolean isHubActive() {
+            return isHubActive;
+        }
     }
 }

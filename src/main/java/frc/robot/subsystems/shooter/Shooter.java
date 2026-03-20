@@ -43,14 +43,14 @@ public class Shooter extends SubsystemBase {
 
     Translation2d robotTranslation = robotPose.get().getTranslation();
     Translation2d virtualTarget;
-    boolean isActive = AutoAlign.isActive();
+    boolean autoAlignActive = AutoAlign.isActive();
 
-    if (isActive) virtualTarget = AutoAlign.getSavedVirtualTarget();
+    if (autoAlignActive) virtualTarget = AutoAlign.getSavedVirtualTarget();
     else virtualTarget = AutoAlign.getVirtualTarget(robotVelocity.get(), robotTranslation,
                                                     AutoAlign.getTargetTranslation(AutoAlign.Target.HUB, robotTranslation));
     distanceToTarget = robotTranslation.getDistance(virtualTarget);
 
-    Logger.recordOutput("Shooter/Shooter Ready", RobotUtil.isPoseEstimatorReady && isActive);
+    Logger.recordOutput("Shooter/Shooter Ready", RobotUtil.shiftTimer.isHubActive() && autoAlignActive);
     Logger.recordOutput("Shooter/Distance to Target", distanceToTarget);
   }
 
