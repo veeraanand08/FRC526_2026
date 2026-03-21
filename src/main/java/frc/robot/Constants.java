@@ -202,13 +202,13 @@ public final class Constants
                             Units.degreesToRadians(-150.0))); // yaw
 
     // Basic filtering thresholds
-    public static final LoggedNetworkNumber MAX_AMBIGUITY = new LoggedNetworkNumber("/Tuning/Vision/Max Ambiguity", 0.3);
-    public static final LoggedNetworkNumber MAX_Z_ERROR = new LoggedNetworkNumber("/Tuning/Vision/Max Z Error", 0.75);
+    public static final double MAX_AMBIGUITY = 0.3;
+    public static final double MAX_Z_ERROR = 0.75;
 
     // Standard deviation baselines, for 1-meter distance and 1 tag
     // (Adjusted automatically based on distance and # of tags)
-    public static LoggedNetworkNumber linearStdDevBaseline = new LoggedNetworkNumber("/Tuning/Vision/linearStdDevBaseline", 0.02); // Meters
-    public static LoggedNetworkNumber angularStdDevBaseline = new LoggedNetworkNumber("/Tuning/Vision/angularStdDevBaseline", 0.1); // Radians
+    public static double linearStdDevBaseline = 0.06; // Meters
+    public static double angularStdDevBaseline = 0.1; // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
