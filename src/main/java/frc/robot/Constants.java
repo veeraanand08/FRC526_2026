@@ -165,7 +165,7 @@ public final class Constants
     
     // setpoints, in degrees
     public static final double PIVOT_RAISED_ANGLE = 0;
-    public static final double PIVOT_ENGAGED_ANGLE = 120; // lowered
+    public static final double PIVOT_ENGAGED_ANGLE = 125; // lowered
     public static final double PIVOT_AGITATION_UPPER_ANGLE  = 40; //where the upper bound starts
     public static final double PIVOT_AGITATION_UPPER_ANGLE_MIN = 25; // where the upper bound ends
     public static final double PIVOT_AGITATION_LOWER_ANGLE  = 105;

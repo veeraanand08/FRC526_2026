@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
-    setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget));
+    setAngularVelocity(ShooterConstants.DISTANCE_TO_RPM.get(distanceToTarget*0.9));
   }
 
   public void setAngularVelocity(double rpm) {
