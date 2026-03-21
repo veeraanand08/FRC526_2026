@@ -61,7 +61,7 @@ public class RobotContainer {
   private final CommandXboxController operatorController =
       new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
-  private final BallSensor ballSensor;
+//  private final BallSensor ballSensor;
 
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -144,7 +144,7 @@ public class RobotContainer {
         intakeSubsystem = new Intake(new IntakeIOSparkMax());
         break;
       case SIM:
-        ballSensor = new BallSensor(new BallSensorIO() {});
+//        ballSensor = new BallSensor(new BallSensorIO() {});
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
                 new VisionIO() {});
@@ -164,7 +164,7 @@ public class RobotContainer {
         intakeSubsystem = new Intake(new IntakeIOSim());
         break;
       default: // REPLAY
-        ballSensor = new BallSensor(new BallSensorIO() {});
+//        ballSensor = new BallSensor(new BallSensorIO() {});
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
                 new VisionIO() {},
