@@ -131,7 +131,7 @@ public class RobotContainer {
   public RobotContainer() {
     switch (currentMode) {
       case REAL:
-        ballSensor = new BallSensor(new BallSensorIOLaserCan());
+//        ballSensor = new BallSensor(new BallSensorIOLaserCan());
         visionSubsystem = new Vision(
                 swerveSubsystem.getSwerveDrive()::addVisionMeasurement,
                 new VisionIOPhotonVision(VisionConstants.CAMERA_0_NAME, VisionConstants.robotToCamera0),
