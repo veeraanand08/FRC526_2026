@@ -150,7 +150,7 @@ public final class Constants
     public static final double PIVOT_ROT_TO_DEG_ABS = 360 / PIVOT_CHAIN_GEAR_RATIO;
     public static final double PIVOT_RPM_TO_DEG_PER_SEC = (360.0/60.0) / PIVOT_GEAR_RATIO;
     public static final double PIVOT_STALL_VELOCITY = 0.5;
-    public static final double PIVOT_P = 0.01;
+    public static final double PIVOT_P = 0.0125;
     public static final double PIVOT_I = 0;
     public static final double PIVOT_D = 0;
     public static final double PIVOT_FF_S = 0.15;
